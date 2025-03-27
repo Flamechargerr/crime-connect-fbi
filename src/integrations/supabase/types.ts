@@ -9,7 +9,207 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      case_criminals: {
+        Row: {
+          case_id: string
+          criminal_id: string
+        }
+        Insert: {
+          case_id: string
+          criminal_id: string
+        }
+        Update: {
+          case_id?: string
+          criminal_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "case_criminals_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "case_criminals_criminal_id_fkey"
+            columns: ["criminal_id"]
+            isOneToOne: false
+            referencedRelation: "criminals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cases: {
+        Row: {
+          created_at: string
+          description: string
+          id: string
+          police_station_id: string | null
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          id?: string
+          police_station_id?: string | null
+          status: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          id?: string
+          police_station_id?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cases_police_station_id_fkey"
+            columns: ["police_station_id"]
+            isOneToOne: false
+            referencedRelation: "police_stations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      criminals: {
+        Row: {
+          biometric_data: string | null
+          created_at: string
+          date_of_birth: string
+          first_name: string
+          id: string
+          last_name: string
+          middle_name: string | null
+          photo: string | null
+          updated_at: string
+        }
+        Insert: {
+          biometric_data?: string | null
+          created_at?: string
+          date_of_birth: string
+          first_name: string
+          id?: string
+          last_name: string
+          middle_name?: string | null
+          photo?: string | null
+          updated_at?: string
+        }
+        Update: {
+          biometric_data?: string | null
+          created_at?: string
+          date_of_birth?: string
+          first_name?: string
+          id?: string
+          last_name?: string
+          middle_name?: string | null
+          photo?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      evidence: {
+        Row: {
+          case_id: string | null
+          created_at: string
+          description: string
+          id: string
+          storage_location: string
+          updated_at: string
+        }
+        Insert: {
+          case_id?: string | null
+          created_at?: string
+          description: string
+          id?: string
+          storage_location: string
+          updated_at?: string
+        }
+        Update: {
+          case_id?: string | null
+          created_at?: string
+          description?: string
+          id?: string
+          storage_location?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "evidence_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      police_stations: {
+        Row: {
+          created_at: string
+          id: string
+          location: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          location: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          location?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      witnesses: {
+        Row: {
+          case_id: string | null
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          statement: string
+          updated_at: string
+        }
+        Insert: {
+          case_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          statement: string
+          updated_at?: string
+        }
+        Update: {
+          case_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          statement?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "witnesses_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
