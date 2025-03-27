@@ -13,6 +13,11 @@ import Cases from "./pages/Cases";
 import AddCase from "./pages/AddCase";
 import Criminals from "./pages/Criminals";
 import AddCriminal from "./pages/AddCriminal";
+import Officers from "./pages/Officers"; 
+import Evidence from "./pages/Evidence";
+import Witnesses from "./pages/Witnesses";
+import Courts from "./pages/Courts";
+import Reports from "./pages/Reports";
 import NotFound from "./pages/NotFound";
 import Index from "./pages/Index";
 
@@ -42,7 +47,11 @@ const App = () => (
               <Route path="/cases/add" element={<AddCase />} />
               <Route path="/criminals" element={<Criminals />} />
               <Route path="/criminals/add" element={<AddCriminal />} />
-              {/* Add other routes here as we develop them */}
+              <Route path="/officers" element={<Officers />} />
+              <Route path="/evidence" element={<Evidence />} />
+              <Route path="/witnesses" element={<Witnesses />} />
+              <Route path="/courts" element={<Courts />} />
+              <Route path="/reports" element={<Reports />} />
             </Route>
             
             <Route path="*" element={<NotFound />} />

@@ -77,6 +77,36 @@ export type Database = {
           },
         ]
       }
+      courts: {
+        Row: {
+          created_at: string
+          id: string
+          judge_name: string
+          jurisdiction: string | null
+          location: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          judge_name: string
+          jurisdiction?: string | null
+          location: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          judge_name?: string
+          jurisdiction?: string | null
+          location?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       criminals: {
         Row: {
           biometric_data: string | null
@@ -148,6 +178,47 @@ export type Database = {
           },
         ]
       }
+      officers: {
+        Row: {
+          badge_number: string
+          created_at: string
+          department: string | null
+          id: string
+          name: string
+          police_station_id: string | null
+          rank: string
+          updated_at: string
+        }
+        Insert: {
+          badge_number: string
+          created_at?: string
+          department?: string | null
+          id?: string
+          name: string
+          police_station_id?: string | null
+          rank: string
+          updated_at?: string
+        }
+        Update: {
+          badge_number?: string
+          created_at?: string
+          department?: string | null
+          id?: string
+          name?: string
+          police_station_id?: string | null
+          rank?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "officers_police_station_id_fkey"
+            columns: ["police_station_id"]
+            isOneToOne: false
+            referencedRelation: "police_stations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       police_stations: {
         Row: {
           created_at: string
@@ -171,6 +242,44 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      reports: {
+        Row: {
+          case_id: string | null
+          content: string
+          created_at: string
+          created_by: string | null
+          id: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          case_id?: string | null
+          content: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          case_id?: string | null
+          content?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reports_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "cases"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       witnesses: {
         Row: {
