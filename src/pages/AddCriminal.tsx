@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -9,6 +9,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { supabase } from "@/integrations/supabase/client";
+import { InsertCriminal } from '@/types/supabase';
 
 const formSchema = z.object({
   firstName: z.string().min(2, {
@@ -26,6 +28,7 @@ const formSchema = z.object({
 
 const AddCriminal = () => {
   const navigate = useNavigate();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   // Define form
   const form = useForm<z.infer<typeof formSchema>>({
@@ -40,15 +43,38 @@ const AddCriminal = () => {
   });
 
   // Submit handler
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // In a real app, this would be an API call
-    console.log("Form submitted:", values);
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    setIsSubmitting(true);
     
-    // Simulate adding the criminal
-    setTimeout(() => {
+    try {
+      // Map form values to database schema
+      const newCriminal: InsertCriminal = {
+        first_name: values.firstName,
+        last_name: values.lastName,
+        middle_name: values.middleName || null,
+        date_of_birth: values.dateOfBirth,
+        biometric_data: values.biometricData || null,
+      };
+      
+      // Insert the criminal record
+      const { error } = await supabase
+        .from('criminals')
+        .insert(newCriminal);
+      
+      if (error) {
+        console.error('Error adding criminal:', error);
+        toast.error('Failed to add criminal record');
+        return;
+      }
+      
       toast.success("Criminal record added successfully!");
       navigate("/criminals");
-    }, 1000);
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      toast.error('An unexpected error occurred');
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -149,8 +175,8 @@ const AddCriminal = () => {
                 <Button variant="outline" type="button" onClick={() => navigate("/criminals")}>
                   Cancel
                 </Button>
-                <Button type="submit">
-                  Add Criminal Record
+                <Button type="submit" disabled={isSubmitting}>
+                  {isSubmitting ? "Adding..." : "Add Criminal Record"}
                 </Button>
               </div>
             </form>
