@@ -1,13 +1,11 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { User, Search, Filter, ChevronDown, ChevronUp } from 'lucide-react';
+import { User, Search, Filter, ChevronDown, ChevronUp, Plus } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Criminal } from '../types';
 
-// Mock criminals data based on your SQL inserts
 const mockCriminals: Criminal[] = [
   {
     id: 201,
@@ -49,11 +47,9 @@ const Criminals: React.FC = () => {
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
   useEffect(() => {
-    // Simulate API call to fetch criminals
     const fetchCriminals = async () => {
       setLoading(true);
       try {
-        // In a real app, this would be an API call
         await new Promise(resolve => setTimeout(resolve, 1000));
         setCriminals(mockCriminals);
       } catch (error) {
@@ -120,11 +116,19 @@ const Criminals: React.FC = () => {
           <h1 className="text-3xl font-bold tracking-tight">Criminals</h1>
           <p className="text-muted-foreground">Manage and view criminal records.</p>
         </div>
-        <Button className="flex items-center">
-          <Link to="/cases" className="flex items-center">
-            View Cases
-          </Link>
-        </Button>
+        <div className="flex space-x-3">
+          <Button className="flex items-center">
+            <Link to="/criminals/add" className="flex items-center">
+              <Plus className="mr-2 h-4 w-4" />
+              Add Criminal
+            </Link>
+          </Button>
+          <Button variant="outline" className="flex items-center">
+            <Link to="/cases" className="flex items-center">
+              View Cases
+            </Link>
+          </Button>
+        </div>
       </div>
 
       <Card className="glass-card">

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Plus, Search, Filter, FileText, ChevronDown, ChevronUp } from 'lucide-react';
@@ -92,11 +91,9 @@ const Cases: React.FC = () => {
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
 
   useEffect(() => {
-    // Simulate API call to fetch cases
     const fetchCases = async () => {
       setLoading(true);
       try {
-        // In a real app, this would be an API call
         await new Promise(resolve => setTimeout(resolve, 1000));
         setCases(mockCases);
       } catch (error) {
@@ -159,8 +156,10 @@ const Cases: React.FC = () => {
           <p className="text-muted-foreground">Manage and view all case files.</p>
         </div>
         <Button className="flex items-center">
-          <Plus className="mr-2 h-4 w-4" />
-          New Case
+          <Link to="/cases/add" className="flex items-center">
+            <Plus className="mr-2 h-4 w-4" />
+            New Case
+          </Link>
         </Button>
       </div>
 
