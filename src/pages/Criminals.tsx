@@ -1,66 +1,80 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { User, Search, Filter, ChevronDown, ChevronUp, Plus } from 'lucide-react';
+import { User, Search, Filter, ChevronDown, ChevronUp, Plus, Trash2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Criminal } from '../types';
-
-const mockCriminals: Criminal[] = [
-  {
-    id: 201,
-    firstName: 'Ravi',
-    lastName: 'Kumar',
-    dateOfBirth: new Date('1985-07-15'),
-    biometricData: 'Fingerprint_201',
-    photo: undefined,
-    createdAt: new Date('2025-03-20'),
-    updatedAt: new Date('2025-03-20')
-  },
-  {
-    id: 202,
-    firstName: 'Ajay',
-    lastName: 'Singh',
-    dateOfBirth: new Date('1990-09-22'),
-    biometricData: 'Fingerprint_202',
-    photo: undefined,
-    createdAt: new Date('2025-03-18'),
-    updatedAt: new Date('2025-03-18')
-  },
-  {
-    id: 203,
-    firstName: 'Neha',
-    lastName: 'Sharma',
-    dateOfBirth: new Date('1995-12-10'),
-    biometricData: 'Fingerprint_203',
-    photo: undefined,
-    createdAt: new Date('2025-02-25'),
-    updatedAt: new Date('2025-02-25')
-  }
-];
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { DbCriminal } from "@/types/supabase";
+import { 
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 const Criminals: React.FC = () => {
-  const [criminals, setCriminals] = useState<Criminal[]>([]);
+  const [criminals, setCriminals] = useState<DbCriminal[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState<'name' | 'date'>('name');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchCriminals = async () => {
-      setLoading(true);
-      try {
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        setCriminals(mockCriminals);
-      } catch (error) {
-        console.error('Error fetching criminals:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchCriminals();
   }, []);
+
+  const fetchCriminals = async () => {
+    setLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('criminals')
+        .select('*');
+      
+      if (error) {
+        console.error('Error fetching criminals:', error);
+        toast.error('Failed to load criminal records');
+      } else {
+        setCriminals(data || []);
+      }
+    } catch (error) {
+      console.error('Error in fetchCriminals:', error);
+      toast.error('An unexpected error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from('criminals')
+        .delete()
+        .eq('id', id);
+      
+      if (error) {
+        console.error('Error deleting criminal:', error);
+        toast.error('Failed to delete criminal record');
+        return;
+      }
+      
+      setCriminals(criminals.filter(criminal => criminal.id !== id));
+      toast.success('Criminal record deleted successfully');
+    } catch (error) {
+      console.error('Error in handleDelete:', error);
+      toast.error('An unexpected error occurred');
+    } finally {
+      setDeletingId(null);
+    }
+  };
 
   const handleSort = (field: 'name' | 'date') => {
     if (sortBy === field) {
@@ -73,32 +87,32 @@ const Criminals: React.FC = () => {
 
   const filteredAndSortedCriminals = criminals
     .filter(criminal => 
-      criminal.firstName.toLowerCase().includes(searchTerm.toLowerCase()) || 
-      criminal.lastName.toLowerCase().includes(searchTerm.toLowerCase())
+      criminal.first_name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+      criminal.last_name.toLowerCase().includes(searchTerm.toLowerCase())
     )
     .sort((a, b) => {
       if (sortBy === 'name') {
-        const nameA = `${a.lastName} ${a.firstName}`.toLowerCase();
-        const nameB = `${b.lastName} ${b.firstName}`.toLowerCase();
+        const nameA = `${a.last_name} ${a.first_name}`.toLowerCase();
+        const nameB = `${b.last_name} ${b.first_name}`.toLowerCase();
         return sortDirection === 'asc' 
           ? nameA.localeCompare(nameB)
           : nameB.localeCompare(nameA);
       } else {
         return sortDirection === 'asc'
-          ? new Date(a.dateOfBirth).getTime() - new Date(b.dateOfBirth).getTime()
-          : new Date(b.dateOfBirth).getTime() - new Date(a.dateOfBirth).getTime();
+          ? new Date(a.date_of_birth).getTime() - new Date(b.date_of_birth).getTime()
+          : new Date(b.date_of_birth).getTime() - new Date(a.date_of_birth).getTime();
       }
     });
 
-  const formatDate = (date: Date) => {
-    return new Date(date).toLocaleDateString('en-US', {
+  const formatDate = (dateStr: string) => {
+    return new Date(dateStr).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
       day: 'numeric'
     });
   };
 
-  const calculateAge = (dob: Date) => {
+  const calculateAge = (dob: string) => {
     const today = new Date();
     const birthDate = new Date(dob);
     let age = today.getFullYear() - birthDate.getFullYear();
@@ -199,6 +213,7 @@ const Criminals: React.FC = () => {
                     )}
                   </button>
                 </div>
+                <div className="w-16"></div> {/* Space for delete button */}
               </div>
 
               <div className="divide-y divide-border">
@@ -209,33 +224,60 @@ const Criminals: React.FC = () => {
                   </div>
                 ) : (
                   filteredAndSortedCriminals.map((criminal) => (
-                    <Link 
-                      key={criminal.id} 
-                      to={`/criminals/${criminal.id}`}
-                      className="block hover:bg-muted/50 transition-colors"
-                    >
-                      <div className="flex flex-col md:flex-row md:items-center py-4 px-4">
-                        <div className="flex items-start flex-1 min-w-0">
-                          <div className="h-10 w-10 flex-shrink-0 rounded-full bg-primary/10 flex items-center justify-center mr-4">
-                            <User className="h-5 w-5 text-primary" />
-                          </div>
-                          <div>
-                            <h3 className="font-medium text-foreground leading-tight">
-                              {criminal.lastName}, {criminal.firstName}
-                            </h3>
-                            <p className="text-sm text-muted-foreground mt-1">
-                              ID: {criminal.id}
-                            </p>
-                          </div>
+                    <div key={criminal.id} className="flex flex-col md:flex-row md:items-center py-4 px-4 hover:bg-muted/50 transition-colors">
+                      <div className="flex items-start flex-1 min-w-0">
+                        <div className="h-10 w-10 flex-shrink-0 rounded-full bg-primary/10 flex items-center justify-center mr-4">
+                          <User className="h-5 w-5 text-primary" />
                         </div>
-                        <div className="mt-2 md:mt-0 md:w-32 md:text-center text-sm">
-                          {calculateAge(criminal.dateOfBirth)} years
-                        </div>
-                        <div className="mt-2 md:mt-0 md:w-40 md:text-right text-sm text-muted-foreground">
-                          {formatDate(criminal.dateOfBirth)}
+                        <div>
+                          <h3 className="font-medium text-foreground leading-tight">
+                            <Link to={`/criminals/${criminal.id}`}>
+                              {criminal.last_name}, {criminal.first_name}
+                            </Link>
+                          </h3>
+                          <p className="text-sm text-muted-foreground mt-1">
+                            ID: {criminal.id.substring(0, 8)}...
+                          </p>
                         </div>
                       </div>
-                    </Link>
+                      <div className="mt-2 md:mt-0 md:w-32 md:text-center text-sm">
+                        {calculateAge(criminal.date_of_birth)} years
+                      </div>
+                      <div className="mt-2 md:mt-0 md:w-40 md:text-right text-sm text-muted-foreground">
+                        {formatDate(criminal.date_of_birth)}
+                      </div>
+                      <div className="mt-2 md:mt-0 md:w-16 md:text-right flex justify-end">
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button 
+                              variant="ghost" 
+                              size="icon" 
+                              className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                This will permanently delete the criminal record for {criminal.first_name} {criminal.last_name}. This action cannot be undone.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction 
+                                className="bg-destructive hover:bg-destructive/90"
+                                onClick={() => handleDelete(criminal.id)}
+                              >
+                                Delete
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </div>
+                    </div>
                   ))
                 )}
               </div>
