@@ -20,9 +20,9 @@ interface ConnectionLineProps {
 export const ConnectionLine: React.FC<ConnectionLineProps> = ({
   startPos,
   endPos,
-  color = 'rgba(255, 0, 0, 0.6)',
+  color = 'rgba(255, 0, 0, 0.8)',
   dashed = true,
-  thickness = 2,
+  thickness = 3,
   animated = true,
   label,
   style = 'dashed',
@@ -45,13 +45,13 @@ export const ConnectionLine: React.FC<ConnectionLineProps> = ({
       case 'dashed':
         return {
           backgroundImage: `linear-gradient(to right, ${color} 50%, transparent 50%)`,
-          backgroundSize: '12px 100%',
+          backgroundSize: '15px 100%',
           backgroundRepeat: 'repeat-x',
         };
       case 'dotted':
         return {
           backgroundImage: `linear-gradient(to right, ${color} 25%, transparent 25%)`,
-          backgroundSize: '6px 100%',
+          backgroundSize: '8px 100%',
           backgroundRepeat: 'repeat-x',
         };
       case 'zigzag':
@@ -61,7 +61,7 @@ export const ConnectionLine: React.FC<ConnectionLineProps> = ({
       default:
         return {
           backgroundImage: `linear-gradient(to right, ${color} 50%, transparent 50%)`,
-          backgroundSize: '12px 100%',
+          backgroundSize: '15px 100%',
           backgroundRepeat: 'repeat-x',
         };
     }
@@ -85,8 +85,9 @@ export const ConnectionLine: React.FC<ConnectionLineProps> = ({
           backgroundColor: color,
           transformOrigin: '0 50%',
           transform: `translate(${startPos.x}px, ${startPos.y}px) rotate(${angle}deg)`,
-          opacity: 0.8,
+          opacity: 0.9,
           ...getLineStyle(),
+          boxShadow: '0 1px 2px rgba(0,0,0,0.2)',
         }}
       />
       
@@ -99,16 +100,18 @@ export const ConnectionLine: React.FC<ConnectionLineProps> = ({
           backgroundColor: color,
           transform: `translate(${centerX - thickness * 2}px, ${centerY - thickness * 2}px)`,
           opacity: 0.9,
+          boxShadow: '0 1px 3px rgba(0,0,0,0.3)',
         }}
       />
 
       {/* Label */}
       {label && (
         <div
-          className="absolute bg-black/60 backdrop-blur-sm text-white text-xs px-2 py-1 rounded z-10"
+          className="absolute bg-white font-handwriting text-black text-xs px-2 py-1 rounded z-10 transform -translate-y-1/2 border border-black/10 shadow-md"
           style={{
             transform: `translate(${centerX - 20}px, ${centerY - 15}px)`,
             whiteSpace: 'nowrap',
+            fontWeight: 'bold',
           }}
         >
           {label}

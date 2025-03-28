@@ -1,9 +1,11 @@
+
 import { useState, useRef } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
 import { Card } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { X, Maximize2, Minimize2, Link as LinkIcon, Pin, Paperclip, MapPin, AlertTriangle } from 'lucide-react';
 import { CorkboardItemType } from '@/types';
+import NoteIcon from './NoteIcon';
 
 interface CorkboardItemProps {
   id: string;
@@ -126,7 +128,7 @@ export const CorkboardItem = ({
       case 'photo':
         return <Paperclip size={12} />;
       case 'note':
-        return <Pin size={12} />;
+        return <NoteIcon />;
       case 'document':
         return <Paperclip size={12} />;
       case 'wanted':
@@ -145,11 +147,11 @@ export const CorkboardItem = ({
   // Component for the pin at the top of the item
   const PinComponent = () => (
     <div 
-      className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-20"
+      className="absolute -top-6 left-1/2 transform -translate-x-1/2 z-20"
       onClick={(e) => e.stopPropagation()}
     >
-      <div className="w-3 h-3 rounded-full bg-red-500 shadow-md"></div>
-      <div className="w-0.5 h-3 bg-red-700 mx-auto -mt-0.5"></div>
+      <div className="w-4 h-4 rounded-full bg-red-600 shadow-md"></div>
+      <div className="w-1 h-5 bg-red-700 mx-auto -mt-0.5"></div>
     </div>
   );
 
@@ -205,10 +207,10 @@ export const CorkboardItem = ({
           className={`
             ${expanded ? 'w-[300px]' : `w-[${baseWidth}px]`}
             ${expanded ? 'h-auto' : `h-[${baseHeight}px]`}
-            p-3 shadow-md
-            ${type === 'note' ? 'bg-amber-200' : 'bg-orange-200'}
+            p-4 shadow-lg rounded-none
+            ${type === 'note' ? 'bg-yellow-300' : 'bg-orange-300'}
             font-handwriting relative overflow-hidden
-            ${selected ? 'ring-2 ring-primary shadow-lg' : ''}
+            ${selected ? 'ring-2 ring-primary shadow-xl' : ''}
           `}
         >
           <PinComponent />
@@ -223,23 +225,23 @@ export const CorkboardItem = ({
             <div className="flex items-center space-x-1">
               {expanded ? (
                 <button onClick={handleToggleExpand} className="p-1 rounded-full hover:bg-black/10 text-black">
-                  <Minimize2 size={12} />
+                  <Minimize2 size={14} />
                 </button>
               ) : (
                 <button onClick={handleToggleExpand} className="p-1 rounded-full hover:bg-black/10 text-black">
-                  <Maximize2 size={12} />
+                  <Maximize2 size={14} />
                 </button>
               )}
               <button onClick={handleConnect} className="p-1 rounded-full hover:bg-black/10 text-black">
-                <LinkIcon size={12} />
+                <LinkIcon size={14} />
               </button>
               <button onClick={handleRemove} className="p-1 rounded-full hover:bg-black/10 text-black">
-                <X size={12} />
+                <X size={14} />
               </button>
             </div>
           </div>
           
-          <div className={`mt-2 ${expanded ? '' : 'line-clamp-6'} text-black`}>
+          <div className={`mt-2 ${expanded ? '' : 'line-clamp-6'} text-black font-bold`}>
             {content}
           </div>
           
@@ -267,6 +269,7 @@ export const CorkboardItem = ({
             ${getItemStyle()}
             ${selected ? 'ring-2 ring-primary shadow-primary/20 shadow-xl' : ''}
             border-2 p-3 transition-all duration-200 corkboard-item
+            ${type === 'photo' || type === 'wanted' ? 'bg-white' : ''}
           `}
         >
           <PinComponent />
@@ -299,7 +302,7 @@ export const CorkboardItem = ({
           
           {image && (
             <div 
-              className={`mt-2 relative ${expanded ? 'h-auto' : 'h-24'} overflow-hidden bg-black/5`}
+              className={`mt-2 relative ${expanded ? 'h-auto' : 'h-32'} overflow-hidden border border-black/10`}
             >
               <img 
                 src={image} 
