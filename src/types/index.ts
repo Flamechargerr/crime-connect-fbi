@@ -1,4 +1,3 @@
-
 export interface User {
   id: number;
   username: string;
@@ -125,3 +124,5 @@ export type DashboardStats = {
   totalWitnesses: number;
   recentCases: Case[];
 };
+
+export type CorkboardItemType = "photo" | "document" | "wanted" | "evidence" | "location" | "note";
