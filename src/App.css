@@ -158,6 +158,106 @@
   opacity: 0.5;
 }
 
+/* Data grid styling */
+.data-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 8px;
+}
+
+.data-cell {
+  font-family: monospace;
+  font-size: 0.75rem;
+  background-color: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(0, 156, 255, 0.1);
+  padding: 4px;
+  border-radius: 2px;
+  color: rgba(255, 255, 255, 0.7);
+  overflow: hidden;
+}
+
+/* Holographic element */
+.holographic-element {
+  position: relative;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(0, 156, 255, 0.3);
+  box-shadow: 0 0 10px rgba(0, 156, 255, 0.3);
+}
+
+.holographic-element::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    to bottom right,
+    transparent, 
+    rgba(0, 156, 255, 0.1), 
+    transparent
+  );
+  transform: rotate(45deg);
+  animation: hologram-scan 3s ease-in-out infinite;
+}
+
+/* Glass card effect */
+.glass-card {
+  background: rgba(6, 22, 35, 0.5);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(0, 156, 255, 0.2);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Animated text scan */
+.animated-text-scan {
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+}
+
+.animated-text-scan::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  width: 2px;
+  height: 100%;
+  background-color: rgba(0, 156, 255, 0.8);
+  animation: text-scan 3s steps(30) infinite;
+}
+
+/* Terminal box styling */
+.terminal-box {
+  background-color: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(0, 200, 81, 0.3);
+  padding: 8px;
+  font-family: monospace;
+  color: rgba(0, 200, 81, 0.8);
+  border-radius: 2px;
+  line-height: 1.4;
+}
+
+/* Digital divider */
+.digital-divider {
+  height: 1px;
+  width: 100%;
+  background: linear-gradient(to right, transparent, rgba(0, 156, 255, 0.5), transparent);
+  margin: 12px 0;
+  position: relative;
+}
+
+.digital-divider::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 30%;
+  height: 1px;
+  background: rgba(0, 156, 255, 0.8);
+  animation: data-flow-pulse 2s ease-in-out infinite alternate;
+}
+
 @keyframes scanner-line {
   0%, 100% { top: 0%; }
   50% { top: 100%; }
@@ -166,6 +266,16 @@
 @keyframes data-flow-pulse {
   0% { transform: translateX(-100%); }
   100% { transform: translateX(300%); }
+}
+
+@keyframes hologram-scan {
+  0%, 100% { top: -50%; left: -50%; }
+  50% { top: 0%; left: 0%; }
+}
+
+@keyframes text-scan {
+  0% { left: 0; }
+  100% { left: 100%; }
 }
 
 @keyframes logo-spin {
