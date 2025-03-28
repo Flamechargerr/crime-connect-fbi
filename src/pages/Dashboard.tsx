@@ -24,6 +24,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { DashboardStats, Case } from '../types';
 import { Button } from '@/components/ui/button';
 import { ConnectionLine } from '@/components/corkboard/ConnectionLine';
+import { supabase } from "@/integrations/supabase/client";
 
 const mockDashboardData: DashboardStats = {
   totalCases: 256,
@@ -133,6 +134,34 @@ const Dashboard: React.FC = () => {
     }, 15000);
     
     return () => clearInterval(securityInterval);
+  }, []);
+
+  useEffect(() => {
+    const initializeDatabase = async () => {
+      // Check if there's at least one police station
+      const { data: existingStations } = await supabase
+        .from('police_stations')
+        .select('*')
+        .limit(1);
+
+      // If no police stations exist, add an initial one
+      if (!existingStations || existingStations.length === 0) {
+        await supabase
+          .from('police_stations')
+          .insert([
+            {
+              name: 'FBI Headquarters',
+              address: '935 Pennsylvania Avenue, NW, Washington, D.C.',
+              jurisdiction: 'Federal',
+              phone_number: '(202) 324-3000'
+            }
+          ]);
+        
+        console.log('Added initial police station');
+      }
+    };
+
+    initializeDatabase();
   }, []);
 
   const StatusBadge: React.FC<{ status: Case['status'] }> = ({ status }) => {

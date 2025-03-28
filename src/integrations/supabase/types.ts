@@ -9,7 +9,267 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      case_criminals: {
+        Row: {
+          case_id: string
+          created_at: string
+          criminal_id: string
+          id: string
+          relationship: string | null
+        }
+        Insert: {
+          case_id: string
+          created_at?: string
+          criminal_id: string
+          id?: string
+          relationship?: string | null
+        }
+        Update: {
+          case_id?: string
+          created_at?: string
+          criminal_id?: string
+          id?: string
+          relationship?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "case_criminals_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "case_criminals_criminal_id_fkey"
+            columns: ["criminal_id"]
+            isOneToOne: false
+            referencedRelation: "criminals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cases: {
+        Row: {
+          assigned_date: string | null
+          created_at: string
+          description: string | null
+          id: string
+          police_station_id: string | null
+          priority: string
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          assigned_date?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          police_station_id?: string | null
+          priority?: string
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          assigned_date?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          police_station_id?: string | null
+          priority?: string
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cases_police_station_id_fkey"
+            columns: ["police_station_id"]
+            isOneToOne: false
+            referencedRelation: "police_stations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      courts: {
+        Row: {
+          created_at: string
+          id: string
+          judge_name: string
+          jurisdiction: string | null
+          location: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          judge_name: string
+          jurisdiction?: string | null
+          location: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          judge_name?: string
+          jurisdiction?: string | null
+          location?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      criminals: {
+        Row: {
+          biometric_data: string | null
+          created_at: string
+          date_of_birth: string | null
+          first_name: string
+          id: string
+          last_name: string
+          middle_name: string | null
+        }
+        Insert: {
+          biometric_data?: string | null
+          created_at?: string
+          date_of_birth?: string | null
+          first_name: string
+          id?: string
+          last_name: string
+          middle_name?: string | null
+        }
+        Update: {
+          biometric_data?: string | null
+          created_at?: string
+          date_of_birth?: string | null
+          first_name?: string
+          id?: string
+          last_name?: string
+          middle_name?: string | null
+        }
+        Relationships: []
+      }
+      evidence: {
+        Row: {
+          case_id: string | null
+          created_at: string
+          description: string
+          id: string
+          storage_location: string
+        }
+        Insert: {
+          case_id?: string | null
+          created_at?: string
+          description: string
+          id?: string
+          storage_location: string
+        }
+        Update: {
+          case_id?: string | null
+          created_at?: string
+          description?: string
+          id?: string
+          storage_location?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "evidence_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      officers: {
+        Row: {
+          badge_number: string
+          created_at: string
+          department: string | null
+          id: string
+          name: string
+          rank: string
+        }
+        Insert: {
+          badge_number: string
+          created_at?: string
+          department?: string | null
+          id?: string
+          name: string
+          rank: string
+        }
+        Update: {
+          badge_number?: string
+          created_at?: string
+          department?: string | null
+          id?: string
+          name?: string
+          rank?: string
+        }
+        Relationships: []
+      }
+      police_stations: {
+        Row: {
+          address: string
+          created_at: string
+          id: string
+          jurisdiction: string | null
+          name: string
+          phone_number: string | null
+        }
+        Insert: {
+          address: string
+          created_at?: string
+          id?: string
+          jurisdiction?: string | null
+          name: string
+          phone_number?: string | null
+        }
+        Update: {
+          address?: string
+          created_at?: string
+          id?: string
+          jurisdiction?: string | null
+          name?: string
+          phone_number?: string | null
+        }
+        Relationships: []
+      }
+      witnesses: {
+        Row: {
+          case_id: string | null
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          statement: string
+        }
+        Insert: {
+          case_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          statement: string
+        }
+        Update: {
+          case_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          statement?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "witnesses_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
