@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,8 +6,22 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { AlertCircle, FileWarning, Skull, DollarSign, Filter, Search, MapPin, Eye, UserCheck } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 
-// Mock data for the Most Wanted criminals
-const MOST_WANTED_DATA = [
+// Types for our Most Wanted entries
+interface MostWantedCriminal {
+  id: string;
+  name: string;
+  image: string;
+  status: 'active' | 'captured' | 'deceased';
+  dangerLevel: 'low' | 'moderate' | 'high' | 'extreme';
+  crimes: string[];
+  lastSeen: string;
+  reward: number;
+  description: string;
+  caution: string;
+}
+
+// Mock data for the Most Wanted criminals - strictly typed to match MostWantedCriminal interface
+const MOST_WANTED_DATA: MostWantedCriminal[] = [
   {
     id: '1',
     name: 'Robert Thompson',
@@ -83,20 +96,6 @@ const MOST_WANTED_DATA = [
   },
 ];
 
-// Types for our Most Wanted entries
-interface MostWantedCriminal {
-  id: string;
-  name: string;
-  image: string;
-  status: 'active' | 'captured' | 'deceased';
-  dangerLevel: 'low' | 'moderate' | 'high' | 'extreme';
-  crimes: string[];
-  lastSeen: string;
-  reward: number;
-  description: string;
-  caution: string;
-}
-
 const MostWanted: React.FC = () => {
   const [criminals, setCriminals] = useState<MostWantedCriminal[]>(MOST_WANTED_DATA);
   const [searchTerm, setSearchTerm] = useState('');
@@ -104,7 +103,6 @@ const MostWanted: React.FC = () => {
   const [dangerFilter, setDangerFilter] = useState<'all' | 'extreme' | 'high' | 'moderate' | 'low'>('all');
   const [selectedCriminal, setSelectedCriminal] = useState<MostWantedCriminal | null>(null);
   
-  // Filter the criminals based on search term and filters
   const filteredCriminals = criminals.filter(criminal => {
     const matchesSearch = criminal.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          criminal.crimes.some(crime => crime.toLowerCase().includes(searchTerm.toLowerCase())) ||
@@ -116,7 +114,6 @@ const MostWanted: React.FC = () => {
     return matchesSearch && matchesStatus && matchesDanger;
   });
 
-  // Helper function to format currency
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -125,7 +122,6 @@ const MostWanted: React.FC = () => {
     }).format(amount);
   };
 
-  // Helper to get badge color based on danger level
   const getDangerBadgeClass = (level: string) => {
     switch(level) {
       case 'extreme':
@@ -141,7 +137,6 @@ const MostWanted: React.FC = () => {
     }
   };
 
-  // Helper to get badge color based on status
   const getStatusBadgeClass = (status: string) => {
     switch(status) {
       case 'active':
@@ -155,7 +150,6 @@ const MostWanted: React.FC = () => {
     }
   };
 
-  // Show detailed view when a criminal is selected
   const renderDetailedView = () => {
     if (!selectedCriminal) return null;
     
