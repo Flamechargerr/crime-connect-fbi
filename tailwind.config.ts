@@ -62,6 +62,21 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				// FBI theme specific colors
+				fbi: {
+					navy: '#1A1F2C',
+					blue: '#0057B8',
+					red: '#C41230',
+					gold: '#FFD700',
+					darkgray: '#333333',
+					gray: '#8E9196'
+				},
+				secure: {
+					green: '#00C851',
+					red: '#ff4444',
+					yellow: '#FFBB33',
+					blue: '#0099CC'
 				}
 			},
 			borderRadius: {
@@ -105,6 +120,23 @@ export default {
 				'scale-in': {
 					from: { transform: 'scale(0.95)', opacity: '0' },
 					to: { transform: 'scale(1)', opacity: '1' }
+				},
+				'scanner-line': {
+					'0%, 100%': { top: '0%' },
+					'50%': { top: '100%' }
+				},
+				'type-blink': {
+					'0%, 100%': { opacity: '1' },
+					'50%': { opacity: '0' }
+				},
+				'data-flow': {
+					'0%': { backgroundPosition: '0% 50%' },
+					'50%': { backgroundPosition: '100% 50%' },
+					'100%': { backgroundPosition: '0% 50%' }
+				},
+				'pulse-glow': {
+					'0%, 100%': { boxShadow: '0 0 5px rgba(0, 87, 184, 0.5)' },
+					'50%': { boxShadow: '0 0 20px rgba(0, 87, 184, 0.8)' }
 				}
 			},
 			animation: {
@@ -116,7 +148,11 @@ export default {
 				'slide-out-right': 'slide-out-right 0.3s ease-out',
 				'slide-in-left': 'slide-in-left 0.3s ease-out',
 				'slide-out-left': 'slide-out-left 0.3s ease-out',
-				'scale-in': 'scale-in 0.3s ease-out'
+				'scale-in': 'scale-in 0.3s ease-out',
+				'scanner-line': 'scanner-line 3s ease-in-out infinite',
+				'type-blink': 'type-blink 1s step-end infinite',
+				'data-flow': 'data-flow 10s linear infinite',
+				'pulse-glow': 'pulse-glow 2s infinite'
 			},
 			backdropFilter: {
 				'none': 'none',
@@ -125,7 +161,13 @@ export default {
 			boxShadow: {
 				'glass': '0 4px 30px rgba(0, 0, 0, 0.1)',
 				'glass-hover': '0 8px 40px rgba(0, 0, 0, 0.12)',
-				'glass-active': '0 2px 20px rgba(0, 0, 0, 0.08)'
+				'glass-active': '0 2px 20px rgba(0, 0, 0, 0.08)',
+				'fbi': '0 4px 15px rgba(0, 0, 0, 0.25)',
+				'terminal': '0 0 10px rgba(0, 200, 81, 0.6)'
+			},
+			backgroundImage: {
+				'digital-circuit': "url(\"data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h20v20H0V0zm10 17a7 7 0 1 0 0-14 7 7 0 0 0 0 14zm20 0a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM10 37a7 7 0 1 0 0-14 7 7 0 0 0 0 14zm10-17h20v20H20V20zm10 17a7 7 0 1 0 0-14 7 7 0 0 0 0 14z' fill='%23000000' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E\")",
+				'grid-pattern': "url(\"data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23000000' fill-opacity='0.03' fill-rule='evenodd'%3E%3Ccircle cx='3' cy='3' r='1'/%3E%3Ccircle cx='13' cy='13' r='1'/%3E%3C/g%3E%3C/svg%3E\")"
 			}
 		}
 	},

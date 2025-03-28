@@ -31,6 +31,9 @@ const queryClient = new QueryClient({
   },
 });
 
+// Set document title
+document.title = "FBI CrimeConnect - Classified System";
+
 // Ensure React is properly initialized before rendering components
 const App = () => (
   <QueryClientProvider client={queryClient}>
