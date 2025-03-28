@@ -1,6 +1,8 @@
+
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { CorkboardItem } from '@/components/corkboard/CorkboardItem';
 import { ConnectionLine } from '@/components/corkboard/ConnectionLine';
 import { useDrop } from 'react-dnd';
@@ -21,8 +23,32 @@ import {
   Map as MapIcon,
   Pin,
   AlertTriangle,
-  Lightbulb
+  Lightbulb,
+  Download,
+  Share2,
+  ChevronDown,
+  Menu,
+  X,
+  Edit3
 } from 'lucide-react';
+import { 
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { CorkboardItemType } from '@/types';
 
 const INITIAL_ITEMS = [
   {
@@ -152,7 +178,7 @@ const INITIAL_CONNECTIONS = [
 
 interface CorkboardItem {
   id: string;
-  type: 'photo' | 'note' | 'document' | 'wanted' | 'evidence' | 'location' | 'clue';
+  type: CorkboardItemType;
   content: string;
   image?: string;
   position: { x: number; y: number };
@@ -185,8 +211,29 @@ const Corkboard: React.FC = () => {
   const [corkboardBackgrounds] = useState(['cork', 'metal', 'blackboard', 'map']);
   const [currentBackground, setCurrentBackground] = useState('cork');
   const [showMap, setShowMap] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [editingItem, setEditingItem] = useState<CorkboardItem | null>(null);
+  const [newItemContent, setNewItemContent] = useState('');
+  const [showFullscreenInfo, setShowFullscreenInfo] = useState(true);
   
   const boardRef = useRef<HTMLDivElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  // Listen for clicks outside the menu to close it
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setShowMenu(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   const [, drop] = useDrop(() => ({
     accept: ItemTypes.CORKBOARD_ITEM,
@@ -195,6 +242,18 @@ const Corkboard: React.FC = () => {
       return delta;
     },
   }));
+
+  // Function to handle removing an item
+  const handleRemoveItem = (id: string) => {
+    setItems(prev => prev.filter(item => item.id !== id));
+    
+    // Also remove any connections to/from this item
+    setConnections(prev => 
+      prev.filter(conn => conn.start !== id && conn.end !== id)
+    );
+    
+    toast.success('Item removed from corkboard');
+  };
 
   const handlePositionChange = (id: string, newPosition: { x: number; y: number }) => {
     setItems(prevItems =>
@@ -211,6 +270,18 @@ const Corkboard: React.FC = () => {
     }
     
     if (connectingFrom === id) {
+      setConnectingFrom(null);
+      return;
+    }
+    
+    // Check if connection already exists
+    const connectionExists = connections.some(
+      c => (c.start === connectingFrom && c.end === id) || 
+           (c.start === id && c.end === connectingFrom)
+    );
+    
+    if (connectionExists) {
+      toast.error('Connection already exists');
       setConnectingFrom(null);
       return;
     }
@@ -234,7 +305,8 @@ const Corkboard: React.FC = () => {
         start: connectingFrom, 
         end: id,
         style: randomStyle,
-        color: randomColor
+        color: randomColor,
+        label: 'New Connection'
       }
     ]);
     
@@ -249,9 +321,32 @@ const Corkboard: React.FC = () => {
         !(c.start === endId && c.end === startId)
       )
     );
+    toast.success('Connection removed');
   };
 
-  const addNewItem = useCallback((type: CorkboardItem['type']) => {
+  const handleEditItemClick = (item: CorkboardItem) => {
+    setEditingItem(item);
+    setNewItemContent(item.content);
+    setEditDialogOpen(true);
+  };
+
+  const handleSaveEdit = () => {
+    if (editingItem && newItemContent.trim()) {
+      setItems(prevItems => 
+        prevItems.map(item => 
+          item.id === editingItem.id 
+            ? { ...item, content: newItemContent } 
+            : item
+        )
+      );
+      toast.success('Item updated');
+    }
+    setEditDialogOpen(false);
+    setEditingItem(null);
+    setNewItemContent('');
+  };
+
+  const addNewItem = useCallback((type: CorkboardItemType) => {
     const centerX = boardRef.current ? boardRef.current.clientWidth / 2 : 400;
     const centerY = boardRef.current ? boardRef.current.clientHeight / 2 : 300;
     
@@ -261,7 +356,7 @@ const Corkboard: React.FC = () => {
     const newItem: CorkboardItem = {
       id: Date.now().toString(),
       type,
-      content: `New ${type} - Double click to edit`,
+      content: `New ${type} - Click to edit`,
       position: { 
         x: centerX + offsetX - 100,
         y: centerY + offsetY - 100,
@@ -272,19 +367,49 @@ const Corkboard: React.FC = () => {
     };
     
     setItems(prev => [...prev, newItem]);
+    setSelectedItem(newItem.id);
     toast.success(`Added new ${type}`);
   }, []);
 
   const clearCorkboard = () => {
-    setItems([]);
-    setConnections([]);
-    toast.info('Corkboard cleared');
+    if (confirm('Are you sure you want to clear the corkboard? This action cannot be undone.')) {
+      setItems([]);
+      setConnections([]);
+      toast.info('Corkboard cleared');
+    }
   };
 
   const saveCorkboard = () => {
     localStorage.setItem('corkboardItems', JSON.stringify(items));
     localStorage.setItem('corkboardConnections', JSON.stringify(connections));
     toast.success('Corkboard saved');
+  };
+
+  const exportCorkboard = () => {
+    const data = {
+      items,
+      connections,
+      background: currentBackground
+    };
+    
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data));
+    const downloadAnchorNode = document.createElement('a');
+    downloadAnchorNode.setAttribute("href", dataStr);
+    downloadAnchorNode.setAttribute("download", "investigation-board.json");
+    document.body.appendChild(downloadAnchorNode);
+    downloadAnchorNode.click();
+    downloadAnchorNode.remove();
+    
+    toast.success('Investigation board exported');
+  };
+
+  const toggleEditMode = () => {
+    setIsEditMode(!isEditMode);
+    if (!isEditMode) {
+      toast.info('Edit mode enabled. Click on items to edit or remove them.');
+    } else {
+      toast.info('Edit mode disabled.');
+    }
   };
 
   useEffect(() => {
@@ -306,7 +431,55 @@ const Corkboard: React.FC = () => {
         console.error('Failed to parse saved connections', e);
       }
     }
+    
+    // Auto-hide the fullscreen info after 5 seconds
+    const timer = setTimeout(() => {
+      setShowFullscreenInfo(false);
+    }, 5000);
+    
+    return () => clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    // Handle keyboard shortcuts
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Zoom in/out with Ctrl+/Ctrl-
+      if (e.ctrlKey && e.key === '+') {
+        e.preventDefault();
+        setZoomLevel(prev => Math.min(prev + 0.1, 1.5));
+      } else if (e.ctrlKey && e.key === '-') {
+        e.preventDefault();
+        setZoomLevel(prev => Math.max(prev - 0.1, 0.5));
+      }
+      
+      // Toggle edit mode with E
+      if (e.key === 'e' && !editDialogOpen) {
+        e.preventDefault();
+        toggleEditMode();
+      }
+      
+      // Save with Ctrl+S
+      if (e.ctrlKey && e.key === 's') {
+        e.preventDefault();
+        saveCorkboard();
+      }
+      
+      // Cycle background with B
+      if (e.key === 'b' && !editDialogOpen) {
+        e.preventDefault();
+        cycleBackground();
+      }
+      
+      // Clear selection with Escape
+      if (e.key === 'Escape') {
+        setSelectedItem(null);
+        setConnectingFrom(null);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isEditMode, editDialogOpen]);
 
   const cycleBackground = () => {
     const currentIndex = corkboardBackgrounds.indexOf(currentBackground);
@@ -318,6 +491,8 @@ const Corkboard: React.FC = () => {
     } else {
       setShowMap(false);
     }
+    
+    toast.info(`Background changed to ${corkboardBackgrounds[nextIndex]}`);
   };
 
   const renderConnections = () => {
@@ -338,16 +513,18 @@ const Corkboard: React.FC = () => {
       };
       
       return (
-        <ConnectionLine
-          key={`${connection.start}-${connection.end}-${index}`}
-          startPos={startPos}
-          endPos={endPos}
-          color={connection.color || "rgba(255, 0, 0, 0.8)"}
-          dashed={connection.style === 'dashed'}
-          animated={true}
-          label={connection.label}
-          style={connection.style || 'dashed'}
-        />
+        <div key={`${connection.start}-${connection.end}-${index}`} 
+             onClick={() => isEditMode && handleRemoveConnection(connection.start, connection.end)}>
+          <ConnectionLine
+            startPos={startPos}
+            endPos={endPos}
+            color={connection.color || "rgba(255, 0, 0, 0.8)"}
+            dashed={connection.style === 'dashed'}
+            animated={true}
+            label={connection.label}
+            style={connection.style || 'dashed'}
+          />
+        </div>
       );
     });
   };
@@ -367,95 +544,166 @@ const Corkboard: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.ctrlKey && e.key === '+') {
-        e.preventDefault();
-        setZoomLevel(prev => Math.min(prev + 0.1, 1.5));
-      } else if (e.ctrlKey && e.key === '-') {
-        e.preventDefault();
-        setZoomLevel(prev => Math.max(prev - 0.1, 0.5));
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
-
   return (
-    <div className="space-y-4 animate-fade-in">
-      <div className="flex justify-between items-start">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight inline-flex items-center">
-            <span className="animated-text-scan">INVESTIGATION BOARD</span>
-            <span className="ml-3 text-xs bg-red-600 text-white py-1 px-3 rounded-md border border-primary/20 font-mono">CONFIDENTIAL</span>
-          </h1>
-          <p className="text-muted-foreground mt-1">Connect evidence, leads, and suspects to build your case.</p>
-        </div>
-        
-        <div className="flex space-x-2">
-          <Button variant="outline" size="sm" onClick={() => setZoomLevel(Math.min(zoomLevel + 0.1, 1.5))}>
-            <ZoomIn size={16} className="mr-1" />
-            Zoom In
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => setZoomLevel(Math.max(zoomLevel - 0.1, 0.5))}>
-            <ZoomOut size={16} className="mr-1" />
-            Zoom Out
-          </Button>
-          <Button variant="outline" size="sm" onClick={cycleBackground}>
-            <RotateCw size={16} className="mr-1" />
-            Change Background
-          </Button>
-          <Button variant="outline" size="sm" onClick={saveCorkboard}>
-            <Save size={16} className="mr-1" />
-            Save
-          </Button>
-          <Button variant="destructive" size="sm" onClick={clearCorkboard}>
-            <Trash2 size={16} className="mr-1" />
-            Clear
-          </Button>
-        </div>
-      </div>
-      
-      <Card className="glass-card shadow-xl">
-        <CardHeader className="border-b border-red-700/20 pb-3 bg-gray-900/5">
-          <div className="flex justify-between items-center">
-            <CardTitle>Case Evidence Board</CardTitle>
-            <div className="flex space-x-2">
-              <Button size="sm" variant="ghost" onClick={() => addNewItem('photo')}>
-                <Camera size={16} className="mr-1 text-blue-600" /> Photo
+    <div className="h-screen w-screen overflow-hidden fixed top-0 left-0 z-50 bg-gray-950">
+      <div className="relative w-full h-full flex flex-col">
+        <div className="absolute top-0 left-0 right-0 z-50 bg-black/70 backdrop-blur-md p-2 flex justify-between items-center">
+          <div className="flex items-center">
+            <Button 
+              variant="outline" 
+              size="icon" 
+              className="mr-2" 
+              onClick={() => window.history.back()}
+            >
+              <X size={18} />
+            </Button>
+            <h1 className="text-xl font-bold tracking-tight inline-flex items-center text-white">
+              <span className="animated-text-scan">INVESTIGATION BOARD</span>
+              <span className="ml-3 text-xs bg-red-600 text-white py-1 px-3 rounded-md border border-primary/20 font-mono">CONFIDENTIAL</span>
+            </h1>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <div className="hidden md:flex gap-2">
+              <Button variant="outline" size="sm" onClick={() => setZoomLevel(Math.min(zoomLevel + 0.1, 1.5))}>
+                <ZoomIn size={16} className="mr-1" />
+                Zoom In
               </Button>
-              <Button size="sm" variant="ghost" onClick={() => addNewItem('note')}>
-                <Copy size={16} className="mr-1 text-yellow-600" /> Note
+              <Button variant="outline" size="sm" onClick={() => setZoomLevel(Math.max(zoomLevel - 0.1, 0.5))}>
+                <ZoomOut size={16} className="mr-1" />
+                Zoom Out
               </Button>
-              <Button size="sm" variant="ghost" onClick={() => addNewItem('document')}>
-                <FileText size={16} className="mr-1 text-gray-600" /> Document
+              <Button variant="outline" size="sm" onClick={cycleBackground}>
+                <RotateCw size={16} className="mr-1" />
+                Change Background
               </Button>
-              <Button size="sm" variant="ghost" onClick={() => addNewItem('evidence')}>
-                <FilePlus2 size={16} className="mr-1 text-green-600" /> Evidence
+              <Button variant="outline" size="sm" onClick={toggleEditMode}>
+                <Edit3 size={16} className="mr-1" />
+                {isEditMode ? 'Exit Edit Mode' : 'Edit Mode'}
               </Button>
-              <Button size="sm" variant="ghost" onClick={() => addNewItem('wanted')}>
-                <Search size={16} className="mr-1 text-red-600" /> Wanted
+              <Button variant="outline" size="sm" onClick={saveCorkboard}>
+                <Save size={16} className="mr-1" />
+                Save
               </Button>
-              <Button size="sm" variant="ghost" onClick={() => addNewItem('location')}>
-                <MapPin size={16} className="mr-1 text-purple-600" /> Location
+              <Button variant="outline" size="sm" onClick={exportCorkboard}>
+                <Download size={16} className="mr-1" />
+                Export
               </Button>
-              <Button size="sm" variant="ghost" onClick={() => addNewItem('clue')}>
-                <Lightbulb size={16} className="mr-1 text-orange-600" /> Clue
+              <Button variant="destructive" size="sm" onClick={clearCorkboard}>
+                <Trash2 size={16} className="mr-1" />
+                Clear
               </Button>
             </div>
+            
+            <div className="md:hidden">
+              <Button variant="outline" size="icon" onClick={() => setShowMenu(!showMenu)}>
+                <Menu size={16} />
+              </Button>
+              
+              {showMenu && (
+                <div 
+                  ref={menuRef}
+                  className="absolute top-12 right-2 bg-black/70 backdrop-blur-md border border-white/10 rounded-md shadow-lg p-2 z-50 flex flex-col gap-2 w-40"
+                >
+                  <Button variant="ghost" size="sm" onClick={() => setZoomLevel(Math.min(zoomLevel + 0.1, 1.5))}>
+                    <ZoomIn size={14} className="mr-1" />
+                    Zoom In
+                  </Button>
+                  <Button variant="ghost" size="sm" onClick={() => setZoomLevel(Math.max(zoomLevel - 0.1, 0.5))}>
+                    <ZoomOut size={14} className="mr-1" />
+                    Zoom Out
+                  </Button>
+                  <Button variant="ghost" size="sm" onClick={cycleBackground}>
+                    <RotateCw size={14} className="mr-1" />
+                    Background
+                  </Button>
+                  <Button variant="ghost" size="sm" onClick={toggleEditMode}>
+                    <Edit3 size={14} className="mr-1" />
+                    {isEditMode ? 'Exit Edit' : 'Edit Mode'}
+                  </Button>
+                  <Button variant="ghost" size="sm" onClick={saveCorkboard}>
+                    <Save size={14} className="mr-1" />
+                    Save
+                  </Button>
+                  <Button variant="ghost" size="sm" onClick={exportCorkboard}>
+                    <Download size={14} className="mr-1" />
+                    Export
+                  </Button>
+                  <Button variant="ghost" size="sm" className="text-red-400" onClick={clearCorkboard}>
+                    <Trash2 size={14} className="mr-1" />
+                    Clear
+                  </Button>
+                </div>
+              )}
+            </div>
           </div>
-          <CardDescription>
-            Drag items around, connect clues, and build your investigation map. Use the toolbar to add new elements.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="p-0 overflow-hidden">
+        </div>
+        
+        <div className="pt-12 h-full">
+          <div className="bg-gray-900/80 backdrop-blur-sm border-b border-gray-800 py-2 px-4 flex flex-wrap gap-2 justify-center">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm">
+                  <Plus size={14} className="mr-1" />
+                  Add Item <ChevronDown size={14} className="ml-1" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuLabel>Add to Investigation</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => addNewItem('photo')}>
+                  <Camera size={14} className="mr-2 text-blue-600" /> Photo
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => addNewItem('note')}>
+                  <Copy size={14} className="mr-2 text-yellow-600" /> Note
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => addNewItem('document')}>
+                  <FileText size={14} className="mr-2 text-gray-600" /> Document
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => addNewItem('evidence')}>
+                  <FilePlus2 size={14} className="mr-2 text-green-600" /> Evidence
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => addNewItem('wanted')}>
+                  <Search size={14} className="mr-2 text-red-600" /> Wanted
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => addNewItem('location')}>
+                  <MapPin size={14} className="mr-2 text-purple-600" /> Location
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => addNewItem('clue')}>
+                  <Lightbulb size={14} className="mr-2 text-orange-600" /> Clue
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            
+            <Button variant="ghost" size="sm" onClick={() => addNewItem('photo')}>
+              <Camera size={14} className="mr-1 text-blue-600" /> Photo
+            </Button>
+            <Button variant="ghost" size="sm" onClick={() => addNewItem('note')}>
+              <Copy size={14} className="mr-1 text-yellow-600" /> Note
+            </Button>
+            <Button variant="ghost" size="sm" onClick={() => addNewItem('document')}>
+              <FileText size={14} className="mr-1 text-gray-600" /> Document
+            </Button>
+            <Button variant="ghost" size="sm" onClick={() => addNewItem('evidence')}>
+              <FilePlus2 size={14} className="mr-1 text-green-600" /> Evidence
+            </Button>
+            <Button variant="ghost" size="sm" onClick={() => addNewItem('wanted')}>
+              <Search size={14} className="mr-1 text-red-600" /> Wanted
+            </Button>
+            <Button variant="ghost" size="sm" onClick={() => addNewItem('location')}>
+              <MapPin size={14} className="mr-1 text-purple-600" /> Location
+            </Button>
+            <Button variant="ghost" size="sm" onClick={() => addNewItem('clue')}>
+              <Lightbulb size={14} className="mr-1 text-orange-600" /> Clue
+            </Button>
+          </div>
+          
           <div 
             ref={(node) => {
               if (node) drop(node);
               if (boardRef) boardRef.current = node;
             }}
-            className={`relative w-full h-[calc(100vh-300px)] overflow-auto ${getBackgroundStyle()}`}
+            className={`relative w-full h-[calc(100vh-96px)] overflow-auto ${getBackgroundStyle()}`}
             style={{ transformOrigin: '0 0', transform: `scale(${zoomLevel})` }}
             onClick={() => setSelectedItem(null)}
           >
@@ -478,24 +726,31 @@ const Corkboard: React.FC = () => {
             {renderConnections()}
             
             {items.map((item) => (
-              <CorkboardItem
-                key={item.id}
-                id={item.id}
-                type={item.type}
-                content={item.content}
-                image={item.image}
-                initialPosition={item.position}
-                onPositionChange={handlePositionChange}
-                onConnect={handleConnect}
-                selected={selectedItem === item.id || connectingFrom === item.id}
-                onSelect={setSelectedItem}
-                metadata={item.metadata}
-              />
+              <div key={item.id} onClick={(e) => isEditMode && (e.stopPropagation(), handleEditItemClick(item))}>
+                <CorkboardItem
+                  id={item.id}
+                  type={item.type}
+                  content={item.content}
+                  image={item.image}
+                  initialPosition={item.position}
+                  onPositionChange={handlePositionChange}
+                  onConnect={handleConnect}
+                  selected={selectedItem === item.id || connectingFrom === item.id}
+                  onSelect={setSelectedItem}
+                  metadata={item.metadata}
+                />
+              </div>
             ))}
             
             {connectingFrom && (
               <div className="fixed bottom-4 right-4 bg-red-500 text-white px-4 py-2 rounded-md shadow-lg z-50">
                 Click on another item to connect, or anywhere to cancel
+              </div>
+            )}
+
+            {isEditMode && (
+              <div className="fixed top-20 right-4 bg-black/80 text-white px-4 py-2 rounded-md shadow-lg z-50 border border-red-500 animate-pulse">
+                Edit Mode: Click on items to edit or connections to remove
               </div>
             )}
 
@@ -519,28 +774,75 @@ const Corkboard: React.FC = () => {
                 </div>
               </div>
             </div>
+            
+            {showFullscreenInfo && (
+              <div className="fixed bottom-4 inset-x-0 mx-auto w-fit bg-black/80 text-white px-4 py-2 rounded-md shadow-lg z-50 flex items-center gap-2 animate-fade-in border border-white/20">
+                <div className="text-xs">
+                  <span className="font-bold">Keyboard shortcuts:</span> [E] Edit Mode, [B] Background, [Ctrl+S] Save, [Esc] Cancel
+                </div>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="h-6 text-xs" 
+                  onClick={() => setShowFullscreenInfo(false)}
+                >
+                  <X size={12} className="mr-1" />
+                  Dismiss
+                </Button>
+              </div>
+            )}
           </div>
-        </CardContent>
-      </Card>
-      
-      <Card className="bg-black/10 backdrop-blur-sm border-primary/20">
-        <CardContent className="p-4">
-          <div className="flex items-start space-x-4">
-            <AlertTriangle className="text-red-600 mt-1 flex-shrink-0" />
-            <div>
-              <h3 className="text-sm font-semibold">Usage Instructions</h3>
-              <ul className="text-xs text-muted-foreground mt-1 space-y-1 list-disc pl-4">
-                <li>Drag items around the board to organize your evidence</li>
-                <li>Click on the "link" button on an item and then click another item to create connections</li>
-                <li>Change the background using the "Change Background" button</li>
-                <li>Add new items using the toolbar at the top</li>
-                <li>Use Ctrl+Plus to zoom in and Ctrl+Minus to zoom out</li>
-                <li>Click "Save" to persist your investigation board</li>
-              </ul>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+          
+          <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Edit {editingItem?.type}</DialogTitle>
+                <DialogDescription>
+                  Update the content of this investigation item.
+                </DialogDescription>
+              </DialogHeader>
+              
+              <div className="py-4">
+                <Input
+                  value={newItemContent}
+                  onChange={(e) => setNewItemContent(e.target.value)}
+                  placeholder="Enter content"
+                  className="w-full"
+                />
+              </div>
+              
+              <DialogFooter className="flex justify-between">
+                <Button 
+                  variant="destructive" 
+                  onClick={() => {
+                    if (editingItem) {
+                      handleRemoveItem(editingItem.id);
+                      setEditDialogOpen(false);
+                    }
+                  }}
+                >
+                  <Trash2 size={14} className="mr-1" />
+                  Delete Item
+                </Button>
+                <div className="space-x-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => setEditDialogOpen(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button 
+                    onClick={handleSaveEdit}
+                    disabled={!newItemContent.trim()}
+                  >
+                    Save Changes
+                  </Button>
+                </div>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </div>
+      </div>
     </div>
   );
 };
