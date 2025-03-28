@@ -1,12 +1,29 @@
 
-import React, { useState, useRef, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { CorkboardItem } from '@/components/corkboard/CorkboardItem';
 import { ConnectionLine } from '@/components/corkboard/ConnectionLine';
 import { useDrop } from 'react-dnd';
 import { toast } from 'sonner';
-import { Plus, RotateCw, ZoomIn, ZoomOut, Save, Trash2, Camera, FileText, Copy, FilePlus2, MapPin } from 'lucide-react';
+import { 
+  Plus, 
+  RotateCw, 
+  ZoomIn, 
+  ZoomOut, 
+  Save, 
+  Trash2, 
+  Camera, 
+  FileText, 
+  Copy, 
+  FilePlus2, 
+  MapPin, 
+  Search, 
+  Map as MapIcon,
+  Pin,
+  AlertTriangle,
+  Lightbulb
+} from 'lucide-react';
 
 // Mock data for the corkboard
 const INITIAL_ITEMS = [
@@ -16,6 +33,10 @@ const INITIAL_ITEMS = [
     content: 'John Doe - Wanted for armed robbery and assault. Last seen in Chicago area.',
     image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3',
     position: { x: 100, y: 100 },
+    metadata: {
+      importance: 'high' as const,
+      status: 'At large',
+    }
   },
   {
     id: '2',
@@ -23,18 +44,28 @@ const INITIAL_ITEMS = [
     content: 'Crime scene at First National Bank, March 15, 2023.',
     image: 'https://images.unsplash.com/photo-1617839570201-f545a6a66e28?q=80&w=1780&auto=format&fit=crop&ixlib=rb-4.0.3',
     position: { x: 400, y: 150 },
+    metadata: {
+      location: 'First National Bank',
+      date: '03/15/2023',
+    }
   },
   {
     id: '3',
     type: 'note' as const,
     content: 'Witness reported seeing a blue sedan leaving the scene at approximately 10:45 PM. Partial plate number: XTR-2',
     position: { x: 320, y: 350 },
+    metadata: {
+      date: '03/16/2023',
+    }
   },
   {
     id: '4',
     type: 'document' as const,
     content: 'Forensic Report: Analysis found traces of explosives used in the vault breach. Same signature as Westside Heist (Case #4392).',
     position: { x: 600, y: 250 },
+    metadata: {
+      importance: 'medium' as const,
+    }
   },
   {
     id: '5',
@@ -42,6 +73,10 @@ const INITIAL_ITEMS = [
     content: 'Recovered firearm - S&W 9mm, Serial #45873. Ballistics match shell casings found at scene.',
     image: 'https://images.unsplash.com/photo-1584515933487-779824d29309?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3',
     position: { x: 500, y: 450 },
+    metadata: {
+      importance: 'high' as const,
+      status: 'In evidence locker',
+    }
   },
   {
     id: '6',
@@ -49,28 +84,72 @@ const INITIAL_ITEMS = [
     content: 'Jane Smith - Known associate of John Doe. Expertise in alarm systems and security bypassing.',
     image: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=1961&auto=format&fit=crop&ixlib=rb-4.0.3',
     position: { x: 200, y: 400 },
+    metadata: {
+      importance: 'medium' as const,
+      status: 'At large',
+    }
+  },
+  {
+    id: '7',
+    type: 'location' as const,
+    content: 'Suspect\'s last known hideout. Abandoned warehouse at the corner of 5th and Main.',
+    position: { x: 720, y: 150 },
+    metadata: {
+      location: '5th and Main St.',
+      importance: 'medium' as const,
+    }
+  },
+  {
+    id: '8',
+    type: 'clue' as const,
+    content: 'Suspect is within 100 miles of Downtown area based on cell tower pings.',
+    position: { x: 640, y: 380 },
+    metadata: {
+      date: '03/18/2023',
+    }
+  },
+  {
+    id: '9',
+    type: 'clue' as const,
+    content: 'Suspect is NOT in the Northern District according to informant.',
+    position: { x: 150, y: 220 },
+    metadata: {
+      date: '03/19/2023',
+    }
   },
 ];
 
 // Mock connections between pieces of evidence/clues
 const INITIAL_CONNECTIONS = [
-  { start: '1', end: '2' },
-  { start: '2', end: '3' },
-  { start: '4', end: '5' },
-  { start: '1', end: '6' },
+  { start: '1', end: '2', label: 'Present at scene', style: 'dashed' as const, color: 'rgba(255, 0, 0, 0.6)' },
+  { start: '2', end: '3', label: 'Observed at', style: 'solid' as const, color: 'rgba(0, 100, 255, 0.6)' },
+  { start: '4', end: '5', label: 'Linked by forensics', style: 'dotted' as const, color: 'rgba(0, 200, 100, 0.6)' },
+  { start: '1', end: '6', label: 'Known associates', style: 'zigzag' as const, color: 'rgba(255, 100, 0, 0.6)' },
+  { start: '1', end: '7', label: 'Hideout', style: 'dashed' as const, color: 'rgba(255, 0, 0, 0.6)' },
+  { start: '8', end: '7', label: 'Geographic area', style: 'solid' as const, color: 'rgba(100, 0, 255, 0.6)' },
+  { start: '9', end: '1', label: 'Location info', style: 'dotted' as const, color: 'rgba(255, 200, 0, 0.6)' },
 ];
 
 interface CorkboardItem {
   id: string;
-  type: 'photo' | 'note' | 'document' | 'wanted' | 'evidence';
+  type: 'photo' | 'note' | 'document' | 'wanted' | 'evidence' | 'location' | 'clue';
   content: string;
   image?: string;
   position: { x: number; y: number };
+  metadata?: {
+    location?: string;
+    date?: string;
+    importance?: 'high' | 'medium' | 'low';
+    status?: string;
+  };
 }
 
 interface Connection {
   start: string;
   end: string;
+  label?: string;
+  style?: 'solid' | 'dashed' | 'dotted' | 'zigzag';
+  color?: string;
 }
 
 const ItemTypes = {
@@ -83,8 +162,9 @@ const Corkboard: React.FC = () => {
   const [connectingFrom, setConnectingFrom] = useState<string | null>(null);
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
   const [zoomLevel, setZoomLevel] = useState(1);
-  const [corkboardBackgrounds] = useState(['cork', 'metal', 'blackboard']);
+  const [corkboardBackgrounds] = useState(['cork', 'metal', 'blackboard', 'map']);
   const [currentBackground, setCurrentBackground] = useState('cork');
+  const [showMap, setShowMap] = useState(false);
   
   const boardRef = useRef<HTMLDivElement>(null);
 
@@ -118,10 +198,28 @@ const Corkboard: React.FC = () => {
       return;
     }
     
-    // Create new connection
+    // Create new connection with a random color and style
+    const connectionStyles = ['solid', 'dashed', 'dotted', 'zigzag'] as const;
+    const randomStyle = connectionStyles[Math.floor(Math.random() * connectionStyles.length)];
+    
+    const colors = [
+      'rgba(255, 0, 0, 0.6)',
+      'rgba(0, 100, 255, 0.6)',
+      'rgba(0, 200, 100, 0.6)',
+      'rgba(255, 100, 0, 0.6)',
+      'rgba(100, 0, 255, 0.6)',
+      'rgba(255, 200, 0, 0.6)',
+    ];
+    const randomColor = colors[Math.floor(Math.random() * colors.length)];
+    
     setConnections(prev => [
       ...prev,
-      { start: connectingFrom, end: id }
+      { 
+        start: connectingFrom, 
+        end: id,
+        style: randomStyle,
+        color: randomColor
+      }
     ]);
     
     setConnectingFrom(null);
@@ -139,7 +237,7 @@ const Corkboard: React.FC = () => {
   };
 
   // Add a new item to the corkboard
-  const addNewItem = (type: CorkboardItem['type']) => {
+  const addNewItem = useCallback((type: CorkboardItem['type']) => {
     const centerX = boardRef.current ? boardRef.current.clientWidth / 2 : 400;
     const centerY = boardRef.current ? boardRef.current.clientHeight / 2 : 300;
     
@@ -155,11 +253,14 @@ const Corkboard: React.FC = () => {
         x: centerX + offsetX - 100, // Center the item
         y: centerY + offsetY - 100,
       },
+      metadata: type === 'note' || type === 'clue' 
+        ? { date: new Date().toLocaleDateString() } 
+        : undefined
     };
     
     setItems(prev => [...prev, newItem]);
     toast.success(`Added new ${type}`);
-  };
+  }, []);
 
   // Clear the corkboard
   const clearCorkboard = () => {
@@ -202,6 +303,13 @@ const Corkboard: React.FC = () => {
     const currentIndex = corkboardBackgrounds.indexOf(currentBackground);
     const nextIndex = (currentIndex + 1) % corkboardBackgrounds.length;
     setCurrentBackground(corkboardBackgrounds[nextIndex]);
+    
+    // Toggle map if the new background is a map
+    if (corkboardBackgrounds[nextIndex] === 'map') {
+      setShowMap(true);
+    } else {
+      setShowMap(false);
+    }
   };
 
   // Render the connection lines between items
@@ -228,9 +336,11 @@ const Corkboard: React.FC = () => {
           key={`${connection.start}-${connection.end}-${index}`}
           startPos={startPos}
           endPos={endPos}
-          color="rgba(255, 0, 0, 0.6)"
-          dashed={true}
+          color={connection.color || "rgba(255, 0, 0, 0.6)"}
+          dashed={connection.style === 'dashed'}
           animated={true}
+          label={connection.label}
+          style={connection.style || 'dashed'}
         />
       );
     });
@@ -245,10 +355,28 @@ const Corkboard: React.FC = () => {
         return 'bg-slate-800 bg-[url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'0.1\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")]';
       case 'blackboard':
         return 'bg-gray-900 bg-[url("data:image/svg+xml,%3Csvg width=\'40\' height=\'40\' viewBox=\'0 0 40 40\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'0.05\' fill-rule=\'evenodd\'%3E%3Cpath d=\'M0 38.59l2.83-2.83 1.41 1.41L1.41 40H0v-1.41zM0 1.4l2.83 2.83 1.41-1.41L1.41 0H0v1.41zM38.59 40l-2.83-2.83 1.41-1.41L40 38.59V40h-1.41zM40 1.41l-2.83 2.83-1.41-1.41L38.59 0H40v1.41zM20 18.6l2.83-2.83 1.41 1.41L21.41 20l2.83 2.83-1.41 1.41L20 21.41l-2.83 2.83-1.41-1.41L18.59 20l-2.83-2.83 1.41-1.41L20 18.59z\'/%3E%3C/g%3E%3C/svg%3E")]';
+      case 'map':
+        return 'bg-blue-50';
       default:
         return 'bg-amber-800/80';
     }
   };
+
+  // Handle keyboard shortcuts for zooming
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.key === '+') {
+        e.preventDefault();
+        setZoomLevel(prev => Math.min(prev + 0.1, 1.5));
+      } else if (e.ctrlKey && e.key === '-') {
+        e.preventDefault();
+        setZoomLevel(prev => Math.max(prev - 0.1, 0.5));
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -303,10 +431,19 @@ const Corkboard: React.FC = () => {
                 <FilePlus2 size={16} className="mr-1" /> Evidence
               </Button>
               <Button size="sm" variant="ghost" onClick={() => addNewItem('wanted')}>
-                <MapPin size={16} className="mr-1" /> Wanted
+                <Search size={16} className="mr-1" /> Wanted
+              </Button>
+              <Button size="sm" variant="ghost" onClick={() => addNewItem('location')}>
+                <MapPin size={16} className="mr-1" /> Location
+              </Button>
+              <Button size="sm" variant="ghost" onClick={() => addNewItem('clue')}>
+                <Lightbulb size={16} className="mr-1" /> Clue
               </Button>
             </div>
           </div>
+          <CardDescription>
+            Drag items around, connect clues, and build your investigation map. Use the toolbar to add new elements.
+          </CardDescription>
         </CardHeader>
         <CardContent className="p-0 overflow-hidden">
           <div 
@@ -319,6 +456,22 @@ const Corkboard: React.FC = () => {
             style={{ transformOrigin: '0 0', transform: `scale(${zoomLevel})` }}
             onClick={() => setSelectedItem(null)}
           >
+            {showMap && (
+              <div className="absolute inset-0 z-0">
+                <img 
+                  src="/lovable-uploads/7af87d74-28a1-432a-b5da-3c290007e536.png" 
+                  alt="Investigation map" 
+                  className="w-full h-full object-cover opacity-60"
+                />
+                <div className="absolute bottom-4 right-4 bg-black/80 text-white px-4 py-2 rounded-md text-sm">
+                  <div className="flex items-center">
+                    <MapIcon size={14} className="mr-2" />
+                    <span>Investigation Map</span>
+                  </div>
+                </div>
+              </div>
+            )}
+            
             {renderConnections()}
             
             {items.map((item) => (
@@ -333,6 +486,7 @@ const Corkboard: React.FC = () => {
                 onConnect={handleConnect}
                 selected={selectedItem === item.id || connectingFrom === item.id}
                 onSelect={setSelectedItem}
+                metadata={item.metadata}
               />
             ))}
             
@@ -341,6 +495,48 @@ const Corkboard: React.FC = () => {
                 Click on another item to connect, or anywhere to cancel
               </div>
             )}
+
+            {/* Legend in the corner */}
+            <div className="absolute bottom-4 left-4 bg-black/70 text-white p-2 rounded-md text-xs z-30">
+              <div className="font-bold mb-1 flex items-center">
+                <Pin size={10} className="mr-1" />
+                Connection Types
+              </div>
+              <div className="flex space-x-2">
+                <div className="flex items-center">
+                  <div className="w-3 h-3 bg-red-500 rounded-full mr-1"></div>
+                  <span>Suspect</span>
+                </div>
+                <div className="flex items-center">
+                  <div className="w-3 h-3 bg-blue-500 rounded-full mr-1"></div>
+                  <span>Location</span>
+                </div>
+                <div className="flex items-center">
+                  <div className="w-3 h-3 bg-green-500 rounded-full mr-1"></div>
+                  <span>Evidence</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+      
+      {/* Instructions Panel */}
+      <Card className="bg-black/10 backdrop-blur-sm border-primary/20">
+        <CardContent className="p-4">
+          <div className="flex items-start space-x-4">
+            <AlertTriangle className="text-primary mt-1 flex-shrink-0" />
+            <div>
+              <h3 className="text-sm font-semibold">Usage Instructions</h3>
+              <ul className="text-xs text-muted-foreground mt-1 space-y-1 list-disc pl-4">
+                <li>Drag items around the board to organize your evidence</li>
+                <li>Click on the "link" button on an item and then click another item to create connections</li>
+                <li>Change the background using the "Change Background" button</li>
+                <li>Add new items using the toolbar at the top</li>
+                <li>Use Ctrl+Plus to zoom in and Ctrl+Minus to zoom out</li>
+                <li>Click "Save" to persist your investigation board</li>
+              </ul>
+            </div>
           </div>
         </CardContent>
       </Card>

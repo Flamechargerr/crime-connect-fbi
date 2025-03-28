@@ -3,11 +3,11 @@ import { useState, useRef } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
 import { Card } from '@/components/ui/card';
 import { toast } from 'sonner';
-import { X, Maximize2, Minimize2, Link as LinkIcon, Pin, Paperclip } from 'lucide-react';
+import { X, Maximize2, Minimize2, Link as LinkIcon, Pin, Paperclip, MapPin, AlertTriangle } from 'lucide-react';
 
 interface CorkboardItemProps {
   id: string;
-  type: 'photo' | 'note' | 'document' | 'wanted' | 'evidence';
+  type: 'photo' | 'note' | 'document' | 'wanted' | 'evidence' | 'location' | 'clue';
   content: string;
   image?: string;
   initialPosition: { x: number; y: number };
@@ -16,6 +16,12 @@ interface CorkboardItemProps {
   selected?: boolean;
   onSelect: (id: string) => void;
   colorCode?: string;
+  metadata?: {
+    location?: string;
+    date?: string;
+    importance?: 'high' | 'medium' | 'low';
+    status?: string;
+  };
 }
 
 const ItemTypes = {
@@ -33,6 +39,7 @@ export const CorkboardItem = ({
   selected,
   onSelect,
   colorCode = 'border-primary',
+  metadata,
 }: CorkboardItemProps) => {
   const [position, setPosition] = useState(initialPosition);
   const [expanded, setExpanded] = useState(false);
@@ -104,8 +111,34 @@ export const CorkboardItem = ({
         return 'border-red-500 bg-red-50 dark:bg-red-950/30';
       case 'evidence':
         return 'border-green-500 bg-emerald-50 dark:bg-emerald-950/30';
+      case 'location':
+        return 'border-purple-500 bg-purple-50 dark:bg-purple-950/30';
+      case 'clue':
+        return 'border-orange-500 bg-orange-50 dark:bg-orange-950/30';
       default:
         return 'border-primary bg-background';
+    }
+  };
+
+  // Get the appropriate icon for the item type
+  const getItemIcon = () => {
+    switch (type) {
+      case 'photo':
+        return <Paperclip size={12} />;
+      case 'note':
+        return <Pin size={12} />;
+      case 'document':
+        return <Paperclip size={12} />;
+      case 'wanted':
+        return <AlertTriangle size={12} className="text-red-500" />;
+      case 'evidence':
+        return <Paperclip size={12} className="text-green-500" />;
+      case 'location':
+        return <MapPin size={12} className="text-purple-500" />;
+      case 'clue':
+        return <AlertTriangle size={12} className="text-orange-500" />;
+      default:
+        return <Pin size={12} />;
     }
   };
 
@@ -150,6 +183,9 @@ export const CorkboardItem = ({
   const baseWidth = type === 'photo' || type === 'wanted' ? 180 : 220;
   const baseHeight = type === 'photo' || type === 'wanted' ? 220 : 180;
 
+  // Determine if this is a sticky note (notes should look like post-its)
+  const isStickyNote = type === 'note' || type === 'clue';
+
   return (
     <div
       ref={ref}
@@ -163,70 +199,146 @@ export const CorkboardItem = ({
       }}
       onClick={handleClick}
     >
-      <Card 
-        className={`
-          overflow-hidden shadow-lg
-          ${expanded ? 'w-[400px]' : `w-[${baseWidth}px]`}
-          ${expanded ? 'h-auto' : `h-[${baseHeight}px]`}
-          ${getItemStyle()}
-          ${selected ? 'ring-2 ring-primary shadow-primary/20 shadow-xl' : ''}
-          border-2 p-3 transition-all duration-200 corkboard-item
-        `}
-      >
-        <PinComponent />
-        
-        <div className="flex justify-between items-start">
-          <div className="flex items-center space-x-1">
-            {type === 'photo' && <Paperclip size={12} />}
-            {type === 'note' && <Pin size={12} />}
-            {type === 'document' && <Paperclip size={12} />}
-            {type === 'wanted' && <Pin size={12} className="text-red-500" />}
-            {type === 'evidence' && <Paperclip size={12} className="text-green-500" />}
-            <span className="text-xs font-bold uppercase opacity-70">
-              {type}
-            </span>
-          </div>
-          <div className="flex items-center space-x-1">
-            {expanded ? (
-              <button onClick={handleToggleExpand} className="p-1 rounded-full hover:bg-black/10">
-                <Minimize2 size={12} />
+      {isStickyNote ? (
+        // Sticky note style
+        <div 
+          className={`
+            ${expanded ? 'w-[300px]' : `w-[${baseWidth}px]`}
+            ${expanded ? 'h-auto' : `h-[${baseHeight}px]`}
+            p-3 shadow-md
+            ${type === 'note' ? 'bg-amber-200' : 'bg-orange-200'}
+            font-handwriting relative overflow-hidden
+            ${selected ? 'ring-2 ring-primary shadow-lg' : ''}
+          `}
+        >
+          <PinComponent />
+          
+          <div className="flex justify-between items-start">
+            <div className="flex items-center space-x-1">
+              {getItemIcon()}
+              <span className="text-xs font-bold uppercase opacity-70 text-black">
+                {type}
+              </span>
+            </div>
+            <div className="flex items-center space-x-1">
+              {expanded ? (
+                <button onClick={handleToggleExpand} className="p-1 rounded-full hover:bg-black/10 text-black">
+                  <Minimize2 size={12} />
+                </button>
+              ) : (
+                <button onClick={handleToggleExpand} className="p-1 rounded-full hover:bg-black/10 text-black">
+                  <Maximize2 size={12} />
+                </button>
+              )}
+              <button onClick={handleConnect} className="p-1 rounded-full hover:bg-black/10 text-black">
+                <LinkIcon size={12} />
               </button>
-            ) : (
-              <button onClick={handleToggleExpand} className="p-1 rounded-full hover:bg-black/10">
-                <Maximize2 size={12} />
+              <button onClick={handleRemove} className="p-1 rounded-full hover:bg-black/10 text-black">
+                <X size={12} />
               </button>
-            )}
-            <button onClick={handleConnect} className="p-1 rounded-full hover:bg-black/10">
-              <LinkIcon size={12} />
-            </button>
-            <button onClick={handleRemove} className="p-1 rounded-full hover:bg-black/10">
-              <X size={12} />
-            </button>
+            </div>
           </div>
+          
+          <div className={`mt-2 ${expanded ? '' : 'line-clamp-6'} text-black`}>
+            {content}
+          </div>
+          
+          {metadata && (
+            <div className="absolute bottom-2 right-2 text-xs opacity-80 text-black">
+              {metadata.location && (
+                <div className="flex items-center">
+                  <MapPin size={10} className="mr-1" />
+                  {metadata.location}
+                </div>
+              )}
+              {metadata.date && (
+                <div>{metadata.date}</div>
+              )}
+            </div>
+          )}
         </div>
-        
-        {image && (
-          <div 
-            className={`mt-2 relative ${expanded ? 'h-auto' : 'h-24'} overflow-hidden bg-black/5`}
-          >
-            <img 
-              src={image} 
-              alt={content} 
-              className="w-full h-full object-cover"
-            />
+      ) : (
+        // Card style for other types
+        <Card 
+          className={`
+            overflow-hidden shadow-lg
+            ${expanded ? 'w-[400px]' : `w-[${baseWidth}px]`}
+            ${expanded ? 'h-auto' : `h-[${baseHeight}px]`}
+            ${getItemStyle()}
+            ${selected ? 'ring-2 ring-primary shadow-primary/20 shadow-xl' : ''}
+            border-2 p-3 transition-all duration-200 corkboard-item
+          `}
+        >
+          <PinComponent />
+          
+          <div className="flex justify-between items-start">
+            <div className="flex items-center space-x-1">
+              {getItemIcon()}
+              <span className="text-xs font-bold uppercase opacity-70">
+                {type}
+              </span>
+            </div>
+            <div className="flex items-center space-x-1">
+              {expanded ? (
+                <button onClick={handleToggleExpand} className="p-1 rounded-full hover:bg-black/10">
+                  <Minimize2 size={12} />
+                </button>
+              ) : (
+                <button onClick={handleToggleExpand} className="p-1 rounded-full hover:bg-black/10">
+                  <Maximize2 size={12} />
+                </button>
+              )}
+              <button onClick={handleConnect} className="p-1 rounded-full hover:bg-black/10">
+                <LinkIcon size={12} />
+              </button>
+              <button onClick={handleRemove} className="p-1 rounded-full hover:bg-black/10">
+                <X size={12} />
+              </button>
+            </div>
           </div>
-        )}
-        
-        <div className={`mt-2 ${expanded ? '' : 'line-clamp-3'} text-sm ${type === 'note' ? 'font-handwriting' : ''}`}>
-          {content}
-        </div>
-        
-        {type === 'document' && !expanded && (
-          <div className="absolute bottom-2 right-2 text-xs opacity-60">
-            Click to expand
+          
+          {image && (
+            <div 
+              className={`mt-2 relative ${expanded ? 'h-auto' : 'h-24'} overflow-hidden bg-black/5`}
+            >
+              <img 
+                src={image} 
+                alt={content} 
+                className="w-full h-full object-cover"
+              />
+            </div>
+          )}
+          
+          <div className={`mt-2 ${expanded ? '' : 'line-clamp-3'} text-sm ${type === 'note' ? 'font-handwriting' : ''}`}>
+            {content}
           </div>
-        )}
-      </Card>
+          
+          {metadata && (
+            <div className="flex flex-wrap gap-2 mt-2 text-xs">
+              {metadata.importance && (
+                <span className={`px-2 py-0.5 rounded-full ${
+                  metadata.importance === 'high' ? 'bg-red-100 text-red-800' :
+                  metadata.importance === 'medium' ? 'bg-yellow-100 text-yellow-800' :
+                  'bg-blue-100 text-blue-800'
+                }`}>
+                  {metadata.importance} priority
+                </span>
+              )}
+              {metadata.status && (
+                <span className="px-2 py-0.5 rounded-full bg-gray-100 text-gray-800">
+                  {metadata.status}
+                </span>
+              )}
+            </div>
+          )}
+          
+          {type === 'document' && !expanded && (
+            <div className="absolute bottom-2 right-2 text-xs opacity-60">
+              Click to expand
+            </div>
+          )}
+        </Card>
+      )}
     </div>
   );
 };
