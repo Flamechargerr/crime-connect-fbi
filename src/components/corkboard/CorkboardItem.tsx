@@ -1,13 +1,13 @@
-
 import { useState, useRef } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
 import { Card } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { X, Maximize2, Minimize2, Link as LinkIcon, Pin, Paperclip, MapPin, AlertTriangle } from 'lucide-react';
+import { CorkboardItemType } from '@/types';
 
 interface CorkboardItemProps {
   id: string;
-  type: 'photo' | 'note' | 'document' | 'wanted' | 'evidence' | 'location' | 'clue';
+  type: CorkboardItemType;
   content: string;
   image?: string;
   initialPosition: { x: number; y: number };

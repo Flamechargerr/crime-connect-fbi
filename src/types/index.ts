@@ -125,4 +125,4 @@ export type DashboardStats = {
   recentCases: Case[];
 };
 
-export type CorkboardItemType = "photo" | "document" | "wanted" | "evidence" | "location" | "note";
+export type CorkboardItemType = "photo" | "document" | "wanted" | "evidence" | "location" | "note" | "clue";
