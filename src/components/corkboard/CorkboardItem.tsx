@@ -53,7 +53,11 @@ export const CorkboardItem = ({
   // Set up drag functionality
   const [{ opacity }, drag] = useDrag(() => ({
     type: ItemTypes.CORKBOARD_ITEM,
-    item: { id, position },
+    item: () => {
+      setIsDragging(true);
+      onSelect(id);
+      return { id, position };
+    },
     collect: (monitor) => ({
       opacity: monitor.isDragging() ? 0.8 : 1,
     }),
@@ -71,10 +75,6 @@ export const CorkboardItem = ({
         }
       }
       setIsDragging(false);
-    },
-    begin: () => {
-      setIsDragging(true);
-      onSelect(id);
     },
   }), [id, position, onPositionChange]);
 
