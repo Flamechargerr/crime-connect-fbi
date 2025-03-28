@@ -5,37 +5,37 @@
 
 @layer base {
   :root {
-    --background: 218 28% 13%;
-    --foreground: 220 13% 91%;
+    --background: 211 36% 7%;
+    --foreground: 213 31% 91%;
 
-    --card: 224 30% 9%;
+    --card: 211 42% 5%;
     --card-foreground: 210 40% 98%;
 
-    --popover: 224 30% 9%;
+    --popover: 224 36% 5%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 221 83% 53%;
+    --primary: 199 89% 48%;
     --primary-foreground: 210 40% 98%;
 
-    --secondary: 217 33% 17%;
+    --secondary: 199 39% 12%;
     --secondary-foreground: 210 40% 98%;
 
     --muted: 217 33% 17%;
     --muted-foreground: 215 20% 65%;
 
-    --accent: 217 33% 17%;
+    --accent: 199 69% 16%;
     --accent-foreground: 210 40% 98%;
 
     --destructive: 0 63% 31%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 217 33% 17%;
-    --input: 217 33% 17%;
+    --border: 213 27% 15%;
+    --input: 213 27% 15%;
     --ring: 213 27% 84%;
 
-    --sidebar-background: 222 47% 11%;
+    --sidebar-background: 213 42% 5%;
     --sidebar-foreground: 210 40% 98%;
-    --sidebar-primary: 221 83% 53%;
+    --sidebar-primary: 199 89% 48%;
     --sidebar-primary-foreground: 210 40% 98%;
     --sidebar-accent: 217 33% 17%;
     --sidebar-accent-foreground: 210 40% 98%;
@@ -54,13 +54,13 @@
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
-    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%231a1f2c' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h20v20H0V0zm10 17a7 7 0 1 0 0-14 7 7 0 0 0 0 14zm20 0a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM10 37a7 7 0 1 0 0-14 7 7 0 0 0 0 14zm10-17h20v20H20V20zm10 17a7 7 0 1 0 0-14 7 7 0 0 0 0 14z' fill='%23102a43' fill-opacity='0.07' fill-rule='evenodd'/%3E%3C/svg%3E");
   }
 
   /* Custom scrollbar */
   ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    width: 6px;
+    height: 6px;
   }
 
   ::-webkit-scrollbar-track {
@@ -68,11 +68,11 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    @apply bg-muted-foreground/30 rounded-full;
+    @apply bg-primary/30 rounded-full;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    @apply bg-muted-foreground/50;
+    @apply bg-primary/50;
   }
   
   input::placeholder {
@@ -82,17 +82,18 @@
 
 @layer components {
   .glass-card {
-    @apply bg-black/50 backdrop-blur-lg rounded-lg border border-white/10 shadow-fbi transition-all duration-300 relative overflow-hidden;
+    @apply bg-black/40 backdrop-blur-lg rounded-lg border border-primary/20 shadow-fbi transition-all duration-300 relative overflow-hidden;
+    box-shadow: 0 4px 20px rgba(0, 156, 255, 0.1), inset 0 1px 1px rgba(255, 255, 255, 0.05);
   }
 
-  .glass-card:hover {
-    @apply shadow-glass-hover border-white/20;
-  }
-  
   .glass-card::before {
     content: "";
     @apply absolute -inset-1 opacity-0 transition-opacity duration-500;
-    background: linear-gradient(90deg, transparent, rgba(0, 87, 184, 0.1), transparent);
+    background: linear-gradient(90deg, transparent, rgba(0, 156, 255, 0.1), transparent);
+  }
+  
+  .glass-card:hover {
+    @apply shadow-glass-hover border-primary/30;
   }
   
   .glass-card:hover::before {
@@ -105,12 +106,12 @@
   }
   
   .fbi-header {
-    @apply bg-fbi-navy relative overflow-hidden border-b border-fbi-blue/50;
+    @apply bg-fbi-navy relative overflow-hidden border-b border-primary/40;
   }
   
   .fbi-header::after {
     content: "";
-    @apply absolute h-0.5 w-full bg-fbi-blue/60 left-0 animate-scanner-line;
+    @apply absolute h-0.5 w-full bg-primary/40 left-0 animate-scanner-line;
   }
   
   .secure-badge {
@@ -161,7 +162,7 @@
   .scanner-effect::after {
     content: "";
     @apply absolute left-0 right-0 h-1 bg-primary/40 animate-scanner-line;
-    box-shadow: 0 0 15px 5px rgba(0, 87, 184, 0.5);
+    box-shadow: 0 0 15px 5px rgba(0, 156, 255, 0.5);
   }
   
   .confidential-stamp {
@@ -171,4 +172,125 @@
   .classified-heading {
     @apply px-3 py-1 bg-fbi-navy border-l-4 border-fbi-red text-white font-semibold;
   }
+
+  /* Advanced holographic elements */
+  .holographic-element {
+    @apply relative backdrop-blur-lg bg-primary/5 border border-primary/20 rounded-md overflow-hidden;
+    box-shadow: 0 0 20px rgba(0, 156, 255, 0.1);
+  }
+
+  .holographic-element::before {
+    content: "";
+    @apply absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-50;
+    animation: hologram-shift 3s ease-in-out infinite alternate;
+  }
+
+  .holographic-element::after {
+    content: "";
+    @apply absolute -inset-1 opacity-20;
+    background: linear-gradient(45deg, transparent, rgba(0, 156, 255, 0.2), transparent);
+    animation: hologram-scan 3s linear infinite;
+  }
+
+  .data-grid {
+    @apply grid gap-1 text-xs font-mono;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  }
+  
+  .data-cell {
+    @apply px-1.5 py-1 bg-primary/5 border border-primary/10 rounded-sm overflow-hidden text-primary/80;
+  }
+
+  .cyber-badge {
+    @apply inline-flex items-center justify-center px-2 py-0.5 bg-primary/10 border border-primary/30 rounded text-xs font-mono text-primary shadow-sm;
+  }
+
+  .fbi-map {
+    @apply relative rounded-lg overflow-hidden border border-primary/20;
+    box-shadow: 0 0 30px rgba(0, 156, 255, 0.1);
+  }
+
+  .fbi-map::before {
+    content: "";
+    @apply absolute inset-0 bg-primary/5 z-10;
+    backdrop-filter: brightness(1.2) contrast(1.2);
+  }
+
+  .fbi-map::after {
+    content: "";
+    @apply absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-20;
+  }
+
+  .geo-point {
+    @apply absolute w-2 h-2 rounded-full bg-primary/80 z-30;
+    box-shadow: 0 0 10px rgba(0, 156, 255, 0.8);
+    animation: geo-point-pulse 2s ease-in-out infinite;
+  }
+  
+  .geo-connection {
+    @apply absolute h-px bg-primary/30 z-25 origin-left;
+    animation: geo-connection-pulse 3s ease-in-out infinite;
+  }
+
+  .stat-display {
+    @apply relative bg-black/40 backdrop-blur-md rounded-md border border-primary/20 p-3 flex flex-col;
+  }
+
+  .stat-display::before {
+    content: "";
+    @apply absolute top-0 left-0 w-full h-1 bg-primary/30;
+  }
+
+  .radial-progress {
+    @apply relative flex items-center justify-center rounded-full;
+    background: conic-gradient(theme(colors.primary) var(--value), theme(colors.primary/10) var(--value));
+  }
+
+  .radial-progress-inner {
+    @apply absolute rounded-full bg-black/80;
+  }
+  
+  .animated-text-scan {
+    background: linear-gradient(90deg, transparent, theme(colors.primary), transparent);
+    background-size: 200% 100%;
+    animation: text-scanner 2s linear infinite;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+}
+
+@keyframes data-flow {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+@keyframes hologram-shift {
+  0% { transform: translateY(0) scale(1); opacity: 0.5; }
+  100% { transform: translateY(-5px) scale(1.02); opacity: 0.7; }
+}
+
+@keyframes hologram-scan {
+  0% { transform: translateY(-100%) rotate(45deg); }
+  100% { transform: translateY(200%) rotate(45deg); }
+}
+
+@keyframes geo-point-pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.5); opacity: 0.6; }
+}
+
+@keyframes geo-connection-pulse {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 0.8; }
+}
+
+@keyframes text-scanner {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@keyframes grid-scan {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
 }

@@ -87,11 +87,11 @@ const Layout: React.FC = () => {
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#101419] bg-digital-circuit">
+    <div className="flex h-screen overflow-hidden bg-[#0a1117] bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMCIgaGVpZ2h0PSIzMCI+CiAgPHJlY3Qgd2lkdGg9IjMwIiBoZWlnaHQ9IjMwIiBmaWxsPSIjMGExMTE3Ii8+CiAgPHBhdGggZD0iTTAgMGg2djZIMHoiIGZpbGw9IiMwYjE1MjIiIG9wYWNpdHk9IjAuMDciLz4KICA8cGF0aCBkPSJNNiAwaDZ2Nkg2eiIgZmlsbD0iIzBiMTUyMiIgb3BhY2l0eT0iMC4wMiIvPgogIDxwYXRoIGQ9Ik0xMiAwaDZ2NmgtNnoiIGZpbGw9IiMwYjE1MjIiIG9wYWNpdHk9IjAuMDciLz4KICA8cGF0aCBkPSJNMTggMGg2djZoLTZ6IiBmaWxsPSIjMGIxNTIyIiBvcGFjaXR5PSIwLjAyIi8+CiAgPHBhdGggZD0iTTI0IDBoNnY2aC02eiIgZmlsbD0iIzBiMTUyMiIgb3BhY2l0eT0iMC4wNyIvPgogIDxwYXRoIGQ9Ik0wIDZoNnY2SDB6IiBmaWxsPSIjMGIxNTIyIiBvcGFjaXR5PSIwLjAyIi8+CiAgPHBhdGggZD0iTTYgNmg2djZINnoiIGZpbGw9IiMwYjE1MjIiIG9wYWNpdHk9IjAuMDciLz4KICA8cGF0aCBkPSJNMTIgNmg2djZoLTZ6IiBmaWxsPSIjMGIxNTIyIiBvcGFjaXR5PSIwLjAyIi8+CiAgPHBhdGggZD0iTTE4IDZoNnY2aC02eiIgZmlsbD0iIzBiMTUyMiIgb3BhY2l0eT0iMC4wNyIvPgogIDxwYXRoIGQ9Ik0yNCA2aDZ2NmgtNnoiIGZpbGw9IiMwYjE1MjIiIG9wYWNpdHk9IjAuMDIiLz4KICA8cGF0aCBkPSJNMCAxMmg2djZIMHoiIGZpbGw9IiMwYjE1MjIiIG9wYWNpdHk9IjAuMDciLz4KICA8cGF0aCBkPSJNNiAxMmg2djZINnoiIGZpbGw9IiMwYjE1MjIiIG9wYWNpdHk9IjAuMDIiLz4KICA8cGF0aCBkPSJNMTIgMTJoNnY2aC02eiIgZmlsbD0iIzBiMTUyMiIgb3BhY2l0eT0iMC4wNyIvPgogIDxwYXRoIGQ9Ik0xOCAxMmg2djZoLTZ6IiBmaWxsPSIjMGIxNTIyIiBvcGFjaXR5PSIwLjAyIi8+CiAgPHBhdGggZD0iTTI0IDEyaDZ2NmgtNnoiIGZpbGw9IiMwYjE1MjIiIG9wYWNpdHk9IjAuMDciLz4KICA8cGF0aCBkPSJNMCAxOGg2djZIMHoiIGZpbGw9IiMwYjE1MjIiIG9wYWNpdHk9IjAuMDIiLz4KICA8cGF0aCBkPSJNNiAxOGg2djZINnoiIGZpbGw9IiMwYjE1MjIiIG9wYWNpdHk9IjAuMDciLz4KICA8cGF0aCBkPSJNMTIgMThoNnY2aC02eiIgZmlsbD0iIzBiMTUyMiIgb3BhY2l0eT0iMC4wMiIvPgogIDxwYXRoIGQ9Ik0xOCAxOGg2djZoLTZ6IiBmaWxsPSIjMGIxNTIyIiBvcGFjaXR5PSIwLjA3Ii8+CiAgPHBhdGggZD0iTTI0IDE4aDZ2NmgtNnoiIGZpbGw9IiMwYjE1MjIiIG9wYWNpdHk9IjAuMDIiLz4KICA8cGF0aCBkPSJNMCAyNGg2djZIMHoiIGZpbGw9IiMwYjE1MjIiIG9wYWNpdHk9IjAuMDciLz4KICA8cGF0aCBkPSJNNiAyNGg2djZINnoiIGZpbGw9IiMwYjE1MjIiIG9wYWNpdHk9IjAuMDIiLz4KICA8cGF0aCBkPSJNMTIgMjRoNnY2aC02eiIgZmlsbD0iIzBiMTUyMiIgb3BhY2l0eT0iMC4wNyIvPgogIDxwYXRoIGQ9Ik0xOCAyNGg2djZoLTZ6IiBmaWxsPSIjMGIxNTIyIiBvcGFjaXR5PSIwLjAyIi8+CiAgPHBhdGggZD0iTTI0IDI0aDZ2NmgtNnoiIGZpbGw9IiMwYjE1MjIiIG9wYWNpdHk9IjAuMDciLz4KPC9zdmc+')]">
       <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden relative">
         <TopBar />
-        <div className="absolute top-16 left-0 right-0 bg-black/40 backdrop-blur-sm py-1.5 px-6 z-10 border-b border-border/50 flex justify-between items-center">
+        <div className="absolute top-16 left-0 right-0 bg-[#061623]/60 backdrop-blur-sm py-1.5 px-6 z-10 border-b border-primary/30 flex justify-between items-center">
           <div className="flex items-center space-x-4 text-xs">
             <div className="flex items-center">
               <Shield size={12} className="mr-1 text-secure-green" />
@@ -117,35 +117,41 @@ const Layout: React.FC = () => {
           </div>
         </div>
         
-        <main className="flex-1 overflow-y-auto p-6 pt-12 animate-fade-in">
-          <div className="flex justify-between items-center mb-4 text-xs text-muted-foreground">
-            <div className="flex items-center">
-              {systemStatus === 'normal' && (
-                <div className="flex items-center text-secure-green">
-                  <Radio size={10} className="mr-1 animate-pulse" />
-                  <span>{statusMessage}</span>
-                </div>
-              )}
-              {systemStatus === 'warning' && (
-                <div className="flex items-center text-secure-yellow">
-                  <ServerCrash size={10} className="mr-1 animate-pulse" />
-                  <span>{statusMessage}</span>
-                </div>
-              )}
-              {systemStatus === 'alert' && (
-                <div className="flex items-center text-secure-red">
-                  <AlertTriangle size={10} className="mr-1 animate-pulse" />
-                  <span>{statusMessage}</span>
-                </div>
-              )}
-            </div>
-            <div className="flex items-center">
-              <Clock size={10} className="mr-1.5" />
-              <span>TIMESTAMP: {format(currentTime, 'yyyy-MM-dd HH:mm:ss')} UTC</span>
-            </div>
+        <main className="flex-1 overflow-y-auto pt-12 animate-fade-in relative">
+          <div className="relative z-10">
+            <div className="absolute top-0 left-0 right-0 h-96 bg-[url('/lovable-uploads/0e8f12c1-a3f8-44f9-ae7a-48c73d7f257c.png')] bg-cover bg-center opacity-10 pointer-events-none"></div>
           </div>
           
-          <Outlet />
+          <div className="relative z-20 p-6">
+            <div className="flex justify-between items-center mb-4 text-xs text-muted-foreground">
+              <div className="flex items-center">
+                {systemStatus === 'normal' && (
+                  <div className="flex items-center text-secure-green">
+                    <Radio size={10} className="mr-1 animate-pulse" />
+                    <span>{statusMessage}</span>
+                  </div>
+                )}
+                {systemStatus === 'warning' && (
+                  <div className="flex items-center text-secure-yellow">
+                    <ServerCrash size={10} className="mr-1 animate-pulse" />
+                    <span>{statusMessage}</span>
+                  </div>
+                )}
+                {systemStatus === 'alert' && (
+                  <div className="flex items-center text-secure-red">
+                    <AlertTriangle size={10} className="mr-1 animate-pulse" />
+                    <span>{statusMessage}</span>
+                  </div>
+                )}
+              </div>
+              <div className="flex items-center">
+                <Clock size={10} className="mr-1.5" />
+                <span>TIMESTAMP: {format(currentTime, 'yyyy-MM-dd HH:mm:ss')} UTC</span>
+              </div>
+            </div>
+            
+            <Outlet />
+          </div>
           
           <div className="fixed bottom-3 right-3 flex items-center text-xs text-muted-foreground">
             <div className="animate-pulse h-2 w-2 rounded-full bg-secure-green mr-2"></div>
@@ -155,14 +161,14 @@ const Layout: React.FC = () => {
       </div>
       
       {/* Bottom status bar */}
-      <div className="fixed bottom-0 left-0 right-0 bg-black/40 backdrop-blur-md py-1 px-6 z-10 border-t border-primary/30 flex justify-between items-center text-xs">
+      <div className="fixed bottom-0 left-0 right-0 bg-[#061623]/80 backdrop-blur-md py-1 px-6 z-10 border-t border-primary/30 flex justify-between items-center text-xs">
         <div className="flex items-center space-x-3">
           <div className="flex items-center">
             <div className="h-1.5 w-1.5 bg-secure-green rounded-full animate-pulse mr-1"></div>
             <span>SECURE CONNECTION</span>
           </div>
           <div>
-            USER: {user?.email?.split('@')[0]?.toUpperCase() || 'AGENT'}
+            USER: {user?.username?.toUpperCase() || 'AGENT'}
           </div>
         </div>
         <div className="flex items-center space-x-4">
@@ -184,4 +190,3 @@ const Layout: React.FC = () => {
 };
 
 export default Layout;
-

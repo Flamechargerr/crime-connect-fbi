@@ -1,21 +1,171 @@
+
 #root {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 2rem;
   text-align: center;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
+/* Holographic glow effects */
+.holo-glow {
+  box-shadow: 0 0 15px rgba(0, 156, 255, 0.4);
+  transition: all 0.3s ease;
 }
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
+
+.holo-glow:hover {
+  box-shadow: 0 0 25px rgba(0, 156, 255, 0.6);
 }
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+
+/* FBI-style scanline effect */
+.fbi-scanline {
+  position: relative;
+  overflow: hidden;
+}
+
+.fbi-scanline::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: rgba(0, 156, 255, 0.4);
+  box-shadow: 0 0 10px rgba(0, 156, 255, 0.6);
+  animation: scanner-line 3s ease-in-out infinite;
+}
+
+/* Data visualization elements */
+.data-flow-line {
+  position: relative;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(0, 156, 255, 0.5), transparent);
+  overflow: hidden;
+}
+
+.data-flow-line::before {
+  content: '';
+  position: absolute;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(to right, transparent, rgba(0, 156, 255, 0.8), transparent);
+  animation: data-flow-pulse 2s linear infinite;
+}
+
+/* Confidential document styling */
+.confidential-document {
+  position: relative;
+  border: 1px solid rgba(196, 18, 48, 0.3);
+  border-radius: 4px;
+  padding: 2rem;
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.confidential-document::before {
+  content: 'CONFIDENTIAL';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-30deg);
+  font-size: 4rem;
+  color: rgba(196, 18, 48, 0.15);
+  font-weight: bold;
+  letter-spacing: 0.5rem;
+  pointer-events: none;
+}
+
+/* FBI Badge styling */
+.fbi-badge {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle, #0c1824, #0a1117);
+  border-radius: 50%;
+  padding: 1rem;
+  box-shadow: 0 0 20px rgba(0, 156, 255, 0.3);
+}
+
+.fbi-badge::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  padding: 2px;
+  background: linear-gradient(45deg, rgba(0, 156, 255, 0.6), transparent 40%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+/* Security level indicator */
+.security-level {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05rem;
+}
+
+.security-level-1 {
+  background-color: rgba(0, 200, 81, 0.15);
+  color: #00C851;
+  border: 1px solid rgba(0, 200, 81, 0.3);
+}
+
+.security-level-2 {
+  background-color: rgba(0, 204, 255, 0.15);
+  color: #00ccff;
+  border: 1px solid rgba(0, 204, 255, 0.3);
+}
+
+.security-level-3 {
+  background-color: rgba(255, 187, 51, 0.15);
+  color: #FFBB33;
+  border: 1px solid rgba(255, 187, 51, 0.3);
+}
+
+.security-level-4 {
+  background-color: rgba(255, 68, 68, 0.15);
+  color: #ff4444;
+  border: 1px solid rgba(255, 68, 68, 0.3);
+}
+
+/* Global map styling */
+.global-map {
+  position: relative;
+  background-image: url('/lovable-uploads/0e8f12c1-a3f8-44f9-ae7a-48c73d7f257c.png');
+  background-size: cover;
+  background-position: center;
+  border-radius: 8px;
+  overflow: hidden;
+  aspect-ratio: 16/9;
+}
+
+.global-map::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(12, 24, 36, 0.6), rgba(12, 24, 36, 0.9));
+  backdrop-filter: blur(1px) brightness(1.2) contrast(1.2);
+}
+
+.global-map::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23009cff' fill-opacity='0.05' fill-rule='evenodd'%3E%3Ccircle cx='3' cy='3' r='1'/%3E%3Ccircle cx='13' cy='13' r='1'/%3E%3C/g%3E%3C/svg%3E");
+  opacity: 0.5;
+}
+
+@keyframes scanner-line {
+  0%, 100% { top: 0%; }
+  50% { top: 100%; }
+}
+
+@keyframes data-flow-pulse {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(300%); }
 }
 
 @keyframes logo-spin {

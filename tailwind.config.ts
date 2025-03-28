@@ -65,18 +65,18 @@ export default {
 				},
 				// FBI theme specific colors
 				fbi: {
-					navy: '#1A1F2C',
-					blue: '#0057B8',
+					navy: '#0c1824',
+					blue: '#009cff',
 					red: '#C41230',
 					gold: '#FFD700',
-					darkgray: '#333333',
+					darkgray: '#102033',
 					gray: '#8E9196'
 				},
 				secure: {
 					green: '#00C851',
 					red: '#ff4444',
 					yellow: '#FFBB33',
-					blue: '#0099CC'
+					blue: '#00ccff'
 				}
 			},
 			borderRadius: {
@@ -135,8 +135,23 @@ export default {
 					'100%': { backgroundPosition: '0% 50%' }
 				},
 				'pulse-glow': {
-					'0%, 100%': { boxShadow: '0 0 5px rgba(0, 87, 184, 0.5)' },
-					'50%': { boxShadow: '0 0 20px rgba(0, 87, 184, 0.8)' }
+					'0%, 100%': { boxShadow: '0 0 5px rgba(0, 156, 255, 0.5)' },
+					'50%': { boxShadow: '0 0 20px rgba(0, 156, 255, 0.8)' }
+				},
+				'rotate-slow': {
+					'0%': { transform: 'rotate(0deg)' },
+					'100%': { transform: 'rotate(360deg)' }
+				},
+				'float': {
+					'0%, 100%': { transform: 'translateY(0)' },
+					'50%': { transform: 'translateY(-10px)' }
+				},
+				'ping-slow': {
+					'75%, 100%': { transform: 'scale(2)', opacity: '0' }
+				},
+				'data-grid-scan': {
+					'0%': { transform: 'translateY(-100%)' },
+					'100%': { transform: 'translateY(100%)' }
 				}
 			},
 			animation: {
@@ -152,22 +167,28 @@ export default {
 				'scanner-line': 'scanner-line 3s ease-in-out infinite',
 				'type-blink': 'type-blink 1s step-end infinite',
 				'data-flow': 'data-flow 10s linear infinite',
-				'pulse-glow': 'pulse-glow 2s infinite'
+				'pulse-glow': 'pulse-glow 2s infinite',
+				'rotate-slow': 'rotate-slow 8s linear infinite',
+				'float': 'float 4s ease-in-out infinite',
+				'ping-slow': 'ping-slow 2s cubic-bezier(0, 0, 0.2, 1) infinite',
+				'data-grid-scan': 'data-grid-scan 3s linear infinite'
 			},
 			backdropFilter: {
 				'none': 'none',
 				'blur': 'blur(20px)'
 			},
 			boxShadow: {
-				'glass': '0 4px 30px rgba(0, 0, 0, 0.1)',
-				'glass-hover': '0 8px 40px rgba(0, 0, 0, 0.12)',
+				'glass': '0 4px 30px rgba(0, 0, 0, 0.2), 0 0 10px rgba(0, 156, 255, 0.1)',
+				'glass-hover': '0 8px 40px rgba(0, 0, 0, 0.3), 0 0 15px rgba(0, 156, 255, 0.15)',
 				'glass-active': '0 2px 20px rgba(0, 0, 0, 0.08)',
-				'fbi': '0 4px 15px rgba(0, 0, 0, 0.25)',
-				'terminal': '0 0 10px rgba(0, 200, 81, 0.6)'
+				'fbi': '0 4px 15px rgba(0, 0, 0, 0.25), 0 0 10px rgba(0, 156, 255, 0.1)',
+				'terminal': '0 0 10px rgba(0, 200, 81, 0.3)',
+				'hologram': '0 0 20px rgba(0, 156, 255, 0.4)'
 			},
 			backgroundImage: {
-				'digital-circuit': "url(\"data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h20v20H0V0zm10 17a7 7 0 1 0 0-14 7 7 0 0 0 0 14zm20 0a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM10 37a7 7 0 1 0 0-14 7 7 0 0 0 0 14zm10-17h20v20H20V20zm10 17a7 7 0 1 0 0-14 7 7 0 0 0 0 14z' fill='%23000000' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E\")",
-				'grid-pattern': "url(\"data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23000000' fill-opacity='0.03' fill-rule='evenodd'%3E%3Ccircle cx='3' cy='3' r='1'/%3E%3Ccircle cx='13' cy='13' r='1'/%3E%3C/g%3E%3C/svg%3E\")"
+				'digital-circuit': "url(\"data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h20v20H0V0zm10 17a7 7 0 1 0 0-14 7 7 0 0 0 0 14zm20 0a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM10 37a7 7 0 1 0 0-14 7 7 0 0 0 0 14zm10-17h20v20H20V20zm10 17a7 7 0 1 0 0-14 7 7 0 0 0 0 14z' fill='%23102a43' fill-opacity='0.07' fill-rule='evenodd'/%3E%3C/svg%3E\")",
+				'grid-pattern': "url(\"data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23102a43' fill-opacity='0.05' fill-rule='evenodd'%3E%3Ccircle cx='3' cy='3' r='1'/%3E%3Ccircle cx='13' cy='13' r='1'/%3E%3C/g%3E%3C/svg%3E\")",
+				'globe-pattern': "url('/lovable-uploads/0e8f12c1-a3f8-44f9-ae7a-48c73d7f257c.png')"
 			}
 		}
 	},
