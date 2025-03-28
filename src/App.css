@@ -258,6 +258,59 @@
   animation: data-flow-pulse 2s ease-in-out infinite alternate;
 }
 
+/* Corkboard specific styles */
+.corkboard-item {
+  transform-origin: center top;
+}
+
+.corkboard-pin {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #cc0000;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  position: absolute;
+  top: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+}
+
+.corkboard-thread {
+  position: absolute;
+  height: 2px;
+  background-color: rgba(255, 0, 0, 0.6);
+  transform-origin: 0% 0%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.font-handwriting {
+  font-family: 'Segoe Print', 'Bradley Hand', cursive;
+}
+
+/* Most wanted styling */
+.wanted-poster {
+  position: relative;
+  background-color: #f5f5dc;
+  border: 8px solid #8b4513;
+  padding: 20px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+}
+
+.wanted-poster::before {
+  content: 'WANTED';
+  position: absolute;
+  top: 20px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 3rem;
+  font-weight: bold;
+  color: #8b0000;
+  letter-spacing: 0.5rem;
+}
+
 @keyframes scanner-line {
   0%, 100% { top: 0%; }
   50% { top: 100%; }

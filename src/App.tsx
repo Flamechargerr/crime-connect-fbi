@@ -5,6 +5,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
 
 import Layout from "./components/layout/Layout";
 import Login from "./pages/Login";
@@ -20,6 +22,8 @@ import Courts from "./pages/Courts";
 import Reports from "./pages/Reports";
 import NotFound from "./pages/NotFound";
 import Index from "./pages/Index";
+import Corkboard from "./pages/Corkboard";
+import MostWanted from "./pages/MostWanted";
 
 // Create a new QueryClient instance
 const queryClient = new QueryClient({
@@ -38,31 +42,35 @@ document.title = "FBI CrimeConnect - Classified System";
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
-      <BrowserRouter>
-        <TooltipProvider>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/login" element={<Login />} />
-            
-            <Route element={<Layout />}>
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/cases" element={<Cases />} />
-              <Route path="/cases/add" element={<AddCase />} />
-              <Route path="/criminals" element={<Criminals />} />
-              <Route path="/criminals/add" element={<AddCriminal />} />
-              <Route path="/officers" element={<Officers />} />
-              <Route path="/evidence" element={<Evidence />} />
-              <Route path="/witnesses" element={<Witnesses />} />
-              <Route path="/courts" element={<Courts />} />
-              <Route path="/reports" element={<Reports />} />
-            </Route>
-            
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-          <Toaster />
-          <Sonner />
-        </TooltipProvider>
-      </BrowserRouter>
+      <DndProvider backend={HTML5Backend}>
+        <BrowserRouter>
+          <TooltipProvider>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/login" element={<Login />} />
+              
+              <Route element={<Layout />}>
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/cases" element={<Cases />} />
+                <Route path="/cases/add" element={<AddCase />} />
+                <Route path="/criminals" element={<Criminals />} />
+                <Route path="/criminals/add" element={<AddCriminal />} />
+                <Route path="/officers" element={<Officers />} />
+                <Route path="/evidence" element={<Evidence />} />
+                <Route path="/witnesses" element={<Witnesses />} />
+                <Route path="/courts" element={<Courts />} />
+                <Route path="/reports" element={<Reports />} />
+                <Route path="/corkboard" element={<Corkboard />} />
+                <Route path="/most-wanted" element={<MostWanted />} />
+              </Route>
+              
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+            <Toaster />
+            <Sonner />
+          </TooltipProvider>
+        </BrowserRouter>
+      </DndProvider>
     </AuthProvider>
   </QueryClientProvider>
 );

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { 
@@ -66,7 +65,6 @@ const Sidebar: React.FC = () => {
     }
   };
 
-  // Mobile menu trigger button that appears in the TopBar
   const MobileTrigger = () => (
     <button 
       className="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-md bg-background/80 backdrop-blur-sm border border-border"
@@ -195,7 +193,7 @@ const Sidebar: React.FC = () => {
             className="absolute inset-0 bg-black/80 backdrop-blur-sm" 
             onClick={toggleMobileSidebar}
           />
-          <div className="relative w-64 h-full bg-background border-r border-border flex flex-col">
+          <div className="relative w-64 h-full bg-background border-r border-sidebar-border flex flex-col">
             {sidebarContent}
           </div>
         </div>
