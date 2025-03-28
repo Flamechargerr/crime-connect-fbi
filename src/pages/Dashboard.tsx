@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
@@ -17,12 +16,15 @@ import {
   MapPin,
   Radio,
   Eye,
-  Lock
+  Lock,
+  PinIcon,
+  Lightbulb
 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { DashboardStats, Case } from '../types';
+import { Button } from '@/components/ui/button';
+import { ConnectionLine } from '@/components/corkboard/ConnectionLine';
 
-// Mock data for initial render
 const mockDashboardData: DashboardStats = {
   totalCases: 256,
   openCases: 87,
@@ -70,7 +72,17 @@ const mockDashboardData: DashboardStats = {
   ]
 };
 
-// Geographic points for map visualization
+const sampleCorkboardItems = [
+  { id: '1', position: { x: 20, y: 30 }, type: 'wanted' },
+  { id: '2', position: { x: 60, y: 40 }, type: 'photo' },
+  { id: '3', position: { x: 40, y: 70 }, type: 'note' },
+];
+
+const sampleConnections = [
+  { start: { x: 35, y: 40 }, end: { x: 75, y: 50 }, color: 'rgba(255, 0, 0, 0.8)', style: 'dashed' },
+  { start: { x: 75, y: 50 }, end: { x: 55, y: 80 }, color: 'rgba(0, 100, 255, 0.8)', style: 'solid' },
+];
+
 const geoPoints = [
   { id: 1, x: 20, y: 30, size: 6, pulse: true },
   { id: 2, x: 35, y: 40, size: 4, pulse: false },
@@ -80,7 +92,6 @@ const geoPoints = [
   { id: 6, x: 84, y: 65, size: 3, pulse: false },
 ];
 
-// Security alerts for the dashboard
 const securityAlerts = [
   { id: 1, level: 'warning', message: 'Unauthorized access attempt detected in Sector 7', time: '14:22:41' },
   { id: 2, level: 'info', message: 'System security scan completed', time: '13:05:12' },
@@ -94,7 +105,6 @@ const Dashboard: React.FC = () => {
   const [securityStatus, setSecurityStatus] = useState('NORMAL');
 
   useEffect(() => {
-    // Update time every second
     const timeInterval = setInterval(() => {
       setCurrentTime(new Date());
     }, 1000);
@@ -103,11 +113,9 @@ const Dashboard: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    // Simulate API call to fetch dashboard data
     const fetchDashboardData = async () => {
       setLoading(true);
       try {
-        // In a real app, this would be an API call
         await new Promise(resolve => setTimeout(resolve, 1000));
         setStats(mockDashboardData);
       } catch (error) {
@@ -119,7 +127,6 @@ const Dashboard: React.FC = () => {
 
     fetchDashboardData();
     
-    // Random security status changes
     const securityInterval = setInterval(() => {
       const statuses = ['NORMAL', 'NORMAL', 'NORMAL', 'HEIGHTENED', 'NORMAL', 'CAUTION'];
       setSecurityStatus(statuses[Math.floor(Math.random() * statuses.length)]);
@@ -163,6 +170,49 @@ const Dashboard: React.FC = () => {
     return <div>Error loading dashboard data</div>;
   }
 
+  const CorkboardPreview = () => {
+    return (
+      <div className="relative w-full h-40 bg-amber-800/90 rounded-lg overflow-hidden border border-primary/30">
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\\'150\\' height=\\'150\\' viewBox=\\'0 0 150 150\\' xmlns=\\'http://www.w3.org/2000/svg\\'%3E%3Cfilter id=\\'noise\\'%3E%3CfeTurbulence type=\\'fractalNoise\\' baseFrequency=\\'0.7\\' numOctaves=\\'2\\' stitchTiles=\\'stitch\\'/%3E%3C/filter%3E%3Crect width=\\'100%\\' height=\\'100%\\' filter=\\'url(%23noise)\\' opacity=\\'0.1\\'/%3E%3C/svg%3E')]">
+          {sampleConnections.map((conn, idx) => (
+            <ConnectionLine
+              key={`conn-${idx}`}
+              startPos={conn.start}
+              endPos={conn.end}
+              color={conn.color}
+              style={conn.style as 'solid' | 'dashed' | 'dotted' | 'zigzag'}
+            />
+          ))}
+          {sampleCorkboardItems.map((item) => (
+            <div
+              key={item.id}
+              className={`absolute shadow-md ${
+                item.type === 'wanted' 
+                  ? 'bg-red-100 border-red-300' 
+                  : item.type === 'photo' 
+                    ? 'bg-blue-100 border-blue-300' 
+                    : 'bg-yellow-100 border-yellow-300'
+              } border p-1 w-12 h-12 flex items-center justify-center rounded-sm transform rotate-1`}
+              style={{
+                left: `${item.position.x}%`,
+                top: `${item.position.y}%`,
+                transformOrigin: 'center',
+              }}
+            >
+              {item.type === 'wanted' && <Search className="h-6 w-6 text-red-600" />}
+              {item.type === 'photo' && <FileText className="h-6 w-6 text-blue-600" />}
+              {item.type === 'note' && <Lightbulb className="h-6 w-6 text-yellow-600" />}
+            </div>
+          ))}
+        </div>
+        
+        <div className="absolute bottom-0 left-0 right-0 bg-black/60 p-2 text-xs text-white">
+          Investigation Board - Active Case #45B28
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="space-y-8 animate-fade-in">
       <div className="flex justify-between items-start">
@@ -189,7 +239,6 @@ const Dashboard: React.FC = () => {
         </div>
       </div>
       
-      {/* Global map section */}
       <div className="relative h-[300px] rounded-lg overflow-hidden border border-primary/20 bg-[#061623]">
         <div className="absolute inset-0 opacity-40">
           <img 
@@ -200,7 +249,6 @@ const Dashboard: React.FC = () => {
         </div>
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
         
-        {/* Geographic points */}
         {geoPoints.map(point => (
           <React.Fragment key={point.id}>
             <div 
@@ -222,7 +270,6 @@ const Dashboard: React.FC = () => {
           </React.Fragment>
         ))}
         
-        {/* Map connection lines */}
         <svg className="absolute inset-0 z-20" width="100%" height="100%">
           <line x1="20%" y1="30%" x2="35%" y2="40%" stroke="rgba(0, 156, 255, 0.4)" strokeWidth="1" />
           <line x1="35%" y1="40%" x2="65%" y2="25%" stroke="rgba(0, 156, 255, 0.4)" strokeWidth="1" />
@@ -231,7 +278,6 @@ const Dashboard: React.FC = () => {
           <line x1="48%" y1="55%" x2="84%" y2="65%" stroke="rgba(0, 156, 255, 0.4)" strokeWidth="1" />
         </svg>
         
-        {/* Global activity overlay */}
         <div className="absolute bottom-0 left-0 right-0 p-4 bg-black/60 backdrop-blur-sm border-t border-primary/30">
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-1">
@@ -373,8 +419,8 @@ const Dashboard: React.FC = () => {
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="glass-card">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <Card className="glass-card col-span-1">
           <CardHeader className="border-b border-border/40 pb-3">
             <div className="flex justify-between items-center">
               <CardTitle className="flex items-center">
@@ -393,7 +439,7 @@ const Dashboard: React.FC = () => {
           </CardHeader>
           <CardContent className="p-0">
             <div className="divide-y divide-border/30">
-              {stats.recentCases.map((caseItem) => (
+              {stats.recentCases.slice(0, 3).map((caseItem) => (
                 <div key={caseItem.id} className="p-4 hover:bg-primary/5 transition-colors">
                   <div className="flex items-start">
                     <div className="h-10 w-10 flex-shrink-0 rounded holographic-element flex items-center justify-center mr-4">
@@ -409,8 +455,6 @@ const Dashboard: React.FC = () => {
                         <div className="flex items-center text-xs text-muted-foreground">
                           <MapPin size={10} className="mr-1" />
                           <span>Station {caseItem.policeStationId}</span>
-                          <span className="mx-2">•</span>
-                          <span>{new Date(caseItem.createdAt).toLocaleDateString()}</span>
                         </div>
                       </div>
                     </div>
@@ -421,101 +465,126 @@ const Dashboard: React.FC = () => {
           </CardContent>
         </Card>
 
-        <div className="space-y-6">
-          <Card className="glass-card">
-            <CardHeader className="border-b border-border/40 pb-3">
-              <CardTitle className="flex items-center">
-                <Shield size={16} className="mr-2 text-primary" />
-                Security Alerts
-              </CardTitle>
-              <CardDescription>Real-time security monitoring and alerts.</CardDescription>
-            </CardHeader>
-            <CardContent className="p-4">
-              <div className="space-y-3">
-                {securityAlerts.map((alert) => (
-                  <div key={alert.id} className="flex items-start p-3 border border-primary/10 rounded-md bg-primary/5">
-                    <div className="mr-3 mt-0.5">
-                      {alert.level === 'alert' && <AlertTriangle size={16} className="text-secure-red" />}
-                      {alert.level === 'warning' && <AlertTriangle size={16} className="text-secure-yellow" />}
-                      {alert.level === 'info' && <Shield size={16} className="text-secure-blue" />}
-                    </div>
-                    <div>
-                      <div className="flex items-center">
-                        <span className="text-sm font-medium">{alert.message}</span>
-                        <span className="ml-auto text-xs text-muted-foreground font-mono">{alert.time}</span>
-                      </div>
-                      <div className="h-1 w-full mt-2 bg-black/20 rounded-full overflow-hidden">
-                        <div className={`h-full rounded-full relative ${
-                          alert.level === 'alert' ? 'bg-secure-red/30' :
-                          alert.level === 'warning' ? 'bg-secure-yellow/30' : 'bg-secure-blue/30'
-                        }`} style={{ width: '70%' }}>
-                          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-data-flow"></div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="glass-card">
-            <CardHeader className="border-b border-border/40 pb-3">
-              <CardTitle className="flex items-center">
-                <Activity size={16} className="mr-2 text-primary" />
-                Case Distribution
-              </CardTitle>
-              <CardDescription>Current status of all registered cases.</CardDescription>
-            </CardHeader>
-            <CardContent className="p-4">
-              <div className="flex items-center justify-center">
-                <div className="relative w-40 h-40">
-                  {/* Circular progress for open cases */}
-                  <div className="absolute inset-0 rounded-full" style={{
-                    background: `conic-gradient(rgba(0, 204, 255, 0.8) 0%, 
-                                               rgba(0, 204, 255, 0.8) ${(stats.openCases / stats.totalCases) * 100}%, 
-                                               rgba(0, 204, 255, 0.1) ${(stats.openCases / stats.totalCases) * 100}%)`
-                  }}></div>
-                  
-                  {/* Inner circle for data */}
-                  <div className="absolute inset-[15%] rounded-full bg-black/60 backdrop-blur-md border border-primary/20 flex flex-col items-center justify-center">
-                    <div className="text-2xl font-bold text-secure-blue">{stats.openCases}</div>
-                    <div className="text-xs text-muted-foreground">Open Cases</div>
-                  </div>
-                  
-                  {/* Percentage indicator */}
-                  <div className="absolute -top-4 -right-4 h-8 w-8 rounded-full bg-black/80 border border-secure-blue flex items-center justify-center text-xs font-bold text-secure-blue">
-                    {Math.round((stats.openCases / stats.totalCases) * 100)}%
-                  </div>
+        <Card className="glass-card col-span-1">
+          <CardHeader className="border-b border-border/40 pb-3">
+            <CardTitle className="flex items-center">
+              <Activity size={16} className="mr-2 text-primary" />
+              Case Distribution
+            </CardTitle>
+            <CardDescription>Current status of all registered cases.</CardDescription>
+          </CardHeader>
+          <CardContent className="p-4">
+            <div className="flex items-center justify-center">
+              <div className="relative w-40 h-40">
+                <div className="absolute inset-0 rounded-full" style={{
+                  background: `conic-gradient(rgba(0, 204, 255, 0.8) 0%, 
+                                             rgba(0, 204, 255, 0.8) ${(stats.openCases / stats.totalCases) * 100}%, 
+                                             rgba(0, 204, 255, 0.1) ${(stats.openCases / stats.totalCases) * 100}%)`
+                }}></div>
+                
+                <div className="absolute inset-[15%] rounded-full bg-black/60 backdrop-blur-md border border-primary/20 flex flex-col items-center justify-center">
+                  <div className="text-2xl font-bold text-secure-blue">{stats.openCases}</div>
+                  <div className="text-xs text-muted-foreground">Open Cases</div>
                 </div>
                 
-                {/* Stats boxes */}
-                <div className="flex flex-col ml-6 space-y-3 flex-1">
-                  <div className="bg-black/40 backdrop-blur-md border border-secure-green/20 rounded-md p-3 flex items-center justify-between">
-                    <div className="flex items-center">
-                      <div className="h-2 w-2 bg-secure-green rounded-full mr-2"></div>
-                      <span className="text-sm">Closed</span>
-                    </div>
-                    <div className="text-xl font-bold text-secure-green">{stats.closedCases}</div>
+                <div className="absolute -top-4 -right-4 h-8 w-8 rounded-full bg-black/80 border border-secure-blue flex items-center justify-center text-xs font-bold text-secure-blue">
+                  {Math.round((stats.openCases / stats.totalCases) * 100)}%
+                </div>
+              </div>
+              
+              <div className="flex flex-col ml-6 space-y-3 flex-1">
+                <div className="bg-black/40 backdrop-blur-md border border-secure-green/20 rounded-md p-3 flex items-center justify-between">
+                  <div className="flex items-center">
+                    <div className="h-2 w-2 bg-secure-green rounded-full mr-2"></div>
+                    <span className="text-sm">Closed</span>
                   </div>
-                  
-                  <div className="bg-black/40 backdrop-blur-md border border-secure-yellow/20 rounded-md p-3 flex items-center justify-between">
-                    <div className="flex items-center">
-                      <div className="h-2 w-2 bg-secure-yellow rounded-full mr-2"></div>
-                      <span className="text-sm">Pending</span>
-                    </div>
-                    <div className="text-xl font-bold text-secure-yellow">
-                      {stats.totalCases - stats.openCases - stats.closedCases}
+                  <div className="text-xl font-bold text-secure-green">{stats.closedCases}</div>
+                </div>
+                
+                <div className="bg-black/40 backdrop-blur-md border border-secure-yellow/20 rounded-md p-3 flex items-center justify-between">
+                  <div className="flex items-center">
+                    <div className="h-2 w-2 bg-secure-yellow rounded-full mr-2"></div>
+                    <span className="text-sm">Pending</span>
+                  </div>
+                  <div className="text-xl font-bold text-secure-yellow">
+                    {stats.totalCases - stats.openCases - stats.closedCases}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="glass-card col-span-1">
+          <CardHeader className="border-b border-border/40 pb-3">
+            <div className="flex justify-between items-center">
+              <CardTitle className="flex items-center">
+                <MapPin size={16} className="mr-2 text-primary" />
+                Investigation Board
+              </CardTitle>
+              <Link 
+                to="/corkboard"
+                className="text-sm font-medium text-primary flex items-center hover:underline"
+              >
+                Open board
+                <ArrowRight className="ml-1 h-4 w-4" />
+              </Link>
+            </div>
+            <CardDescription>Case evidence and intelligence mapping.</CardDescription>
+          </CardHeader>
+          <CardContent className="p-4">
+            <CorkboardPreview />
+            <div className="mt-4 flex justify-between items-center">
+              <div className="text-xs text-muted-foreground">
+                <span className="text-secure-red font-medium">12 evidence items</span> connected with <span className="text-secure-blue font-medium">8 relationships</span>
+              </div>
+              <Button variant="outline" size="sm" asChild>
+                <Link to="/corkboard">
+                  View full board
+                </Link>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card className="glass-card">
+        <CardHeader className="border-b border-border/40 pb-3">
+          <CardTitle className="flex items-center">
+            <Shield size={16} className="mr-2 text-primary" />
+            Security Alerts
+          </CardTitle>
+          <CardDescription>Real-time security monitoring and alerts.</CardDescription>
+        </CardHeader>
+        <CardContent className="p-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            {securityAlerts.map((alert) => (
+              <div key={alert.id} className="flex items-start p-3 border border-primary/10 rounded-md bg-primary/5">
+                <div className="mr-3 mt-0.5">
+                  {alert.level === 'alert' && <AlertTriangle size={16} className="text-secure-red" />}
+                  {alert.level === 'warning' && <AlertTriangle size={16} className="text-secure-yellow" />}
+                  {alert.level === 'info' && <Shield size={16} className="text-secure-blue" />}
+                </div>
+                <div>
+                  <div className="flex items-center">
+                    <span className="text-sm font-medium">{alert.message}</span>
+                    <span className="ml-auto text-xs text-muted-foreground font-mono">{alert.time}</span>
+                  </div>
+                  <div className="h-1 w-full mt-2 bg-black/20 rounded-full overflow-hidden">
+                    <div className={`h-full rounded-full relative ${
+                      alert.level === 'alert' ? 'bg-secure-red/30' :
+                      alert.level === 'warning' ? 'bg-secure-yellow/30' : 'bg-secure-blue/30'
+                    }`} style={{ width: '70%' }}>
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-data-flow"></div>
                     </div>
                   </div>
                 </div>
               </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
       
-      {/* Data Grid Section */}
       <div className="relative p-4 border border-primary/20 rounded-lg bg-black/40 backdrop-blur-md overflow-hidden">
         <div className="absolute inset-0 bg-grid-pattern opacity-50"></div>
         <div className="absolute inset-0 overflow-hidden">
