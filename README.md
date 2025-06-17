@@ -1,69 +1,112 @@
-# Welcome to your Lovable project
+<h1 align="center">🕵️‍♂️ CrimeConnect FBI</h1>
+<p align="center"><em>A digital corkboard for case visualization and criminal tracking — built using Supabase, React, and Lovable.io</em></p>
 
-## Project info
+<p align="center">
+  <img src="https://img.shields.io/github/languages/top/Flamechargerr/crime-connect-fbi?style=flat-square" alt="Top Language">
+  <img src="https://img.shields.io/github/last-commit/Flamechargerr/crime-connect-fbi?style=flat-square" alt="Last Commit">
+  <img src="https://img.shields.io/badge/Backend-Supabase-3fca8b?style=flat-square">
+  <img src="https://img.shields.io/badge/Frontend-React-blue?style=flat-square">
+  <img src="https://img.shields.io/badge/UI-shadcn--ui-yellow?style=flat-square">
+</p>
 
-**URL**: https://lovable.dev/projects/3ef38d20-f4d3-45ad-9408-ca67ba2560af
+---
 
-## How can I edit this code?
+## 🔗 Live Demo
 
-There are several ways of editing your application.
+👉 [Access the app](https://crime-connect-fbi.lovable.app/login)
 
-**Use Lovable**
+---
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/3ef38d20-f4d3-45ad-9408-ca67ba2560af) and start prompting.
+## 🧠 Project Overview
 
-Changes made via Lovable will be committed automatically to this repo.
+**CrimeConnect FBI** is a visual investigation aid modeled after real-world FBI corkboards. This app allows users to:
 
-**Use your preferred IDE**
+- Add suspects, cases, and documents to a shared workspace
+- Visually connect clues, leads, and evidence
+- Mimic an investigation board experience digitally
+- Manage data securely using a Supabase backend
+- Enjoy a fast, reactive interface built with Vite, TailwindCSS, and Shadcn UI
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+This project is a creative experiment that blends crime investigation UX with modern web development — made entirely on **Lovable.io**.
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+---
 
-Follow these steps:
+## 🛠 Tech Stack
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+| Layer       | Technology                         |
+|-------------|-------------------------------------|
+| Frontend    | React + TypeScript + Vite           |
+| Styling     | Tailwind CSS + Shadcn UI            |
+| Backend     | Supabase (PostgreSQL + Auth)        |
+| Deployment  | Lovable.io                          |
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+---
 
-# Step 3: Install the necessary dependencies.
-npm i
+## ⚙️ Features
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+- 📌 Drag-and-drop visual corkboard
+- 🧩 Add suspects, notes, locations, and evidence
+- 🧠 Brainstorm leads and link them visually
+- 🗂️ Data stored via Supabase
+- 🎯 Responsive design with minimal UI
+- 🔐 Login system to access secured boards
+
+---
+
+## 🧪 Setup Guide
+
+To run the project locally:
+
+```bash
+# 1. Clone this repo
+git clone https://github.com/Flamechargerr/crime-connect-fbi.git
+cd crime-connect-fbi
+
+# 2. Install dependencies
+npm install
+
+# 3. Start development server
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+The app will be served at: `http://localhost:5173`
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+---
 
-**Use GitHub Codespaces**
+## 📁 Folder Structure
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+```
+crime-connect-fbi/
+├── public/              # Static assets
+├── src/                 # Frontend source code
+│   ├── components/      # React UI components
+│   └── pages/           # Application views
+├── supabase/            # Backend schema & config
+├── tailwind.config.ts   # Tailwind styling
+└── vite.config.ts       # Vite configuration
+```
 
-## What technologies are used for this project?
+---
 
-This project is built with .
+## 🛸 Future Ideas
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+- 🧾 Role-based access control
+- 🕵️‍♀️ Real-time collaboration for agents
+- 📸 Upload photos and match faces using ML
+- 📍 Map integration for suspect locations
 
-## How can I deploy this project?
+---
 
-Simply open [Lovable](https://lovable.dev/projects/3ef38d20-f4d3-45ad-9408-ca67ba2560af) and click on Share -> Publish.
+## 👨‍💻 Author
 
-## I want to use a custom domain - is that possible?
+- **Anamay Tripathy** – [@Flamechargerr](https://github.com/Flamechargerr)
 
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+---
+
+## 📃 License
+
+MIT License — Open for educational or experimental use.
+
+---
+
+> “Not just connecting clues — connecting dots with data.”
