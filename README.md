@@ -153,11 +153,3 @@ MIT License — free to use for educational, experimental, and creative projects
 
 ```
 
----
-
-✅ **Copy-paste ready**  
-✅ **Styled exactly like HackOps**  
-✅ **Modern, polished markdown with badges, emojis, and section separation**
-
-Let me know if you'd like this in `.md` file format or want a GitHub Pages–optimized version too!
-```
