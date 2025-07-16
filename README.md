@@ -1,5 +1,11 @@
-<h1 align="center">🕵️‍♂️ CrimeConnect FBI</h1>
-<p align="center"><em>A digital corkboard for case visualization and criminal tracking — built using Supabase, React, and Lovable.io</em></p>
+Here you go — the full **README.md** content, ready to copy and paste:
+
+---
+
+````markdown
+# 🕵️‍♂️ CrimeConnect FBI
+
+A digital corkboard for criminal case visualization and investigation — inspired by real-world detective boards and built using **React**, **TypeScript**, **Tailwind CSS**, and **Supabase**.
 
 <p align="center">
   <img src="https://img.shields.io/github/languages/top/Flamechargerr/crime-connect-fbi?style=flat-square" alt="Top Language">
@@ -13,21 +19,19 @@
 
 ## 🔗 Live Demo
 
-👉 [Access the app](https://crime-connect-fbi.lovable.app/login)
+👉 [Try the App](https://crime-connect-fbi.lovable.app/login)
 
 ---
 
-## 🧠 Project Overview
+## 🧠 Overview
 
-**CrimeConnect FBI** is a visual investigation aid modeled after real-world FBI corkboards. This app allows users to:
+**CrimeConnect FBI** is an intuitive, drag-and-drop investigation board that helps visualize cases by connecting:
+- Suspects 👤
+- Evidence 📄
+- Locations 📍
+- Leads 🔍
 
-- Add suspects, cases, and documents to a shared workspace
-- Visually connect clues, leads, and evidence
-- Mimic an investigation board experience digitally
-- Manage data securely using a Supabase backend
-- Enjoy a fast, reactive interface built with Vite, TailwindCSS, and Shadcn UI
-
-This project is a creative experiment that blends crime investigation UX with modern web development — made entirely on **Lovable.io**.
+Whether you're brainstorming a fictional mystery or organizing a real investigative workflow, CrimeConnect is a privacy-first, visually-rich environment to map your thoughts.
 
 ---
 
@@ -37,37 +41,47 @@ This project is a creative experiment that blends crime investigation UX with mo
 |-------------|-------------------------------------|
 | Frontend    | React + TypeScript + Vite           |
 | Styling     | Tailwind CSS + Shadcn UI            |
-| Backend     | Supabase (PostgreSQL + Auth)        |
+| Backend     | Supabase (PostgreSQL + Auth) / localStorage |
+| Drag & Drop | react-dnd                           |
 | Deployment  | Lovable.io                          |
+| Testing     | Jest + React Testing Library        |
 
 ---
 
 ## ⚙️ Features
 
-- 📌 Drag-and-drop visual corkboard
-- 🧩 Add suspects, notes, locations, and evidence
-- 🧠 Brainstorm leads and link them visually
-- 🗂️ Data stored via Supabase
-- 🎯 Responsive design with minimal UI
-- 🔐 Login system to access secured boards
+- 📌 **Corkboard UI** — drag, drop, and visually connect items  
+- 🧠 **Item Types** — suspects, notes, images, evidence, and locations  
+- 🎨 **Custom Styling** — labels, color-coded links, and metadata  
+- 🔐 **Login System** — Supabase-auth (for live demo)
+- 💾 **Offline Mode** — fallback to localStorage for privacy-first use
+- 🧪 **Tested** — unit & integration tests with graceful error boundaries
+- 📱 **Responsive** — works across screen sizes
+- 🧰 **Multiple Boards** — create, rename, and switch investigations
+- 🖼️ **Image Support** — upload your own or use Unsplash/randomuser.me
 
 ---
 
-## 🧪 Setup Guide
+## 🚀 Getting Started
 
-To run the project locally:
+### Prerequisites
+
+- Node.js (v18+)
+- npm or yarn
+
+### Local Setup
 
 ```bash
-# 1. Clone this repo
+# 1. Clone the repo
 git clone https://github.com/Flamechargerr/crime-connect-fbi.git
 cd crime-connect-fbi
 
 # 2. Install dependencies
 npm install
 
-# 3. Start development server
+# 3. Run the development server
 npm run dev
-```
+````
 
 The app will be served at: `http://localhost:5173`
 
@@ -78,35 +92,87 @@ The app will be served at: `http://localhost:5173`
 ```
 crime-connect-fbi/
 ├── public/              # Static assets
-├── src/                 # Frontend source code
-│   ├── components/      # React UI components
-│   └── pages/           # Application views
-├── supabase/            # Backend schema & config
-├── tailwind.config.ts   # Tailwind styling
-└── vite.config.ts       # Vite configuration
+├── src/                 # Source code
+│   ├── components/      # UI components
+│   ├── pages/           # Application pages
+│   ├── context/         # Global context & auth
+│   ├── hooks/           # Reusable logic
+│   ├── types/           # TypeScript definitions
+├── supabase/            # DB config & schema
+├── tailwind.config.ts   # Styling config
+└── vite.config.ts       # Build tool config
 ```
 
 ---
 
-## 🛸 Future Ideas
+## 🧪 Testing & Accessibility
 
-- 🧾 Role-based access control
-- 🕵️‍♀️ Real-time collaboration for agents
-- 📸 Upload photos and match faces using ML
-- 📍 Map integration for suspect locations
+* ✅ Semantic HTML and ARIA labels
+* ✅ Keyboard navigation & focus management
+* ✅ Error boundaries for crash handling
+* ✅ Unit & integration tests for reliability
+
+```bash
+npm run test
+```
+
+---
+
+## 🙋‍♂️ FAQ
+
+**Q: Is my data private?**
+
+> Yes. In local mode, data is stored only in your browser via `localStorage`. In demo mode, Supabase is used securely.
+
+**Q: Can I use this for real investigations?**
+
+> It’s meant for educational, personal, or fictional use only.
+
+**Q: Can I add my own photos?**
+
+> Absolutely — drag/upload images or use external links.
+
+**Q: Does it work offline?**
+
+> Yes! The local version is completely offline-first and functional without internet.
+
+---
+
+## 🧭 Roadmap
+
+* 🧾 Role-based permissions
+* 🌍 Map integration for geolocated leads
+* 📸 Facial recognition (ML-assisted)
+* 🤝 Real-time collaboration on shared boards
+* 🔐 End-to-end encryption
+
+---
+
+## 🤝 Contributing
+
+1. Fork the repo
+2. Create your feature branch: `git checkout -b feature-name`
+3. Commit your changes: `git commit -am 'Add feature'`
+4. Push to the branch: `git push origin feature-name`
+5. Submit a pull request 🚀
 
 ---
 
 ## 👨‍💻 Author
 
-- **Anamay Tripathy** – [@Flamechargerr](https://github.com/Flamechargerr)
+* **Anamay Tripathy** – [@Flamechargerr](https://github.com/Flamechargerr)
 
 ---
 
 ## 📃 License
 
-MIT License — Open for educational or experimental use.
+MIT License — open for educational or experimental use.
+
+> “Not just connecting clues — connecting dots with data.”
+
+```
 
 ---
 
-> “Not just connecting clues — connecting dots with data.”
+Let me know if you want this saved as a `.md` file or auto-linked to your GitHub repo.
+```
