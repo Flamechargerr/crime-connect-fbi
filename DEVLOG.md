@@ -7,3 +7,4 @@
 - [2025-09-03 21:33] feat(search): fuzzy search across entities
 - [2025-09-03 21:05] feat(timeline): add temporal crime viewer
 - [2025-09-05 02:16] fix(graph): prevent node collision overlap
+- [2025-09-05 01:51] feat(import): CSV data ingestion pipeline
