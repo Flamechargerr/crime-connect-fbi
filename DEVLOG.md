@@ -61,3 +61,4 @@
 - [2025-09-19 20:01] docs(schema): document data model ERD
 - [2025-09-20 03:14] feat(alert): anomaly detection in patterns
 - [2025-09-20 00:34] style(ui): glassmorphic investigation panel
+- [2025-09-19 21:06] feat(graph): add force-directed node layout
