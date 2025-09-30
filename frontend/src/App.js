@@ -44,7 +44,7 @@ import {
   Send,
 } from "lucide-react";
 
-import { opsMetrics, intelFeed, caseFiles, timeline, agents } from "./mock";
+import { api } from "./lib/api";
 
 const Accent = ({ children }) => (
   <span className="text-emerald-400 tracking-wider">{children}</span>
@@ -118,13 +118,13 @@ const MetricCard = ({ icon: Icon, label, value, delta, isPercent }) => (
         <div className="text-3xl font-semibold text-neutral-50" style={{ fontFamily: "IBM Plex Mono, monospace" }}>
           {isPercent ? `${value}%` : value}
         </div>
-        <Badge className={`${delta >= 0 ? "bg-emerald-500/10 text-emerald-400" : "bg-red-500/10 text-red-400"} border border-neutral-700`}>{delta &gt; 0 ? `+${delta}` : delta}</Badge>
+        <Badge className={`${delta >= 0 ? "bg-emerald-500/10 text-emerald-400" : "bg-red-500/10 text-red-400"} border border-neutral-700`}>{delta > 0 ? `+${delta}` : delta}</Badge>
       </div>
     </CardContent>
   </Card>
 );
 
-const IntelFeed = () => (
+const IntelFeed = ({ data }) => (
   <Card className="bg-neutral-900/70 border-neutral-800">
     <CardHeader className="pb-2">
       <CardTitle className="flex items-center gap-2 text-neutral-200" style={{ fontFamily: "IBM Plex Mono, monospace" }}>
@@ -142,34 +142,39 @@ const IntelFeed = () => (
           </TableRow>
         </TableHeader>
         <TableBody>
-          {intelFeed.map((i) => (
-            <TableRow key={i.id} className="border-neutral-800 hover:bg-neutral-800/50">
-              <TableCell className="text-neutral-300" style={{ fontFamily: "IBM Plex Mono, monospace" }}>{i.time}</TableCell>
-              <TableCell className="text-neutral-200">{i.title}</TableCell>
-              <TableCell>
-                <Badge className={`${i.severity === "critical" ? "bg-red-500/10 text-red-400" : i.severity === "high" ? "bg-orange-500/10 text-orange-400" : i.severity === "medium" ? "bg-yellow-500/10 text-yellow-400" : "bg-neutral-700 text-neutral-200"} border border-neutral-700`}>{i.severity.toUpperCase()}</Badge>
-              </TableCell>
-              <TableCell className="space-x-1">
-                {i.tags.map((t) => (
-                  <Badge key={t} variant="outline" className="border-neutral-700 text-neutral-400">
-                    #{t}
-                  </Badge>
-                ))}
-              </TableCell>
-            </TableRow>
-          ))}
+          {data.map((i) => {
+            const t = new Date(i.created_at);
+            const hh = t.getHours().toString().padStart(2, "0");
+            const mm = t.getMinutes().toString().padStart(2, "0");
+            return (
+              <TableRow key={i.id} className="border-neutral-800 hover:bg-neutral-800/50">
+                <TableCell className="text-neutral-300" style={{ fontFamily: "IBM Plex Mono, monospace" }}>{`${hh}:${mm}`}</TableCell>
+                <TableCell className="text-neutral-200">{i.title}</TableCell>
+                <TableCell>
+                  <Badge className={`${i.severity === "critical" ? "bg-red-500/10 text-red-400" : i.severity === "high" ? "bg-orange-500/10 text-orange-400" : i.severity === "medium" ? "bg-yellow-500/10 text-yellow-400" : "bg-neutral-700 text-neutral-200"} border border-neutral-700`}>{i.severity.toUpperCase()}</Badge>
+                </TableCell>
+                <TableCell className="space-x-1">
+                  {i.tags.map((t) => (
+                    <Badge key={t} variant="outline" className="border-neutral-700 text-neutral-400">
+                      #{t}
+                    </Badge>
+                  ))}
+                </TableCell>
+              </TableRow>
+            );
+          })}
         </TableBody>
       </Table>
     </CardContent>
   </Card>
 );
 
-const CaseFiles = () => {
+const CaseFiles = ({ data }) => {
   const groups = useMemo(() => ({
-    active: caseFiles.filter((c) => c.status === "active"),
-    backlog: caseFiles.filter((c) => c.status === "backlog"),
-    archived: caseFiles.filter((c) => c.status === "archived"),
-  }), []);
+    active: data.filter((c) => c.status === "active"),
+    backlog: data.filter((c) => c.status === "backlog"),
+    archived: data.filter((c) => c.status === "archived"),
+  }), [data]);
 
   const CaseCard = ({ c }) => (
     <Card key={c.id} className="bg-neutral-900/70 border-neutral-800 hover:border-neutral-700 transition-colors">
@@ -186,7 +191,7 @@ const CaseFiles = () => {
         <div className="flex items-center gap-3">
           <FileSearch className="w-4 h-4 text-neutral-500" /> Owner: <span className="text-neutral-300">{c.owner}</span>
         </div>
-        <div className="mt-1 text-xs">Updated {c.updated} • Notes {c.notes}</div>
+        <div className="mt-1 text-xs">Updated {new Date(c.updated_at).toLocaleString()}</div>
       </CardContent>
     </Card>
   );
@@ -220,7 +225,7 @@ const CaseFiles = () => {
   );
 };
 
-const Timeline = () => (
+const Timeline = ({ data }) => (
   <Card className="bg-neutral-900/70 border-neutral-800">
     <CardHeader className="pb-2">
       <CardTitle className="flex items-center gap-2 text-neutral-200" style={{ fontFamily: "IBM Plex Mono, monospace" }}>
@@ -231,10 +236,10 @@ const Timeline = () => (
       <div className="relative">
         <div className="absolute left-3 top-0 bottom-0 w-px bg-neutral-800" />
         <div className="space-y-4">
-          {timeline.map((t) => (
+          {data.map((t) => (
             <div key={t.id} className="relative pl-8">
               <div className="absolute left-0 top-1 w-2.5 h-2.5 rounded-full bg-emerald-500" />
-              <div className="text-xs text-neutral-500" style={{ fontFamily: "IBM Plex Mono, monospace" }}>{t.time}</div>
+              <div className="text-xs text-neutral-500" style={{ fontFamily: "IBM Plex Mono, monospace" }}>{new Date(t.created_at).toLocaleTimeString()}</div>
               <div className="text-neutral-200">{t.text}</div>
             </div>
           ))}
@@ -268,20 +273,24 @@ const CommandForm = () => {
     setTransmitting(true);
     setProgress(0);
 
+    // Simulate progress locally for UX
     const id = setInterval(() => {
-      setProgress((p) => {
-        const np = Math.min(100, p + Math.random() * 25);
-        if (np >= 100) {
-          clearInterval(id);
-          setTimeout(() => setTransmitting(false), 350);
-          toast({
-            title: "Transmission sent",
-            description: "Your command has been logged locally (mock).",
-          });
-        }
-        return np;
-      });
+      setProgress((p) => Math.min(100, p + Math.random() * 25));
     }, 350);
+
+    try {
+      await api.post("/command", form);
+      toast({ title: "Transmission sent", description: "Command logged to server." });
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error(err);
+      toast({ title: "Transmission failed", description: "Saved locally (mock)", variant: "destructive" });
+    } finally {
+      setTimeout(() => {
+        clearInterval(id);
+        setTransmitting(false);
+      }, 900);
+    }
   };
 
   return (
@@ -310,7 +319,12 @@ const CommandForm = () => {
                   <SelectValue placeholder="Select" />
                 </SelectTrigger>
                 <SelectContent className="bg-neutral-900 border-neutral-800">
-                  {agents.map((a) => (
+                  {[
+                    { code: "A1", name: "Alpha" },
+                    { code: "B2", name: "Bravo" },
+                    { code: "C3", name: "Charlie" },
+                    { code: "D4", name: "Delta" },
+                  ].map((a) => (
                     <SelectItem key={a.code} value={a.code}>{a.name}</SelectItem>
                   ))}
                 </SelectContent>
@@ -351,12 +365,12 @@ const CommandForm = () => {
   );
 };
 
-const MetricsGrid = () => (
+const MetricsGrid = ({ metrics }) => (
   <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-    <MetricCard icon={Shield} label={opsMetrics[0].label} value={opsMetrics[0].value} delta={opsMetrics[0].delta} />
-    <MetricCard icon={Activity} label={opsMetrics[1].label} value={opsMetrics[1].value} delta={opsMetrics[1].delta} />
-    <MetricCard icon={AlertTriangle} label={opsMetrics[2].label} value={opsMetrics[2].value} delta={opsMetrics[2].delta} />
-    <MetricCard icon={CheckCircle2} label={opsMetrics[3].label} value={opsMetrics[3].value} delta={opsMetrics[3].delta} isPercent />
+    <MetricCard icon={Shield} label="Open Cases" value={metrics.open_cases ?? 0} delta={0} />
+    <MetricCard icon={Activity} label="Active Ops" value={metrics.active_ops ?? 0} delta={0} />
+    <MetricCard icon={AlertTriangle} label="Alerts Today" value={metrics.alerts_today ?? 0} delta={0} />
+    <MetricCard icon={CheckCircle2} label="Resolution Rate" value={metrics.resolution_rate ?? 0} delta={0} isPercent />
   </div>
 );
 
@@ -373,8 +387,32 @@ const Footer = () => (
 );
 
 const Home = () => {
+  const [metrics, setMetrics] = useState({});
+  const [intel, setIntel] = useState([]);
+  const [cases, setCases] = useState([]);
+  const [timeline, setTimeline] = useState([]);
+
   useEffect(() => {
-    // Reserved for backend health checks later
+    let mounted = true;
+    (async () => {
+      try {
+        const [m, i, c, t] = await Promise.all([
+          api.get("/metrics"),
+          api.get("/intel"),
+          api.get("/cases"),
+          api.get("/timeline"),
+        ]);
+        if (!mounted) return;
+        setMetrics(m.data);
+        setIntel(i.data);
+        setCases(c.data);
+        setTimeline(t.data);
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.error("API load failed; UI will show empty state.", err);
+      }
+    })();
+    return () => { mounted = false; };
   }, []);
 
   return (
@@ -382,14 +420,14 @@ const Home = () => {
       <NavBar />
       <Hero />
       <main className="max-w-6xl mx-auto px-4">
-        <MetricsGrid />
+        <MetricsGrid metrics={metrics} />
         <div className="mt-4 grid md:grid-cols-3 gap-4">
           <div className="md:col-span-2 space-y-4">
-            <IntelFeed />
-            <CaseFiles />
+            <IntelFeed data={intel} />
+            <CaseFiles data={cases} />
           </div>
           <div className="space-y-4">
-            <Timeline />
+            <Timeline data={timeline} />
             <CommandForm />
           </div>
         </div>
