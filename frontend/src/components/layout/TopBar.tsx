@@ -1,14 +1,16 @@
 
 import React, { useState } from 'react';
-import { Bell, Search, Shield, AlertTriangle, MapPin, Calendar, Clock, Filter, Globe, Key } from 'lucide-react';
+import { Bell, Search, Shield, AlertTriangle, MapPin, Calendar, Clock, Filter, Globe, Key, Sun, Moon } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { NavLink, useLocation } from 'react-router-dom';
+import { useTheme } from 'next-themes';
 
 const TopBar: React.FC = () => {
   const { user } = useAuth();
   const [showAlerts, setShowAlerts] = useState(false);
+  const { theme, setTheme } = useTheme();
 
   // Mock alerts data
   const alerts = [
@@ -16,6 +18,8 @@ const TopBar: React.FC = () => {
     { id: 2, type: 'critical', message: 'Unauthorized access attempt detected', time: '25 min ago' },
     { id: 3, type: 'info', message: 'System maintenance scheduled for 02:00 UTC', time: '1 hour ago' },
   ];
+
+  const toggleTheme = () => setTheme(theme === 'light' ? 'dark' : 'light');
 
   return (
     <header className="fbi-header h-16 border-b border-border flex items-center justify-between px-6 bg-background/90 backdrop-blur-md sticky top-0 z-10">
@@ -155,6 +159,9 @@ const TopBar: React.FC = () => {
       </div>
       
       <div className="flex items-center space-x-4">
+        <Button variant="ghost" size="icon" aria-label="Toggle theme" onClick={toggleTheme}>
+          {theme === 'light' ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
+        </Button>
         <div className="relative">
           <button 
             className="relative p-2 rounded-full hover:bg-muted transition-colors"
