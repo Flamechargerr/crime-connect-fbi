@@ -31,9 +31,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isDemo, setIsDemo] = useState(false);
 
   useEffect(() => {
-    // Check for existing session
-    // No supabase session check, always load as demo
-    setLoading(false);
+    // Load persisted session (demo/local only)
+    try {
+      const stored = localStorage.getItem('auth_user');
+      const isDemoStored = localStorage.getItem('auth_isDemo');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        setUser(parsed);
+        setIsDemo(isDemoStored === 'true');
+      }
+    } catch (e) {
+      console.warn('Failed to load auth from storage', e);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   const login = async (email: string, password: string) => {
