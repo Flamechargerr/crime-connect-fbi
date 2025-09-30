@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import "./App.css";
 import {
-  BrowserRouter,
+  HashRouter as BrowserRouter,
   Routes,
   Route,
 } from "react-router-dom";
@@ -45,6 +45,7 @@ import {
 } from "lucide-react";
 
 import { api } from "./lib/api";
+import { opsMetrics as mockOps, intelFeed as mockIntel, caseFiles as mockCases, timeline as mockTimeline } from "./mock";
 
 const Accent = ({ children }) => (
   <span className="text-emerald-400 tracking-wider">{children}</span>
@@ -273,7 +274,6 @@ const CommandForm = () => {
     setTransmitting(true);
     setProgress(0);
 
-    // Simulate progress locally for UX
     const id = setInterval(() => {
       setProgress((p) => Math.min(100, p + Math.random() * 25));
     }, 350);
@@ -284,7 +284,7 @@ const CommandForm = () => {
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error(err);
-      toast({ title: "Transmission failed", description: "Saved locally (mock)", variant: "destructive" });
+      toast({ title: "Transmission saved locally", description: "Backend not configured; stored in browser.", variant: "default" });
     } finally {
       setTimeout(() => {
         clearInterval(id);
@@ -408,8 +408,42 @@ const Home = () => {
         setCases(c.data);
         setTimeline(t.data);
       } catch (err) {
-        // eslint-disable-next-line no-console
-        console.error("API load failed; UI will show empty state.", err);
+        // Fallback to mocks when backend not configured (e.g., GitHub Pages)
+        const byId = (id) => mockOps.find((o) => o.id === id)?.value ?? 0;
+        setMetrics({
+          open_cases: byId("open_cases"),
+          active_ops: byId("active_ops"),
+          alerts_today: byId("alerts_today"),
+          resolution_rate: byId("resolution_rate"),
+        });
+        setIntel(
+          mockIntel.map((x) => ({
+            id: x.id,
+            title: x.title,
+            severity: x.severity,
+            tags: x.tags,
+            created_at: new Date().toISOString(),
+          }))
+        );
+        setCases(
+          mockCases.map((x) => ({
+            id: x.id,
+            title: x.title,
+            status: x.status,
+            priority: x.priority,
+            owner: x.owner,
+            updated_at: new Date().toISOString(),
+            notes: x.notes,
+          }))
+        );
+        setTimeline(
+          mockTimeline.map((x) => ({
+            id: x.id,
+            type: x.type,
+            text: x.text,
+            created_at: new Date().toISOString(),
+          }))
+        );
       }
     })();
     return () => { mounted = false; };

@@ -32,8 +32,10 @@ jobs:
         run: |
           yarn install --frozen-lockfile
 
-      - name: Build
+      - name: Build (CRA with public URL for GH Pages)
         working-directory: frontend
+        env:
+          PUBLIC_URL: /crime-connect-fbi
         run: |
           yarn build
 
