@@ -50,9 +50,14 @@ class BackendTester:
                     
                 # Check CORS headers
                 cors_header = response.headers.get("Access-Control-Allow-Origin")
-                if cors_header != "*":
-                    self.log_result("Health via proxy - CORS Headers", False, f"Expected '*', got '{cors_header}'")
-                    return False
+                if not cors_header or cors_header != "*":
+                    # Double check with explicit Origin header
+                    test_response = requests.get(f"{self.frontend_proxy_url}/api/health", 
+                                               headers={"Origin": "http://localhost:3000"}, timeout=10)
+                    cors_header = test_response.headers.get("Access-Control-Allow-Origin")
+                    if not cors_header or cors_header != "*":
+                        self.log_result("Health via proxy - CORS Headers", False, f"Expected '*', got '{cors_header}'")
+                        return False
                     
                 self.log_result("Health via proxy", True, f"Response: {data}")
                 return True
