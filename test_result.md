@@ -48,6 +48,66 @@ frontend:
         agent: "testing"
         comment: "Proxy working correctly - frontend can access backend APIs via /api routes"
 
+  - task: "Login Flow (Demo Authentication)"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/pages/Login.tsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "Demo login working correctly with admin@gmail.com/password credentials. Successfully redirects to dashboard and shows 'INTELLIGENCE DASHBOARD' content. Authentication state properly managed."
+
+  - task: "Theme Toggle Persistence"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/main.tsx"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "Theme toggle working correctly - switches between dark/light themes and persists across page reloads using ThemeProvider with storageKey 'theme'. Document.documentElement.classList properly updated."
+
+  - task: "Corkboard Navigation and Interactions"
+    implemented: true
+    working: false
+    file: "/app/frontend/src/pages/Corkboard.tsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "testing"
+        comment: "Authentication issue: Direct navigation to /corkboard redirects to login page, indicating session/authentication state is not persisting across page navigations. Core corkboard functionality appears implemented but inaccessible due to auth routing."
+
+  - task: "Cases Page Filters and Actions"
+    implemented: true
+    working: false
+    file: "/app/frontend/src/pages/Cases.tsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "testing"
+        comment: "Authentication issue: Direct navigation to /cases redirects to login page, indicating session/authentication state is not persisting across page navigations. Cases page functionality appears implemented but inaccessible due to auth routing."
+
+  - task: "General Navigation"
+    implemented: true
+    working: false
+    file: "/app/frontend/src/components/layout/Layout.tsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "testing"
+        comment: "Navigation between protected routes fails due to authentication state not persisting. Users get redirected to login when navigating to /corkboard or /cases after initial login. Layout and routing structure is implemented correctly."
+
 metadata:
   created_by: "testing_agent"
   version: "1.0"
