@@ -126,7 +126,6 @@ async def ensure_seed_data():
 
 
 def today_bounds() -> Dict[str, datetime]:
-    now = datetime.now(timezone.utc)
     start = datetime.combine(date.today(), datetime.min.time(), tzinfo=timezone.utc)
     end = datetime.combine(date.today(), datetime.max.time(), tzinfo=timezone.utc)
     return {"$gte": start, "$lte": end}
