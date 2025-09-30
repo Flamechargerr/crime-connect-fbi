@@ -116,13 +116,19 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Health endpoint implementation"
-    - "CORS middleware configuration"
-    - "API prefix enforcement"
-  stuck_tasks: []
+    - "Authentication state persistence"
+    - "Protected route navigation"
+    - "Session management"
+  stuck_tasks:
+    - "Corkboard Navigation and Interactions"
+    - "Cases Page Filters and Actions"
+    - "General Navigation"
   test_all: false
   test_priority: "high_first"
 
 agent_communication:
   - agent: "testing"
     message: "Backend testing completed successfully. All 4 critical tests passed: 1) Health endpoint via frontend proxy (port 3000) returns 200 with correct JSON and CORS headers, 2) Direct backend access (port 8001) works correctly, 3) Ingress prefix adherence verified (/health without /api returns 404), 4) Stability test passed with 10 consecutive successful requests. The minimal FastAPI service is fully functional and ready for frontend integration."
+  
+  - agent: "testing"
+    message: "Frontend UI testing completed. CRITICAL ISSUE FOUND: Authentication state is not persisting across page navigations. While demo login works correctly and redirects to dashboard, direct navigation to protected routes (/corkboard, /cases) redirects users back to login page. This indicates a session management issue in the AuthContext or routing logic. Core functionality of individual pages appears implemented correctly but is inaccessible due to auth routing problems."
