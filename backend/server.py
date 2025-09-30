@@ -14,11 +14,12 @@ from datetime import datetime, timezone, date
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
-# MongoDB connection
-mongo_url = os.environ['MONGO_URL']
-client = AsyncIOMotorClient(mongo_url)
+logger = logging.getLogger(__name__)
+
+# Globals for DB, initialized at startup
+client: Optional[AsyncIOMotorClient] = None
 DB_NAME = os.environ.get('DB_NAME', 'crime_connect')
-db = client[DB_NAME]
+db = None
 
 # Create the main app without a prefix
 app = FastAPI()
@@ -92,6 +93,8 @@ class CommandItem(CommandCreate):
 # Utilities
 # =========================
 async def ensure_seed_data():
+    if db is None:
+        return
     # Seed intel
     if await db.intel_events.count_documents({}) == 0:
         seed_intel = [
@@ -132,6 +135,11 @@ def today_bounds() -> Dict[str, datetime]:
     return {"$gte": start, "$lte": end}
 
 
+def require_db():
+    if db is None:
+        raise HTTPException(status_code=503, detail="Database not configured. Ensure MONGO_URL is set in backend/.env")
+
+
 # =========================
 # Routes
 # =========================
@@ -141,12 +149,14 @@ async def root():
 
 @api_router.post("/status", response_model=StatusCheck)
 async def create_status_check(input: StatusCheckCreate):
+    require_db()
     status_obj = StatusCheck(**input.dict())
     await db.status_checks.insert_one(status_obj.dict())
     return status_obj
 
 @api_router.get("/status", response_model=List[StatusCheck])
 async def get_status_checks():
+    require_db()
     status_checks = await db.status_checks.find().to_list(1000)
     return [StatusCheck(**status_check) for status_check in status_checks]
 
@@ -154,12 +164,14 @@ async def get_status_checks():
 # ---- Intel ----
 @api_router.get("/intel", response_model=List[IntelItem])
 async def list_intel():
+    require_db()
     await ensure_seed_data()
     rows = await db.intel_events.find().sort("created_at", -1).to_list(1000)
     return [IntelItem(**r) for r in rows]
 
 @api_router.post("/intel", response_model=IntelItem, status_code=201)
 async def create_intel(body: IntelCreate):
+    require_db()
     item = IntelItem(**body.dict())
     await db.intel_events.insert_one(item.dict())
     return item
@@ -168,6 +180,7 @@ async def create_intel(body: IntelCreate):
 # ---- Cases ----
 @api_router.get("/cases", response_model=List[CaseItem])
 async def list_cases(status: Optional[str] = None):
+    require_db()
     await ensure_seed_data()
     query: Dict[str, Any] = {}
     if status:
@@ -177,12 +190,14 @@ async def list_cases(status: Optional[str] = None):
 
 @api_router.post("/cases", response_model=CaseItem, status_code=201)
 async def create_case(body: CaseCreate):
+    require_db()
     item = CaseItem(**body.dict())
     await db.cases.insert_one(item.dict())
     return item
 
 @api_router.patch("/cases/{case_id}", response_model=CaseItem)
 async def update_case(case_id: str, body: CaseUpdate):
+    require_db()
     fields = {k: v for k, v in body.dict().items() if v is not None}
     if not fields:
         raise HTTPException(status_code=400, detail="No fields to update")
@@ -196,12 +211,14 @@ async def update_case(case_id: str, body: CaseUpdate):
 # ---- Timeline ----
 @api_router.get("/timeline", response_model=List[TimelineItem])
 async def list_timeline():
+    require_db()
     await ensure_seed_data()
     rows = await db.timelines.find().sort("created_at", -1).to_list(1000)
     return [TimelineItem(**r) for r in rows]
 
 @api_router.post("/timeline", response_model=TimelineItem, status_code=201)
 async def create_timeline(body: TimelineCreate):
+    require_db()
     item = TimelineItem(**body.dict())
     await db.timelines.insert_one(item.dict())
     return item
@@ -210,12 +227,14 @@ async def create_timeline(body: TimelineCreate):
 # ---- Command Center ----
 @api_router.post("/command", response_model=CommandItem, status_code=201)
 async def create_command(body: CommandCreate):
+    require_db()
     item = CommandItem(**body.dict())
     await db.transmissions.insert_one(item.dict())
     return item
 
 @api_router.get("/command", response_model=List[CommandItem])
 async def list_command():
+    require_db()
     rows = await db.transmissions.find().sort("created_at", -1).to_list(1000)
     return [CommandItem(**r) for r in rows]
 
@@ -223,6 +242,7 @@ async def list_command():
 # ---- Metrics (computed) ----
 @api_router.get("/metrics")
 async def get_metrics():
+    require_db()
     await ensure_seed_data()
     total_cases = await db.cases.count_documents({})
     active_ops = await db.cases.count_documents({"status": "active"})
@@ -260,8 +280,22 @@ logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
-logger = logging.getLogger(__name__)
+
+
+@app.on_event("startup")
+async def init_db():
+    global client, db
+    mongo_url = os.environ.get('MONGO_URL')
+    if not mongo_url:
+        logger.error("MONGO_URL not set. Backend will run but all /api/* routes will return 503 until configured.")
+        return
+    client = AsyncIOMotorClient(mongo_url)
+    db = client[DB_NAME]
+    await ensure_seed_data()
+
 
 @app.on_event("shutdown")
 async def shutdown_db_client():
-    client.close()
+    global client
+    if client:
+        client.close()
