@@ -78,7 +78,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
     setIsDemo(false);
     // No supabase login logic, always return success for demo
-    setUser({
+    const demoUser = {
       id: 'demo-user',
       email: email,
       role: 'user',
@@ -94,7 +94,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       recovery_sent_at: '',
       banned_until: '',
       updated_at: new Date().toISOString(),
-    } as any);
+    } as any;
+    setUser(demoUser);
+    localStorage.setItem('auth_user', JSON.stringify(demoUser));
+    localStorage.setItem('auth_isDemo', 'false');
     setLoading(false);
   };
 
