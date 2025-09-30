@@ -51,7 +51,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setLoading(true);
     // DEMO BYPASS
     if (email === 'admin@gmail.com' && password === 'password') {
-      setUser({
+      const demoAdmin = {
         id: 'demo-admin',
         email: 'admin@gmail.com',
         role: 'admin',
@@ -67,8 +67,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         recovery_sent_at: '',
         banned_until: '',
         updated_at: new Date().toISOString(),
-      } as any);
+      } as any;
+      setUser(demoAdmin);
       setIsDemo(true);
+      // persist session
+      localStorage.setItem('auth_user', JSON.stringify(demoAdmin));
+      localStorage.setItem('auth_isDemo', 'true');
       setLoading(false);
       return;
     }
