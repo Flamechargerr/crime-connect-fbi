@@ -106,6 +106,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsDemo(false);
     // No supabase logout logic, always return success for demo
     setUser(null);
+    try {
+      localStorage.removeItem('auth_user');
+      localStorage.removeItem('auth_isDemo');
+    } catch {}
     setLoading(false);
   };
 
