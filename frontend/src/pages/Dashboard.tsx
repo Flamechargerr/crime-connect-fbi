@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { FileText, Users, Database, FileStack, Activity, Clock, MapPin, AlertTriangle } from 'lucide-react';
+import { FileText, Users, Database, FileStack, Activity, Clock, MapPin, TriangleAlert as AlertTriangle } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { DashboardStats, Case } from '../types';
 import { Button } from '@/components/ui/button';
