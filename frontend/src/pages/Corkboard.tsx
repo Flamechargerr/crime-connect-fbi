@@ -194,7 +194,9 @@ const Corkboard: React.FC = () => {
             <DialogTitle>3D Tracking Globe</DialogTitle>
             <DialogDescription>Markers reflect corkboard location items when coordinates are present.</DialogDescription>
           </DialogHeader>
-          <SciFiGlobe markers={markers} />
+          <Suspense fallback={<div className="h-[65vh] w-full flex items-center justify-center">Loading 3D...</div>}>
+            <SciFiGlobe markers={markers} />
+          </Suspense>
         </DialogContent>
       </Dialog>
     </div>
