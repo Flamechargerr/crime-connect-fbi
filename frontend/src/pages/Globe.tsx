@@ -1,5 +1,6 @@
-import React, { useMemo } from 'react';
-import SciFiGlobe, { Marker } from '@/components/globe/SciFiGlobe';
+import React, { useMemo, lazy, Suspense } from 'react';
+const SciFiGlobe = lazy(() => import('@/components/globe/SciFiGlobe'));
+export type Marker = { lat: number; lon: number; color?: string; size?: number };
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 const sampleMarkers: Marker[] = [
