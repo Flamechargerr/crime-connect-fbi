@@ -13,6 +13,7 @@ const navItems = [
   { name: 'Officers', path: '/officers', icon: Shield },
   { name: 'Courts', path: '/courts', icon: Gavel },
   { name: 'Reports', path: '/reports', icon: BarChart2 },
+  { name: '3D Globe', path: '/globe', icon: Globe },
   { name: 'Most Wanted', path: '/most-wanted', icon: Flag },
   { name: 'Profile', path: '/profile', icon: User },
 ];
