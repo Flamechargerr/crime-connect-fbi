@@ -28,6 +28,7 @@ import ThreeTest from "./pages/ThreeTest";
 import MostWanted from "./pages/MostWanted";
 import Register from "./pages/Register";
 import ForgotPassword from "./pages/ForgotPassword";
+import Profile from "./pages/Profile";
 
 // Create a new QueryClient instance
 const queryClient = new QueryClient({
