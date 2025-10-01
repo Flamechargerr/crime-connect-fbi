@@ -11,7 +11,8 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { CorkboardItemType, CorkboardItemData } from '@/types';
 import { useAuth } from '@/context/AuthContext';
 import DecryptText from '@/components/effects/DecryptText';
-import SciFiGlobe, { Marker } from '@/components/globe/SciFiGlobe';
+const SciFiGlobe = lazy(() => import('@/components/globe/SciFiGlobe'));
+export type Marker = { lat: number; lon: number; color?: string; size?: number };
 
 const DEFAULT_CORKBOARDS = [
   { id: '1', name: 'Bank Heist', items: [], connections: [], background: 'grid' },
