@@ -70,6 +70,7 @@ const App = () => (
                 <Route path="/corkboard" element={<Corkboard />} />
                 <Route path="/globe" element={<Globe />} />
                 <Route path="/most-wanted" element={<MostWanted />} />
+                <Route path="/profile" element={<Profile />} />
                 <Route path="/three-test" element={<ThreeTest />} />
               </Route>
               
