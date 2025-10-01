@@ -1,68 +1,86 @@
-# Crime Connect FBI — Mission Control Dashboard
+# CrimeConnect — Clean, Professional Dashboard
 
-Tactical, FBI-style mission control UI/UX for operations, intel, and case management. Built with React + Tailwind + shadcn/ui.
+A refined, production‑ready React + FastAPI + MongoDB starter focused on clarity and usability. The UI adopts a modern, neutral design (auto light/dark) with accessible components and consistent spacing.
 
-## ✨ What you get
-- Dark, tactical UI with neon-emerald accents and monospace headings
-- Sections: Hero, Ops Metrics, Intel Feed, Case Files (tabs), Timeline, Command Center form
-- Smooth micro-interactions, accessible components (shadcn/ui), and clean layout
-- Frontend uses backend when available and gracefully falls back to mocked data when offline (GitHub Pages)
+## Highlights
+- Clean, professional visual design (system light/dark, subtle borders, clear hierarchy)
+- React + Vite + Tailwind + shadcn/ui component patterns
+- Ready FastAPI backend with /api prefix and MongoDB models (UUIDs only)
+- Sensible auth shell (demo login) with protected routing
 
-> Note: Backend is optional. If FastAPI isn’t configured, the UI auto-falls back to mocks.
+## Screenshots
+> The following images illustrate the core areas of the app. (provided by you)
+- Dashboard: https://customer-assets.emergentagent.com/job_6c7378a1-9e3e-45bb-a9a3-4c6db8ffca0b/artifacts/8q7odfrq_image.png
+- Reports: https://customer-assets.emergentagent.com/job_6c7378a1-9e3e-45bb-a9a3-4c6db8ffca0b/artifacts/39184krj_image.png
+- Investigation Board: https://customer-assets.emergentagent.com/job_6c7378a1-9e3e-45bb-a9a3-4c6db8ffca0b/artifacts/h2mqmzro_image.png
 
-## 🔥 Live Demo
-Once GitHub Pages workflow runs, your app will be available at:
-https://flamechargerr.github.io/crime-connect-fbi/
+## Quickstart
 
-We’ll also add a short demo GIF here after first deployment.
+- Frontend
+  - cd frontend
+  - yarn
+  - yarn start (hot reload)
 
-## 🧭 Screens & Behavior
-- Hero: Mission status, CTA buttons (briefing & dossier)
-- Ops Metrics: Open Cases, Active Ops, Alerts, Resolution Rate
-- Intel Feed: Real-time style table with severity tags
-- Case Files: Tabbed views (Active, Backlog, Archived)
-- Timeline: Vertical activity timeline
-- Command Center: Form with progress + toast; posts to /api/command when backend exists, otherwise stores locally
+- Backend
+  - Ensure backend/.env contains MONGO_URL (we only read env, never hardcode)
+  - Supervisor runs FastAPI on 0.0.0.0:8001 internally (do not change)
+  - All routes must start with /api to pass ingress
 
-## 🗃️ Mock Data
-All mocks live in frontend/src/mock.js and are used across sections so we can later replace them with API data without touching UI.
+- Environment rules (critical)
+  - Frontend must call process.env.REACT_APP_BACKEND_URL or import.meta.env.REACT_APP_BACKEND_URL
+  - Do not hardcode URLs or ports
+  - Never edit .env values via code — only use what's already provided
 
-## ⚙️ Tech Stack
-- React 19, React Router (HashRouter for GH Pages)
-- TailwindCSS + shadcn/ui components
-- lucide-react icons
-- FastAPI backend (optional now; endpoints scaffolded, see contracts.md)
+## Demo GIFs
+We’ll attach short clips demonstrating navigation and theme toggle in this section.
 
-## 🚀 Deploy to GitHub Pages (already configured)
-This repo contains a GitHub Actions workflow at .github/workflows/gh-pages.yml.
+Suggested clips (to be recorded from the running app):
+- 10s: Login → Dashboard → Cases navigation
+- 8s: Theme switch (system/auto + manual toggle)
+- 8s: Investigation board interactions (drag, zoom)
 
-How to deploy:
-1) Push to main (or trigger workflow manually in Actions)
-2) In Repo Settings → Pages: Set Source = GitHub Actions (first time only)
-3) Wait ~1–2 minutes for build + deploy
-4) Visit https://flamechargerr.github.io/crime-connect-fbi/
+Placeholders (replace later):
+- assets/demo-dashboard.gif
+- assets/demo-corkboard.gif
 
-Notes:
-- We use HashRouter, so refreshes work on GitHub Pages.
-- PUBLIC_URL is set to /crime-connect-fbi during build for correct asset paths.
+## Architecture
+- Frontend: React 18, Vite, Tailwind 3, shadcn/ui, Radix primitives
+- State/data: TanStack Query for data fetching/cache; context for demo auth
+- Backend: FastAPI with /api router, MongoDB via motor (UUIDs, no ObjectId leakage)
+- Ingress: All API traffic under /api prefix → port 8001; frontend → port 3000
 
-## 🛠️ Local Development
-- Install: cd frontend && yarn
-- Run: yarn start
-- Build: yarn build
+## API Contracts (summary)
+- GET /api/metrics → { open_cases, active_ops, alerts_today, resolution_rate }
+- GET/POST /api/intel → list/create intel events
+- GET/POST/PATCH /api/cases → list/create/update cases
+- GET/POST /api/timeline → list/create timeline events
+- GET/POST /api/command → list/create command center messages
 
-## 🔗 Backend (when you want it)
-- See /app/contracts.md for API contracts
-- FastAPI endpoints implemented under /api/* (metrics, intel, cases, timeline, command)
-- They return 503 until MONGO_URL is set in backend/.env. When ready, I’ll wire env and complete integration tests.
+All responses use string UUIDs. Backend reads MONGO_URL from backend/.env, never from code.
 
-## 📸 Demo GIF
-Coming right after first Pages deploy — I’ll record a short flow (scroll, tab switch, form submit) and add it here.
+## Design System
+- Typography: system default with improved leading; Inter can be added if desired
+- Spacing scale: 4/6/8/12/16 with max content width at 1280px
+- Color tokens: defined in src/index.css with light/dark themes
+- Components: card-pro, input-pro, btn-pro utility patterns
 
-## ✅ Accessibility & Design Notes
-- Avoids purple/blue gradients; uses muted dark with emerald accents
-- Uses lucide-react icons (no emojis in UI). Emojis reserved for README only.
-- Inline editing patterns, minimal modals, high contrast text, natural focus rings
+## Local Development
+- Frontend
+  - yarn start → http://localhost:3000
+  - REACT_APP_BACKEND_URL must be set in frontend/.env (already configured in deployment)
+
+- Backend
+  - Uses supervisor; check logs if needed
+  - tail -n 100 /var/log/supervisor/backend.*.log
+
+## Testing
+- Backend tests first (deep testing agent)
+- Frontend tests on request (Playwright)
+
+## Deployment Notes
+- Keep all backend routes prefixed with /api
+- Do not modify ports or .env
+- Frontend calls backend using REACT_APP_BACKEND_URL exclusively
 
 ---
-Built with care — ready to extend into a production-grade MVP.
+If you want a brand color or font applied globally, share a hex and font, and I’ll wire it in.

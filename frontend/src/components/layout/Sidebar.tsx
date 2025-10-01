@@ -24,15 +24,15 @@ const Sidebar: React.FC = () => {
   return (
     <aside
       className={cn(
-        'h-full border-r border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80',
+        'h-full border-r bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80',
         collapsed ? 'w-16' : 'w-64',
         'transition-[width] duration-200 ease-in-out hidden md:flex flex-col'
       )}
     >
       <div className="h-14 flex items-center justify-between px-4 border-b">
-        <span className={cn('font-semibold', collapsed && 'sr-only')}>Navigation</span>
+        <span className={cn('font-medium text-sm text-muted-foreground', collapsed && 'sr-only')}>Navigation</span>
         <button
-          className="h-8 w-8 rounded-md border hover:bg-muted"
+          className="btn-pro h-8 w-8 p-0"
           onClick={() => setCollapsed(v => !v)}
           aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
@@ -47,8 +47,8 @@ const Sidebar: React.FC = () => {
             className={({ isActive }) =>
               cn(
                 'flex items-center gap-3 px-3 py-2 rounded-md text-sm',
-                'hover:bg-muted/70',
-                isActive ? 'bg-muted font-medium' : 'text-muted-foreground'
+                'hover:bg-muted',
+                isActive ? 'bg-muted font-medium text-foreground' : 'text-muted-foreground'
               )
             }
           >

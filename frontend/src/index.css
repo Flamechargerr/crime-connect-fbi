@@ -2,9 +2,43 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Design tokens: clean, neutral, professional */
 @layer base {
   :root {
-    /* Neutral, professional dark theme */
+    /* Light theme (default) */
+    --background: 0 0% 100%;
+    --foreground: 224 71% 4%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 224 71% 4%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 224 71% 4%;
+
+    --primary: 221 83% 53%; /* professional blue */
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 210 16% 96%;
+    --secondary-foreground: 224 71% 4%;
+
+    --muted: 210 16% 96%;
+    --muted-foreground: 215 16% 47%;
+
+    --accent: 210 16% 96%;
+    --accent-foreground: 224 71% 4%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 221 83% 53%;
+
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    /* Dark theme */
     --background: 222 47% 11%;
     --foreground: 210 40% 96%;
 
@@ -14,7 +48,7 @@
     --popover: 222 47% 12%;
     --popover-foreground: 210 40% 96%;
 
-    --primary: 226 70% 55%; /* indigo */
+    --primary: 221 83% 60%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 220 17% 20%;
@@ -23,35 +57,39 @@
     --muted: 220 15% 18%;
     --muted-foreground: 215 20% 70%;
 
-    --accent: 226 70% 55%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 220 17% 20%;
+    --accent-foreground: 210 40% 96%;
 
     --destructive: 0 72% 45%;
     --destructive-foreground: 0 0% 100%;
 
     --border: 217 19% 24%;
     --input: 217 19% 24%;
-    --ring: 226 70% 55%;
-
-    --sidebar-background: 222 47% 11%;
-    --sidebar-foreground: 210 40% 96%;
-    --sidebar-primary: 226 70% 55%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 15% 18%;
-    --sidebar-accent-foreground: 210 40% 96%;
-    --sidebar-border: 217 19% 24%;
-    --sidebar-ring: 226 70% 55%;
-
-    --radius: 0.5rem;
+    --ring: 221 83% 60%;
   }
 }
 
 @layer base {
   * { @apply border-border; }
-  body { @apply bg-background text-foreground; font-feature-settings: "rlig" 1, "calt" 1; }
+  html { font-size: 14px; }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
 }
 
-/* Minimal components */
+/* Minimal, reusable building blocks */
 @layer components {
-  .glass-card { @apply bg-card border rounded-lg shadow-sm; }
+  .container-pro {
+    @apply max-w-7xl mx-auto px-4 sm:px-6;
+  }
+  .card-pro {
+    @apply bg-card border rounded-lg shadow-sm;
+  }
+  .input-pro {
+    @apply block w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring;
+  }
+  .btn-pro {
+    @apply inline-flex items-center justify-center rounded-md border border-input bg-background px-3 py-2 text-sm font-medium hover:bg-muted;
+  }
 }
