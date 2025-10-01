@@ -212,14 +212,14 @@ const Cases: React.FC = () => {
 
   const StatusBadge: React.FC<{ status: Case['status'] }> = ({ status }) => {
     const statusStyles = {
-      open: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
-      closed: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
-      pending: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300',
-      archived: 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300'
+      open: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/30',
+      closed: 'bg-green-500/10 text-green-400 border-green-500/30',
+      pending: 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30',
+      archived: 'bg-gray-500/10 text-gray-400 border-gray-500/30'
     };
 
     return (
-      <span className={`text-xs px-2 py-1 rounded-full uppercase font-medium ${statusStyles[status]}`}>
+      <span className={`text-xs px-2.5 py-1 rounded-lg uppercase font-medium border ${statusStyles[status]} backdrop-blur-sm`}>
         {status}
       </span>
     );
@@ -227,84 +227,53 @@ const Cases: React.FC = () => {
 
   return (
     <div className="space-y-8 animate-fade-in">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Cases</h1>
-          <p className="text-muted-foreground">All cases in the system</p>
+      <div className="flex justify-between items-start">
+        <div className="relative">
+          <h1 className="text-4xl font-bold tracking-tight neon-text bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Cases</h1>
+          <p className="text-sm text-muted-foreground mt-2">Manage all active investigations</p>
+          <div className="absolute -bottom-2 left-0 w-24 h-1 bg-gradient-to-r from-cyan-400 to-transparent rounded-full"></div>
         </div>
         <div className="flex gap-2">
-          <Input
-            type="text"
-            placeholder="Search by title or description..."
-            value={searchTerm}
-            onChange={e => setSearchTerm(e.target.value)}
-            className="w-64"
-          />
-          <select
-            value={statusFilter}
-            onChange={e => setStatusFilter(e.target.value as any)}
-            className="border rounded px-2 py-1 text-sm"
-          >
-            <option value="all">All Statuses</option>
-            <option value="open">Open</option>
-            <option value="pending">Pending</option>
-            <option value="closed">Closed</option>
-          </select>
-          <select
-            value={sortBy}
-            onChange={e => setSortBy(e.target.value as 'title' | 'date')}
-            className="border rounded px-2 py-1 text-sm"
-          >
-            <option value="title">Sort by Title</option>
-            <option value="date">Sort by Date</option>
-          </select>
-          <select
-            value={sortDirection}
-            onChange={e => setSortDirection(e.target.value as 'asc' | 'desc')}
-            className="border rounded px-2 py-1 text-sm"
-          >
-            <option value="asc">Ascending</option>
-            <option value="desc">Descending</option>
-          </select>
+          <Button asChild className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white shadow-lg shadow-cyan-500/25">
+            <Link to="/cases/add" className="flex items-center gap-2">
+              <Plus className="h-4 w-4" />
+              New Case
+            </Link>
+          </Button>
         </div>
       </div>
 
-      <Card className="glass-card">
-        <CardHeader className="px-6">
-          <CardTitle>All Cases</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col space-y-4 md:flex-row md:space-y-0 md:space-x-4 mb-4">
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search cases..."
-                className="pl-10"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-            <div className="flex space-x-2">
-              <div className="flex items-center bg-muted rounded-md">
-                <div className="px-3">
-                  <Filter className="h-4 w-4 text-muted-foreground" />
-                </div>
-                <select 
-                  className="bg-transparent py-2 pr-3 border-0 focus:ring-0 text-sm focus:outline-none"
-                  value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value as Case['status'] | 'all')}
-                >
-                  <option value="all">All Status</option>
-                  <option value="open">Open</option>
-                  <option value="pending">Pending</option>
-                  <option value="closed">Closed</option>
-                  <option value="archived">Archived</option>
-                </select>
-              </div>
+      <div className="glass-card rounded-xl p-6 scan-line">
+        <div className="flex flex-col space-y-4 md:flex-row md:space-y-0 md:space-x-4 mb-6">
+          <div className="flex-1 relative group">
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 text-cyan-400/70 group-focus-within:text-cyan-400 transition-colors z-10" />
+            <Input
+              placeholder="Search cases by title or description..."
+              className="pl-11 h-11 bg-cyan-500/5 border-cyan-500/20 focus:border-cyan-500/50 focus:ring-cyan-500/20"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-cyan-400/0 via-cyan-400/5 to-cyan-400/0 opacity-0 group-focus-within:opacity-100 transition-opacity pointer-events-none"></div>
+          </div>
+          <div className="flex space-x-2">
+            <div className="flex items-center bg-cyan-500/5 border border-cyan-500/20 rounded-lg px-3 hover:border-cyan-500/40 transition-all">
+              <Filter className="h-4 w-4 text-cyan-400/70 mr-2" />
+              <select
+                className="bg-transparent py-2.5 pr-2 border-0 focus:ring-0 text-sm focus:outline-none cursor-pointer"
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value as Case['status'] | 'all')}
+              >
+                <option value="all">All Status</option>
+                <option value="open">Open</option>
+                <option value="pending">Pending</option>
+                <option value="closed">Closed</option>
+                <option value="archived">Archived</option>
+              </select>
             </div>
           </div>
+        </div>
 
-          <div ref={listRef} style={{ maxHeight: '60vh', overflowY: 'auto' }}>
+        <div ref={listRef} style={{ maxHeight: '60vh', overflowY: 'auto' }}>
             {loading ? (
               <div className="space-y-4 py-4">
                 {[...Array(5)].map((_, i) => (
@@ -437,9 +406,8 @@ const Cases: React.FC = () => {
                 </div>
               </>
             )}
-          </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 };
