@@ -39,7 +39,9 @@ const GlobePage: React.FC = () => {
           <CardTitle>Threat Markers</CardTitle>
         </CardHeader>
         <CardContent>
-          <SciFiGlobe markers={markers} />
+          <Suspense fallback={<div className="h-[65vh] w-full flex items-center justify-center">Loading 3D...</div>}>
+            <SciFiGlobe markers={markers} />
+          </Suspense>
         </CardContent>
       </Card>
     </div>
