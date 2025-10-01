@@ -65,6 +65,7 @@ const App = () => (
                 <Route path="/courts" element={<Courts />} />
                 <Route path="/reports" element={<Reports />} />
                 <Route path="/corkboard" element={<Corkboard />} />
+                <Route path="/globe" element={<(await import('./pages/Globe')).default as any} />
                 <Route path="/most-wanted" element={<MostWanted />} />
               </Route>
               
