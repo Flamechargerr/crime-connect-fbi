@@ -52,9 +52,9 @@ const ForgotPassword = () => {
                 </div>
                 
                 <div className="text-xs text-muted-foreground space-y-2">
-                  <p>• Reset instructions will be sent to your official FBI email</p>
-                  <p>• Processing time: 2-4 business hours</p>
-                  <p>• Contact IT Support if no response within 24 hours</p>
+                  <p>- Reset instructions will be sent to your official FBI email</p>
+                  <p>- Processing time: 2-4 business hours</p>
+                  <p>- Contact IT Support if no response within 24 hours</p>
                 </div>
                 
                 <Link to="/login">
