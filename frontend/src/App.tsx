@@ -24,6 +24,7 @@ import NotFound from "./pages/NotFound";
 import Index from "./pages/Index";
 import Corkboard from "./pages/Corkboard";
 import Globe from "./pages/Globe";
+import ThreeTest from "./pages/ThreeTest";
 import MostWanted from "./pages/MostWanted";
 import Register from "./pages/Register";
 import ForgotPassword from "./pages/ForgotPassword";
