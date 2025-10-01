@@ -23,6 +23,7 @@ import Reports from "./pages/Reports";
 import NotFound from "./pages/NotFound";
 import Index from "./pages/Index";
 import Corkboard from "./pages/Corkboard";
+import Globe from "./pages/Globe";
 import MostWanted from "./pages/MostWanted";
 import Register from "./pages/Register";
 import ForgotPassword from "./pages/ForgotPassword";
