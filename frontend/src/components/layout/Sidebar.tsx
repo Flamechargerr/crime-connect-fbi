@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { Home, FileText, Database, Users, Shield, Gavel, FileStack, User, Flag, BarChart2 } from 'lucide-react';
+import { Home, FileText, Database, Users, Shield, Gavel, FileStack, User, Flag, BarChart2, Globe } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 
