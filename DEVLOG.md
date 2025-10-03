@@ -92,3 +92,4 @@
 - [2025-10-03 19:43] feat(analysis): centrality score calculation
 - [2025-10-04 00:24] refactor(data): normalize entity relationships
 - [2025-10-04 02:15] feat(export): generate PDF investigation report
+- [2025-10-04 04:01] feat(map): geographic crime clustering
