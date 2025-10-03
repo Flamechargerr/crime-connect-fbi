@@ -85,3 +85,4 @@
 - [2025-10-03 23:44] feat(graph): implement edge weight rendering
 - [2025-10-04 04:16] feat(filter): add crime type dropdown filter
 - [2025-10-04 03:30] feat(search): fuzzy search across entities
+- [2025-10-03 20:44] feat(timeline): add temporal crime viewer
