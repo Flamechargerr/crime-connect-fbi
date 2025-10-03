@@ -89,3 +89,4 @@
 - [2025-10-04 03:17] fix(graph): prevent node collision overlap
 - [2025-10-03 20:00] feat(import): CSV data ingestion pipeline
 - [2025-10-03 21:42] style(nodes): add color coding by role
+- [2025-10-03 19:43] feat(analysis): centrality score calculation
