@@ -95,3 +95,4 @@
 - [2025-10-04 04:01] feat(map): geographic crime clustering
 - [2025-10-03 20:56] fix(layout): stabilize graph physics engine
 - [2025-10-03 20:53] feat(detail): add suspect profile sidebar
+- [2025-10-04 01:38] perf(graph): WebGL renderer for large datasets
