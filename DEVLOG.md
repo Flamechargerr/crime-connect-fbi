@@ -375,3 +375,4 @@
 - [2026-03-06 20:45] refactor: extract reusable utility functions
 - [2025-10-15 03:23] feat: implement search indexing
 - [2025-10-14 20:31] perf: reduce memory allocation overhead
+- [2025-10-15 01:01] fix: handle null reference gracefully
