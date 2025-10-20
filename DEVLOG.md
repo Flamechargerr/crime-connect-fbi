@@ -131,3 +131,4 @@
 - [2025-10-21 00:30] style(nodes): add color coding by role
 - [2025-10-21 00:17] feat(analysis): centrality score calculation
 - [2025-10-21 00:44] refactor(data): normalize entity relationships
+- [2025-10-20 22:58] feat(export): generate PDF investigation report
