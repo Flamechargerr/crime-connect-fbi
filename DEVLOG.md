@@ -130,3 +130,4 @@
 - [2025-10-21 00:04] feat(import): CSV data ingestion pipeline
 - [2025-10-21 00:30] style(nodes): add color coding by role
 - [2025-10-21 00:17] feat(analysis): centrality score calculation
+- [2025-10-21 00:44] refactor(data): normalize entity relationships
