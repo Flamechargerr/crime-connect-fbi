@@ -148,3 +148,4 @@
 - [2025-10-22 01:43] feat(timeline): add temporal crime viewer
 - [2025-10-22 02:11] fix(graph): prevent node collision overlap
 - [2025-10-21 21:46] feat(import): CSV data ingestion pipeline
+- [2025-10-21 19:59] style(nodes): add color coding by role
