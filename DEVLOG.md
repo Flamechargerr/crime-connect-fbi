@@ -157,3 +157,4 @@
 - [2025-10-26 04:15] feat(detail): add suspect profile sidebar
 - [2025-10-27 01:12] perf(graph): WebGL renderer for large datasets
 - [2025-10-26 20:16] feat(link): auto-discover hidden connections
+- [2025-10-28 02:03] test(analysis): validate PageRank results
