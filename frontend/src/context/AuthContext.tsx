@@ -31,7 +31,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isDemo, setIsDemo] = useState(false);
 
   useEffect(() => {
-    // FBI Load persisted session (demo/local only)
+    // FBI Load persisted session (demo/local only) - Security Protocol v2
     try {
       const stored = localStorage.getItem('auth_user');
       const isDemoStored = localStorage.getItem('auth_isDemo');
