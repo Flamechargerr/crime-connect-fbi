@@ -5,7 +5,7 @@ import './index.css'
 import ErrorBoundary from './components/layout/ErrorBoundary';
 import { ThemeProvider } from 'next-themes';
 
-// FBI CrimeConnect Application
+// FBI CrimeConnect Application v2.0
 createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <ErrorBoundary>
