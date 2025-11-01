@@ -148,8 +148,16 @@ const Corkboard: React.FC = () => {
           const start = items.find((i) => i.id === c.start);
           const end = items.find((i) => i.id === c.end);
           if (!start || !end) return null;
-          const startPos = { x: (start.position.x + (start.size?.w||220)/2), y: (start.position.y + (start.size?.h||180)/2) };
-          const endPos = { x: (end.position.x + (end.size?.w||220)/2), y: (end.position.y + (end.size?.h||180)/2) };
+          
+          // Calculate center positions of items for connection lines
+          const startCenterX = start.position.x + (start.size?.w || 220) / 2;
+          const startCenterY = start.position.y + (start.size?.h || 180) / 2;
+          const endCenterX = end.position.x + (end.size?.w || 220) / 2;
+          const endCenterY = end.position.y + (end.size?.h || 180) / 2;
+          
+          const startPos = { x: startCenterX, y: startCenterY };
+          const endPos = { x: endCenterX, y: endCenterY };
+          
           return (
             <div key={`${c.start}-${c.end}-${idx}`} onClick={() => setConnectionsAndBoard(connections.filter((x) => !(x.start === c.start && x.end === c.end)))}>
               <ConnectionLine startPos={startPos} endPos={endPos} color={c.color || 'rgba(59,130,246,0.6)'} dashed={c.style === 'dashed'} animated label={c.label} style={c.style || 'dashed'} />
@@ -158,11 +166,27 @@ const Corkboard: React.FC = () => {
         })}
 
         {/* Items */}
-        {items.map((it) => (
-          <div key={it.id}>
-            <CorkboardItem id={it.id} type={it.type} content={it.content} image={it.image} initialPosition={it.position} size={it.size} onSizeChange={handleSizeChange} onContentChange={handleContentChange} onPositionChange={handlePositionChange} onConnect={handleConnect} selected={selectedItem === it.id || connectingFrom === it.id} onSelect={setSelectedItem} metadata={it.metadata} />
-          </div>
-        ))}
+        <div className="relative w-full h-full">
+          {items.map((it) => (
+            <div key={it.id}>
+              <CorkboardItem 
+                id={it.id} 
+                type={it.type} 
+                content={it.content} 
+                image={it.image} 
+                initialPosition={it.position} 
+                size={it.size} 
+                onSizeChange={handleSizeChange} 
+                onContentChange={handleContentChange} 
+                onPositionChange={handlePositionChange} 
+                onConnect={handleConnect} 
+                selected={selectedItem === it.id || connectingFrom === it.id} 
+                onSelect={setSelectedItem} 
+                metadata={it.metadata} 
+              />
+            </div>
+          ))}
+        </div>
 
         {connectingFrom && (
           <div className="absolute bottom-4 right-4 bg-amber-100 text-amber-900 px-3 py-1.5 rounded-md text-xs border">Select another item to connect</div>

@@ -71,7 +71,7 @@ export const CorkboardItem = ({ id, type, content, image, initialPosition, onCon
   drag(drop(ref));
 
   // Resizing logic
-  useEffect(()=>{
+  useEffect(() => {
     const onMove = (e: MouseEvent) => {
       if (!dragStartSize.current || !dragStartMouse.current) return;
       const dx = e.clientX - dragStartMouse.current.x;
@@ -79,14 +79,17 @@ export const CorkboardItem = ({ id, type, content, image, initialPosition, onCon
       const next = { w: Math.max(160, dragStartSize.current.w + dx), h: Math.max(120, dragStartSize.current.h + dy) };
       setBoxSize(next);
     };
+    
     const onUp = () => {
       if (dragStartSize.current) {
         onSizeChange?.(id, boxSize);
       }
-      dragStartSize.current = null; dragStartMouse.current = null;
+      dragStartSize.current = null; 
+      dragStartMouse.current = null;
       window.removeEventListener('mousemove', onMove);
       window.removeEventListener('mouseup', onUp);
     };
+    
     const el = resizeRef.current;
     const onDown = (e: MouseEvent) => {
       e.stopPropagation();
@@ -95,8 +98,18 @@ export const CorkboardItem = ({ id, type, content, image, initialPosition, onCon
       window.addEventListener('mousemove', onMove);
       window.addEventListener('mouseup', onUp);
     };
-    el?.addEventListener('mousedown', onDown);
-    return () => { el?.removeEventListener('mousedown', onDown); window.removeEventListener('mousemove', onMove); window.removeEventListener('mouseup', onUp); };
+    
+    if (el) {
+      el.addEventListener('mousedown', onDown);
+    }
+    
+    return () => { 
+      if (el) {
+        el.removeEventListener('mousedown', onDown); 
+      }
+      window.removeEventListener('mousemove', onMove); 
+      window.removeEventListener('mouseup', onUp); 
+    };
   }, [boxSize, id, onSizeChange]);
 
   const PinComponent = () => (
@@ -113,12 +126,26 @@ export const CorkboardItem = ({ id, type, content, image, initialPosition, onCon
   const isStickyNote = type === 'note' || type === 'clue';
   const baseWidth = boxSize.w; const baseHeight = boxSize.h;
 
-  const commonStyle = `overflow-hidden shadow-lg border-2 p-3 transition-all duration-200 corkboard-item ${selected ? 'ring-2 ring-primary shadow-primary/20 shadow-xl' : ''}`;
+  const commonStyle = `overflow-hidden shadow-lg border-2 p-3 transition-all duration-200 corkboard-item ${selected ? 'ring-2 ring-primary shadow-primary/20 shadow-xl z-30' : 'z-10'}`;
 
   return (
-    <div ref={ref} className={`absolute cursor-move select-none z-10 ${selected ? 'z-20' : 'z-10'}`} style={{ left: position.x, top: position.y, opacity, transform: `rotate(${rotation}deg)`, transition: isDragging ? 'none' : 'box-shadow 0.2s ease' }} onClick={handleClick} onDoubleClick={() => setEditing(true)}>
+    <div 
+      ref={ref} 
+      className={`absolute cursor-move select-none ${selected ? 'z-30' : 'z-10'}`} 
+      style={{ 
+        left: position.x, 
+        top: position.y, 
+        opacity, 
+        transform: `rotate(${rotation}deg)`, 
+        transition: isDragging ? 'none' : 'box-shadow 0.2s ease',
+        width: baseWidth,
+        height: baseHeight
+      }} 
+      onClick={handleClick} 
+      onDoubleClick={() => setEditing(true)}
+    >
       {isStickyNote ? (
-        <div className={`${expanded ? 'w-[300px]' : ''} ${commonStyle} ${type === 'note' ? 'bg-yellow-300' : 'bg-orange-300'} font-handwriting relative`} style={{ width: baseWidth, height: baseHeight }}>
+        <div className={`${expanded ? 'w-[300px]' : ''} ${commonStyle} ${type === 'note' ? 'bg-yellow-300' : 'bg-orange-300'} font-handwriting relative`} style={{ width: '100%', height: '100%' }}>
           <PinComponent />
           <div className="flex justify-between items-start">
             <div className="flex items-center space-x-1"><NoteIcon /><span className="text-xs font-bold uppercase opacity-70 text-black">{type}</span></div>
@@ -136,7 +163,7 @@ export const CorkboardItem = ({ id, type, content, image, initialPosition, onCon
           <div ref={resizeRef} className="absolute right-1 bottom-1 h-4 w-4 cursor-se-resize bg-black/20 rounded-sm" />
         </div>
       ) : (
-        <Card className={`${commonStyle} ${type==='photo'?'border-blue-500 bg-white':'bg-card'} relative`} style={{ width: baseWidth, height: baseHeight }}>
+        <Card className={`${commonStyle} ${type==='photo'?'border-blue-500 bg-white':'bg-card'} relative`} style={{ width: '100%', height: '100%' }}>
           <PinComponent />
           {/* Crosshair scan overlay when loading */}
           {scan && <div className="absolute inset-0 holo-crosshair animate-[fade-in_0.2s_ease-out]" />}

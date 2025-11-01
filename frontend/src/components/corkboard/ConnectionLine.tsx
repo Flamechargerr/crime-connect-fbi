@@ -37,6 +37,10 @@ export const ConnectionLine: React.FC<ConnectionLineProps> = ({
   const centerX = startPos.x + dx / 2;
   const centerY = startPos.y + dy / 2;
 
+  // Ensure minimum length to prevent rendering issues
+  const minLength = 20;
+  const renderLength = Math.max(length, minLength);
+
   // Get line style based on the style prop
   const getLineStyle = () => {
     switch (style) {
@@ -69,7 +73,7 @@ export const ConnectionLine: React.FC<ConnectionLineProps> = ({
 
   return (
     <div
-      className="absolute pointer-events-none z-0"
+      className="absolute pointer-events-none z-0 connection-line"
       style={{
         top: 0,
         left: 0,
@@ -80,7 +84,7 @@ export const ConnectionLine: React.FC<ConnectionLineProps> = ({
       <div
         className={`absolute ${animated ? 'animate-pulse' : ''}`}
         style={{
-          width: `${length}px`,
+          width: `${renderLength}px`,
           height: `${thickness}px`,
           backgroundColor: color,
           transformOrigin: '0 50%',
@@ -109,9 +113,13 @@ export const ConnectionLine: React.FC<ConnectionLineProps> = ({
         <div
           className="absolute bg-white font-handwriting text-black text-xs px-2 py-1 rounded z-10 transform -translate-y-1/2 border border-black/10 shadow-md"
           style={{
-            transform: `translate(${centerX - 20}px, ${centerY - 15}px)`,
+            left: `${centerX}px`,
+            top: `${centerY}px`,
+            transform: 'translate(-50%, -50%)',
             whiteSpace: 'nowrap',
             fontWeight: 'bold',
+            pointerEvents: 'auto',
+            cursor: 'pointer',
           }}
         >
           {label}
