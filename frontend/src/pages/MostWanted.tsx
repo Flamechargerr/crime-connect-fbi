@@ -216,19 +216,6 @@ const MostWanted: React.FC = () => {
     }
   }, [criminals]);
 
-  // Ensure sortBy always has a valid value
-  const getValidSortBy = (): 'name' | 'bounty' | 'lastSeen' | 'dateAdded' => {
-    if (!sortBy) return 'dateAdded';
-    const validValues: Array<'name' | 'bounty' | 'lastSeen' | 'dateAdded'> = ['name', 'bounty', 'lastSeen', 'dateAdded'];
-    return validValues.includes(sortBy) ? sortBy : 'dateAdded';
-  };
-
-  // Ensure sortDirection always has a valid value
-  const getValidSortDirection = (): 'asc' | 'desc' => {
-    if (!sortDirection) return 'asc';
-    return sortDirection === 'asc' || sortDirection === 'desc' ? sortDirection : 'asc';
-  };
-
   const filteredCriminals = criminals
     .filter(criminal => {
       const matchesSearch = criminal.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -244,11 +231,17 @@ const MostWanted: React.FC = () => {
     .sort((a, b) => {
       let comparison = 0;
       
-      // Use validated values
-      const validSortBy = getValidSortBy();
-      const validSortDirection = getValidSortDirection();
+      // Ensure we have valid values with fallbacks
+      const validSortBy = sortBy || 'dateAdded';
+      const validSortDirection = sortDirection || 'asc';
       
-      switch (validSortBy) {
+      // Validate sortBy value
+      const sortField = ['name', 'bounty', 'lastSeen', 'dateAdded'].includes(validSortBy) ? validSortBy : 'dateAdded';
+      
+      // Validate sortDirection value
+      const direction = validSortDirection === 'asc' || validSortDirection === 'desc' ? validSortDirection : 'asc';
+      
+      switch (sortField) {
         case 'name':
           comparison = a.name.localeCompare(b.name);
           break;
@@ -265,7 +258,7 @@ const MostWanted: React.FC = () => {
           comparison = 0;
       }
       
-      return validSortDirection === 'asc' ? comparison : -comparison;
+      return direction === 'asc' ? comparison : -comparison;
     });
 
   const formatCurrency = (amount: number) => {
@@ -504,7 +497,7 @@ const MostWanted: React.FC = () => {
             <option value="low">Low</option>
           </select>
           <select
-            value={getValidSortBy()}
+            value={sortBy || 'dateAdded'}
             onChange={e => setSortBy(e.target.value as 'name' | 'bounty' | 'lastSeen' | 'dateAdded')}
             className="border rounded px-2 py-1 text-sm"
           >
@@ -514,7 +507,7 @@ const MostWanted: React.FC = () => {
             <option value="lastSeen">Sort by Last Seen</option>
           </select>
           <select
-            value={getValidSortDirection()}
+            value={sortDirection || 'asc'}
             onChange={e => setSortDirection(e.target.value as 'asc' | 'desc')}
             className="border rounded px-2 py-1 text-sm"
           >
