@@ -40,7 +40,7 @@ const queryClient = new QueryClient({
   },
 });
 
-// Set FBI document title
+// Set FBI document title for security
 document.title = "FBI CrimeConnect - Classified System";
 
 // Ensure React is properly initialized before rendering components
