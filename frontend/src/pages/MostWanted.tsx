@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -204,8 +204,8 @@ const MostWanted: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'captured'>('all');
   const [dangerFilter, setDangerFilter] = useState<'all' | 'extreme' | 'high' | 'moderate' | 'low'>('all');
-  const [sortBy, setSortBy] = useState<'name' | 'bounty' | 'lastSeen' | 'dateAdded'>('dateAdded');
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const [sortByState, setSortByState] = useState<'name' | 'bounty' | 'lastSeen' | 'dateAdded'>('dateAdded');
+  const [sortDirectionState, setSortDirectionState] = useState<'asc' | 'desc'>('asc');
   const [selectedCriminal, setSelectedCriminal] = useState<MostWantedCriminal | null>(null);
   
   // 2. On mount, seed with mock data if localStorage is empty
@@ -216,50 +216,62 @@ const MostWanted: React.FC = () => {
     }
   }, [criminals]);
 
-  const filteredCriminals = criminals
-    .filter(criminal => {
-      const matchesSearch = criminal.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           criminal.crimes.some(crime => crime.toLowerCase().includes(searchTerm.toLowerCase())) ||
-                           criminal.lastSeen.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           criminal.caseNumber.toLowerCase().includes(searchTerm.toLowerCase());
-      
-      const matchesStatus = statusFilter === 'all' || criminal.status === statusFilter;
-      const matchesDanger = dangerFilter === 'all' || criminal.dangerLevel === dangerFilter;
-      
-      return matchesSearch && matchesStatus && matchesDanger;
-    })
-    .sort((a, b) => {
-      let comparison = 0;
-      
-      // Ensure we have valid values with fallbacks
-      const validSortBy = sortBy || 'dateAdded';
-      const validSortDirection = sortDirection || 'asc';
-      
-      // Validate sortBy value
-      const sortField = ['name', 'bounty', 'lastSeen', 'dateAdded'].includes(validSortBy) ? validSortBy : 'dateAdded';
-      
-      // Validate sortDirection value
-      const direction = validSortDirection === 'asc' || validSortDirection === 'desc' ? validSortDirection : 'asc';
-      
-      switch (sortField) {
-        case 'name':
-          comparison = a.name.localeCompare(b.name);
-          break;
-        case 'bounty':
-          comparison = a.reward - b.reward;
-          break;
-        case 'lastSeen':
-          comparison = a.lastSeen.localeCompare(b.lastSeen);
-          break;
-        case 'dateAdded':
-          comparison = new Date(a.dateAdded).getTime() - new Date(b.dateAdded).getTime();
-          break;
-        default:
-          comparison = 0;
-      }
-      
-      return direction === 'asc' ? comparison : -comparison;
-    });
+  // Create a safe getter function for sortBy
+  const getSortBy = useCallback(() => {
+    return sortByState || 'dateAdded';
+  }, [sortByState]);
+
+  // Create a safe getter function for sortDirection
+  const getSortDirection = useCallback(() => {
+    return sortDirectionState || 'asc';
+  }, [sortDirectionState]);
+
+  const filteredCriminals = useMemo(() => {
+    return criminals
+      .filter(criminal => {
+        const matchesSearch = criminal.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                             criminal.crimes.some(crime => crime.toLowerCase().includes(searchTerm.toLowerCase())) ||
+                             criminal.lastSeen.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                             criminal.caseNumber.toLowerCase().includes(searchTerm.toLowerCase());
+        
+        const matchesStatus = statusFilter === 'all' || criminal.status === statusFilter;
+        const matchesDanger = dangerFilter === 'all' || criminal.dangerLevel === dangerFilter;
+        
+        return matchesSearch && matchesStatus && matchesDanger;
+      })
+      .sort((a, b) => {
+        let comparison = 0;
+        
+        // Use getter functions to ensure we always have valid values
+        const sortByValue = getSortBy();
+        const sortDirectionValue = getSortDirection();
+        
+        // Validate sortBy value
+        const sortField = ['name', 'bounty', 'lastSeen', 'dateAdded'].includes(sortByValue) ? sortByValue : 'dateAdded';
+        
+        // Validate sortDirection value
+        const direction = sortDirectionValue === 'asc' || sortDirectionValue === 'desc' ? sortDirectionValue : 'asc';
+        
+        switch (sortField) {
+          case 'name':
+            comparison = a.name.localeCompare(b.name);
+            break;
+          case 'bounty':
+            comparison = a.reward - b.reward;
+            break;
+          case 'lastSeen':
+            comparison = a.lastSeen.localeCompare(b.lastSeen);
+            break;
+          case 'dateAdded':
+            comparison = new Date(a.dateAdded).getTime() - new Date(b.dateAdded).getTime();
+            break;
+          default:
+            comparison = 0;
+        }
+        
+        return direction === 'asc' ? comparison : -comparison;
+      });
+  }, [criminals, searchTerm, statusFilter, dangerFilter, sortByState, sortDirectionState, getSortBy, getSortDirection]);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -497,8 +509,8 @@ const MostWanted: React.FC = () => {
             <option value="low">Low</option>
           </select>
           <select
-            value={sortBy || 'dateAdded'}
-            onChange={e => setSortBy(e.target.value as 'name' | 'bounty' | 'lastSeen' | 'dateAdded')}
+            value={sortByState || 'dateAdded'}
+            onChange={e => setSortByState(e.target.value as 'name' | 'bounty' | 'lastSeen' | 'dateAdded')}
             className="border rounded px-2 py-1 text-sm"
           >
             <option value="dateAdded">Sort by Date Added</option>
@@ -507,8 +519,8 @@ const MostWanted: React.FC = () => {
             <option value="lastSeen">Sort by Last Seen</option>
           </select>
           <select
-            value={sortDirection || 'asc'}
-            onChange={e => setSortDirection(e.target.value as 'asc' | 'desc')}
+            value={sortDirectionState || 'asc'}
+            onChange={e => setSortDirectionState(e.target.value as 'asc' | 'desc')}
             className="border rounded px-2 py-1 text-sm"
           >
             <option value="asc">Ascending</option>
