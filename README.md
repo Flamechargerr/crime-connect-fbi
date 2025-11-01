@@ -1,285 +1,180 @@
-# 🕵️ FBI CrimeConnect - TOP SECRET INTELLIGENCE PLATFORM
+# 🕵️ FBI CrimeConnect - Criminal Intelligence Dashboard
 
-[![Security Level](https://img.shields.io/badge/Security%20Level-TOP%20SECRET-red?style=for-the-badge&logo=lock)](https://github.com/Flamechargerr/crime-connect-fbi)
-[![Status](https://img.shields.io/badge/Status-OPERATIONAL-brightgreen?style=for-the-badge&logo=statuspage)](https://crime-connect-fbi.netlify.app/)
-[![Classification](https://img.shields.io/badge/Classification-FBI%20ONLY-red?style=for-the-badge&logo=fbi)](https://github.com/Flamechargerr/crime-connect-fbi)
 [![React](https://img.shields.io/badge/React-18+-61DAFB?style=for-the-badge&logo=react)](https://reactjs.org/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-009688?style=for-the-badge&logo=fastapi)](https://fastapi.tiangolo.com/)
-[![MongoDB](https://img.shields.io/badge/MongoDB-7.0+-47A248?style=for-the-badge&logo=mongodb)](https://www.mongodb.com/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-3178C6?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
+[![Tailwind](https://img.shields.io/badge/Tailwind_CSS-3.0+-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
+[![Vite](https://img.shields.io/badge/Vite-5.0+-646CFF?style=for-the-badge&logo=vite)](https://vitejs.dev/)
+[![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
 
-> **🚨 CLASSIFIED SYSTEM ACCESS RESTRICTED** - This is a sophisticated crime documentation and intelligence management system designed for federal law enforcement agencies. Access is restricted to authorized personnel only.
-
----
-
-## 🎯 MISSION CRITICAL: TRANSFORMING FEDERAL INVESTIGATIONS
-
-Welcome to **FBI CrimeConnect**, the most advanced criminal intelligence management platform ever created for federal law enforcement. This isn't just another dashboard - it's a **revolutionary system** that transforms how the FBI handles crime documentation, evidence tracking, and investigative workflows with military-grade security and a cutting-edge hacker aesthetic.
-
-🔐 **Operational since:** January 2025  
-🚀 **Current deployment:** [crime-connect-fbi.netlify.app](https://crime-connect-fbi.netlify.app/)  
-📊 **Active cases managed:** 10,000+  
-🕵️ **Agents connected:** 500+ federal officers
+> A sleek criminal intelligence dashboard with FBI-inspired design and hacker aesthetics. Built with modern web technologies for a thrilling user experience.
 
 ---
 
-## 🌟 WHY FBI CRIMECONNECT IS THE FUTURE OF LAW ENFORCEMENT
+## 🎯 PROJECT OVERVIEW
 
-### 🔥 **HACKER AESTHETIC MEETS FEDERAL SECURITY**
-- **Cyberpunk Interface**: Glowing terminals, scan lines, and matrix effects
-- **Terminal Commands**: Real-time hacker vibes with authentic FBI styling
-- **Dark Theme**: Professional law enforcement aesthetic with hacker flair
-- **Animated Elements**: Live data streams and security scanners
+**FBI CrimeConnect** is a criminal intelligence management dashboard featuring a dark-themed interface with cyberpunk aesthetics. This project demonstrates modern frontend development techniques with an FBI-inspired UI that includes:
 
-### 🚀 **LIGHTNING-FAST PERFORMANCE**
-- **Instant Loading**: < 2 seconds page load time
-- **Real-Time Updates**: Live data synchronization across all modules
-- **Scalable Architecture**: Handles 1000+ concurrent federal agents
-- **Military-Grade Encryption**: AES-256 for all classified data
-
-### 🎯 **COMPREHENSIVE INVESTIGATION SUITE**
-- **Case Management**: Track complex investigations from inception to closure
-- **Criminal Database**: Most wanted lists with BOLO alerts and profiling
-- **Evidence Locker**: Secure digital evidence storage with blockchain integrity
-- **Investigation Board**: Visual mapping of suspects, locations, and evidence
-- **Witness Protection**: Confidential registry with identity protection protocols
+- 🔥 Hacker-style terminal effects and glowing elements
+- 🕶️ Dark theme with scan lines and matrix background
+- 📊 Interactive data visualization
+- 🎨 Modern UI components with glass morphism effects
 
 ---
 
-## 🛠️ CUTTING-EDGE TECHNOLOGY STACK
+## 🚀 LIVE DEMO
 
-### 💻 **FRONTEND COMMAND CENTER**
-```javascript
-// React 18 with modern hooks and context
-// Tailwind CSS with custom FBI hacker theme
-// Shadcn/UI components with Radix primitives
-// React Query for server state management
-// Lucide React for consistent iconography
-```
+Check out the deployed application: [https://crime-connect-fbi.netlify.app](https://crime-connect-fbi.netlify.app)
 
-### ⚡ **BACKEND WAR ROOM**
-```python
-# FastAPI with async/await support
-# MongoDB with Motor async driver
-# JWT authentication with role-based access
-# Pydantic models for type safety
-# Automatic OpenAPI/Swagger documentation
-```
-
-### 🔐 **SECURITY PROTOCOLS**
-- **Multi-Factor Authentication**: Clearance level verification
-- **Role-Based Access Control**: SECRET/TOP SECRET/CONFIDENTIAL
-- **Encrypted Communications**: TLS 1.3 everywhere
-- **Activity Logging**: Comprehensive audit trails
-- **Session Management**: Real-time monitoring
+**Demo Credentials:**
+- Email: `demo@example.com`
+- Password: `demo123`
 
 ---
 
-## 🎮 TACTICAL DEMO ACCESS
+## 🛠️ TECHNOLOGY STACK
 
-Want to experience the future of federal investigations? Try our demo mode:
+### Frontend
+- **React 18** with TypeScript
+- **Vite** for blazing fast builds
+- **Tailwind CSS** for styling
+- **Shadcn/UI** components
+- **React Router** for navigation
 
-**🔐 DEMO CREDENTIALS**
-```
-Email: demo@fbi.gov
-Password: demo123
-Clearance Level: SECRET
-```
-
-**🚨 DEMO FEATURES**
-- Full system access with classified mock data
-- Real-time dashboard with global crime monitoring
-- Interactive investigation board with drag-and-drop
-- Complete case management workflow
-- Evidence locker with forensic tracking
+### Backend
+- **FastAPI** (Python)
+- **MongoDB** for data storage
 
 ---
 
-## 🚀 QUICK DEPLOYMENT PROTOCOL
+## 🎨 KEY FEATURES
 
-### 🛠️ **LOCAL DEVELOPMENT SETUP**
+### 🔥 HACKER AESTHETICS
+- Terminal-style interface with glowing text effects
+- Matrix background animation
+- Scan line overlay for CRT monitor feel
+- Cyberpunk color scheme with blues and greens
 
-#### **1. SYSTEM REQUIREMENTS**
-```bash
-# Install Node.js 18+ and Python 3.8+
-node --version    # Should be 18+
-python --version  # Should be 3.8+
-```
+### 📊 DASHBOARD COMPONENTS
+- Interactive case management system
+- Criminal database with profiling
+- Evidence tracking and management
+- Investigation board with visual mapping
+- Real-time data visualization
 
-#### **2. BACKEND WAR ROOM ACTIVATION**
-```bash
-cd backend
+### 🎯 CORE MODULES
+- **Dashboard** - Main intelligence overview
+- **Cases** - Case file management
+- **Criminals** - Criminal database
+- **Evidence** - Evidence locker
+- **Witnesses** - Witness protection registry
+- **Officers** - Agent management
+- **Courts** - Court scheduling
+- **Reports** - Intelligence reporting
+- **Corkboard** - Investigation board
+- **Globe** - Global crime visualization
 
-# Install Python dependencies
-pip install -r requirements.txt
+---
 
-# Start the command center
-uvicorn server:app --host 0.0.0.0 --port 8001 --reload
-```
+## 🚀 QUICK START
 
-#### **3. FRONTEND TERMINAL LAUNCH**
+### Prerequisites
+- Node.js 18+
+- Python 3.8+
+- MongoDB
+
+### Frontend Setup
 ```bash
 cd frontend
-
-# Install dependencies
-yarn install
-
-# Activate the hacker interface
-yarn start
+npm install
+npm run dev
 ```
 
-#### **4. SYSTEM ACCESS POINTS**
-- **Frontend Terminal**: http://localhost:3000 🔥
-- **Backend War Room**: http://localhost:8001 ⚡
-- **API Documentation**: http://localhost:8001/docs 📚
-
----
-
-## 🎯 CORE INVESTIGATION MODULES
-
-### 📊 **INTELLIGENCE DASHBOARD**
-> *"The nerve center of federal investigations"*
-
-- **Global Crime Monitor**: Real-time activity visualization
-- **Case Statistics**: Key performance indicators
-- **Security Alerts**: Threat level notifications
-- **Agent Activity**: Resource allocation tracking
-
-### 🗂️ **CASE FILES MANAGEMENT**
-> *"Every detail matters in federal investigations"*
-
-- **Classified Case Files**: Priority level management
-- **Evidence Chain**: Forensic tracking system
-- **Investigation Timeline**: Visual reconstruction
-- **Multi-Agency Collaboration**: Joint task forces
-
-### 🎯 **CRIMINAL DATABASE**
-> *"The most comprehensive criminal registry in federal service"*
-
-- **Most Wanted Lists**: BOLO alerts and profiling
-- **Criminal Profiling**: Behavioral analysis
-- **Biometric Integration**: Advanced identification
-- **Risk Assessment**: Predictive algorithms
-
-### 🛡️ **WITNESS PROTECTION**
-> *"Protecting those who protect America"*
-
-- **Confidential Registry**: Identity protection protocols
-- **Safe House Management**: Secure location tracking
-- **Relocation Tracking**: Movement monitoring
-- **Threat Assessment**: Real-time danger evaluation
-
----
-
-## 🎨 FBI HACKER AESTHETIC FEATURES
-
-### 🔥 **CYBERPUNK INTERFACE**
-```css
-/* FBI Official Colors with hacker vibes */
---fbi-navy: #0c1824        /* Terminal backgrounds */
---fbi-blue: #009cff        /* Interactive elements */
---fbi-red: #C41230         /* Alerts and warnings */
---fbi-gold: #FFD700        /* Highlights and badges */
-
-/* Hacker Terminal Effects */
---terminal-green: #00ff00  /* Classic terminal text */
---matrix-green: #00cc00    /* Matrix code rain */
---scan-line: rgba(0,255,0,0.1) /* CRT scan lines */
+### Backend Setup
+```bash
+cd backend
+pip install -r requirements.txt
+uvicorn server:app --host 0.0.0.0 --port 8001
 ```
 
-### ⚡ **ANIMATED SECURITY ELEMENTS**
-- **Matrix Background**: Falling code effect
-- **Scan Lines**: Authentic CRT monitor simulation
-- **Glow Effects**: Neon terminal aesthetics
-- **Data Streams**: Live updating information
-- **Holographic Elements**: 3D interface components
+---
+
+## 🎯 SCREENSHOTS
+
+### Dashboard View
+![Dashboard](https://customer-assets.emergentagent.com/job_6c7378a1-9e3e-45bb-a9a3-4c6db8ffca0b/artifacts/8q7odfrq_image.png)
+
+### Reports Section
+![Reports](https://customer-assets.emergentagent.com/job_6c7378a1-9e3e-45bb-a9a3-4c6db8ffca0b/artifacts/39184krj_image.png)
+
+### Investigation Board
+![Investigation Board](https://customer-assets.emergentagent.com/job_6c7378a1-9e3e-45bb-a9a3-4c6db8ffca0b/artifacts/h2mqmzro_image.png)
 
 ---
 
-## 🔐 SECURITY CLEARANCE LEVELS
+## 📁 PROJECT STRUCTURE
 
-### 🛡️ **ACCESS TIER CLASSIFICATION**
-| Level | Access Rights | Description |
-|-------|---------------|-------------|
-| **UNCLASSIFIED** | Public info | Basic system access |
-| **CONFIDENTIAL** | Internal use | Standard case access |
-| **SECRET** | Sensitive data | Restricted personnel |
-| **TOP SECRET** | Critical ops | Senior agents only |
-
-### 🔐 **AUTHENTICATION PROTOCOL**
-1. **Primary Auth**: Username/password with complexity
-2. **Secondary**: Email/SMS-based OTP
-3. **Clearance Check**: Background verification
-4. **Session Token**: Encrypted with expiration
-
----
-
-## 📈 PERFORMANCE METRICS
-
-### ⚡ **SYSTEM BENCHMARKS**
-- **Page Load Time**: < 2 seconds ⚡
-- **API Response**: < 500ms 🚀
-- **Database Query**: < 100ms 🔥
-- **Concurrent Users**: 1000+ agents 👥
-- **Security Score**: 98/100 🔐
-- **Accessibility**: WCAG 2.1 AA compliant ♿
+```
+crime-connect-fbi/
+├── frontend/
+│   ├── src/
+│   │   ├── components/     # Reusable UI components
+│   │   ├── pages/          # Page components
+│   │   ├── context/        # React context providers
+│   │   └── hooks/          # Custom hooks
+├── backend/
+│   ├── server.py           # FastAPI application
+│   └── requirements.txt    # Python dependencies
+└── README.md               # This file
+```
 
 ---
 
-## 🌟 UPCOMING ENHANCEMENTS
+## 🎨 DESIGN ELEMENTS
 
-### 🚀 **FUTURE DEVELOPMENT ROADMAP**
-- **AI Crime Prediction**: Machine learning analytics
-- **Biometric Integration**: Advanced identification
-- **Mobile Application**: Field agent support
-- **Blockchain Evidence**: Immutable record keeping
-- **Voice Commands**: Hands-free operation
-- **Augmented Reality**: Crime scene reconstruction
+### Color Scheme
+- **Primary**: `#009cff` (FBI Blue)
+- **Background**: `#0c1824` (Dark Navy)
+- **Accent**: `#C41230` (FBI Red)
+- **Terminal**: `#00ff00` (Hacker Green)
 
----
-
-## 📞 EMERGENCY SUPPORT
-
-### 🆘 **24/7 CRITICAL SUPPORT**
-- **Hotline**: 1-800-FBI-TECH (1-800-324-8324)
-- **Secure Email**: emergency@fbi-crimeconnect.gov
-- **System Chat**: Available via dashboard
-
-### 📧 **TECHNICAL ASSISTANCE**
-- **Hours**: Monday-Friday, 8AM-6PM EST
-- **Email**: support@fbi-crimeconnect.gov
-- **Documentation**: Comprehensive guides available
+### UI Features
+- Glass morphism cards
+- Animated hover effects
+- Responsive design
+- Dark/light theme toggle
+- Interactive data tables
 
 ---
 
-## ⚖️ CLASSIFIED LEGAL NOTICE
+## 🤝 CONTRIBUTING
 
-> **WARNING: FEDERAL LAW ENFORCEMENT SYSTEM**
-> 
-> This software is classified as **FOR OFFICIAL USE ONLY** and is restricted to authorized federal law enforcement personnel. Unauthorized access, use, or distribution is strictly prohibited and may result in criminal prosecution under federal law.
-> 
-> All data processed by this system is subject to federal data protection regulations including the Privacy Act of 1974, CJIS Security Policy, and FISMA compliance requirements.
+This project is for educational and demonstration purposes. Feel free to fork and modify for your own projects!
+
+1. Fork the repository
+2. Create your feature branch
+3. Commit your changes
+4. Push to the branch
+5. Open a pull request
 
 ---
 
-## 🏆 DEVELOPMENT TEAM
+## 📄 LICENSE
 
-### 👥 **FBI CYBER DIVISION**
-- **Lead Developer**: Agent Sarah Johnson (FBI-7734)
-- **Security Architect**: Agent Michael Chen (FBI-8845)
-- **UI/UX Designer**: Agent Emily Rodriguez (FBI-9956)
-- **Quality Assurance**: Agent Lisa Thompson (FBI-2178)
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-### 🎖️ **SPECIAL RECOGNITION**
-- **FBI IT Division** for infrastructure support
-- **CJIS Division** for compliance guidance
-- **Field Offices** for user feedback and testing
+---
+
+## 🙏 ACKNOWLEDGEMENTS
+
+- Built with [React](https://reactjs.org/)
+- Styled with [Tailwind CSS](https://tailwindcss.com/)
+- UI components from [Shadcn/UI](https://ui.shadcn.com/)
+- Icons from [Lucide Icons](https://lucide.dev/)
+- Deployed with [Netlify](https://netlify.com/)
 
 ---
 
 <div align="center">
-  <h3>🔐 FBI CRIMECONNECT v4.0.0</h3>
-  <p><strong>Build 20250101 | Security Level: TOP SECRET | Status: OPERATIONAL</strong></p>
-  <p><em>Protecting America Through Advanced Intelligence Technology</em></p>
-  <p>🔥 <strong>CLASSIFIED SYSTEM - AUTHORIZED PERSONNEL ONLY</strong> 🔥</p>
-  <p><em>This system contains sensitive information related to federal law enforcement operations.</em></p>
+  <h3>Made with 🔥 and 🕶️</h3>
+  <p><em>A fun project with FBI-inspired design aesthetics</em></p>
 </div>
