@@ -25,24 +25,24 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: yarn
+          cache: npm
 
       - name: Install deps
         working-directory: frontend
         run: |
-          yarn install --frozen-lockfile
+          npm ci
 
-      - name: Build (CRA with public URL for GH Pages)
+      - name: Build (Vite with public URL for GH Pages)
         working-directory: frontend
         env:
           PUBLIC_URL: /crime-connect-fbi
         run: |
-          yarn build
+          npm run build
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: frontend/build
+          path: frontend/dist
 
   deploy:
     runs-on: ubuntu-latest
