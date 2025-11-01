@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils"
 
-// FBI Skeleton Component
+// FBI Skeleton Component - Classified
 function Skeleton({
   className,
   ...props
