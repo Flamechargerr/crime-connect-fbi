@@ -208,6 +208,10 @@ const MostWanted: React.FC = () => {
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [selectedCriminal, setSelectedCriminal] = useState<MostWantedCriminal | null>(null);
   
+  // Add defensive check for sortBy
+  const safeSortBy = sortBy && ['name', 'bounty', 'lastSeen', 'dateAdded'].includes(sortBy) ? sortBy : 'dateAdded';
+  const safeSortDirection = sortDirection && ['asc', 'desc'].includes(sortDirection) ? sortDirection : 'asc';
+  
   // 2. On mount, seed with mock data if localStorage is empty
   useEffect(() => {
     if (criminals.length === 0) {
@@ -231,8 +235,8 @@ const MostWanted: React.FC = () => {
     .sort((a, b) => {
       let comparison = 0;
       
-      // Make sure sortBy is defined
-      const sortField = sortBy || 'dateAdded';
+      // Use safe variables with fallbacks
+      const sortField = safeSortBy || 'dateAdded';
       
       switch (sortField) {
         case 'name':
@@ -251,7 +255,8 @@ const MostWanted: React.FC = () => {
           comparison = 0;
       }
       
-      return sortDirection === 'asc' ? comparison : -comparison;
+      const direction = safeSortDirection || 'asc';
+      return direction === 'asc' ? comparison : -comparison;
     });
 
   const formatCurrency = (amount: number) => {
@@ -490,7 +495,7 @@ const MostWanted: React.FC = () => {
             <option value="low">Low</option>
           </select>
           <select
-            value={sortBy || 'dateAdded'}
+            value={safeSortBy}
             onChange={e => setSortBy(e.target.value as 'name' | 'bounty' | 'lastSeen' | 'dateAdded')}
             className="border rounded px-2 py-1 text-sm"
           >
@@ -500,7 +505,7 @@ const MostWanted: React.FC = () => {
             <option value="lastSeen">Sort by Last Seen</option>
           </select>
           <select
-            value={sortDirection || 'asc'}
+            value={safeSortDirection}
             onChange={e => setSortDirection(e.target.value as 'asc' | 'desc')}
             className="border rounded px-2 py-1 text-sm"
           >
