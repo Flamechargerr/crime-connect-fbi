@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { AlertCircle, FileWarning, Skull, DollarSign, Filter, Search, MapPin, Eye, UserCheck, Calendar, Hash, Award } from 'lucide-react';
+import { AlertCircle, FileWarning, Skull, DollarSign, Filter, Search, MapPin, Eye, UserCheck, Calendar, Hash, Award, Download, Map } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 
 // Types for our Most Wanted entries
@@ -20,6 +20,8 @@ interface MostWantedCriminal {
   caution: string;
   dateAdded: string;
   caseNumber: string;
+  category: string; // New field for criminal categories
+  coordinates?: { lat: number; lng: number }; // For map visualization
 }
 
 // Mock data for the Most Wanted criminals - strictly typed to match MostWantedCriminal interface
@@ -37,6 +39,8 @@ const MOST_WANTED_DATA: MostWantedCriminal[] = [
     caution: 'Subject has violent tendencies and extensive weapons training. Do not approach.',
     dateAdded: '2023-04-15',
     caseNumber: 'FBI-2023-045789',
+    category: 'Violent Crimes',
+    coordinates: { lat: 41.8781, lng: -87.6298 }
   },
   {
     id: '2',
@@ -51,6 +55,8 @@ const MOST_WANTED_DATA: MostWantedCriminal[] = [
     caution: 'Subject may have altered appearance and is known to use multiple aliases.',
     dateAdded: '2023-06-22',
     caseNumber: 'FBI-2023-068912',
+    category: 'Cyber Crimes',
+    coordinates: { lat: 47.6062, lng: -122.3321 }
   },
   {
     id: '3',
@@ -65,6 +71,8 @@ const MOST_WANTED_DATA: MostWantedCriminal[] = [
     caution: 'Subject has extensive connections and resources to evade capture. May be traveling with armed associates.',
     dateAdded: '2023-01-30',
     caseNumber: 'FBI-2023-012345',
+    category: 'Organized Crime',
+    coordinates: { lat: 25.7617, lng: -80.1918 }
   },
   {
     id: '4',
@@ -79,6 +87,8 @@ const MOST_WANTED_DATA: MostWantedCriminal[] = [
     caution: 'Subject was found with extensive collection of weapons and survivalist equipment.',
     dateAdded: '2022-11-15',
     caseNumber: 'FBI-2022-115678',
+    category: 'Violent Crimes',
+    coordinates: { lat: 45.5152, lng: -122.6784 }
   },
   {
     id: '5',
@@ -93,6 +103,8 @@ const MOST_WANTED_DATA: MostWantedCriminal[] = [
     caution: 'Subject is highly trained in counter-surveillance and evasion tactics. Considered extremely dangerous.',
     dateAdded: '2023-03-10',
     caseNumber: 'FBI-2023-034567',
+    category: 'Terrorism',
+    coordinates: { lat: 41.0082, lng: 28.9784 }
   },
   {
     id: '6',
@@ -107,6 +119,8 @@ const MOST_WANTED_DATA: MostWantedCriminal[] = [
     caution: 'Subject frequently changes identity and may have undergone cosmetic surgery to alter appearance.',
     dateAdded: '2023-02-18',
     caseNumber: 'FBI-2023-023456',
+    category: 'Financial Crimes',
+    coordinates: { lat: 49.2827, lng: -123.1207 }
   },
   // Adding 5 new criminals to increase data set
   {
@@ -122,6 +136,8 @@ const MOST_WANTED_DATA: MostWantedCriminal[] = [
     caution: 'Subject is known to be violent when confronted and carries concealed weapons. Do not approach without proper backup.',
     dateAdded: '2023-08-15',
     caseNumber: 'FBI-2023-084567',
+    category: 'Organized Crime',
+    coordinates: { lat: 36.1699, lng: -115.1398 }
   },
   {
     id: '8',
@@ -136,6 +152,8 @@ const MOST_WANTED_DATA: MostWantedCriminal[] = [
     caution: 'Subject is extremely dangerous in digital environments and may attempt to hack into law enforcement systems. Monitor all digital communications.',
     dateAdded: '2023-08-20',
     caseNumber: 'FBI-2023-086789',
+    category: 'Cyber Crimes',
+    coordinates: { lat: 52.5200, lng: 13.4050 }
   },
   {
     id: '9',
@@ -150,6 +168,8 @@ const MOST_WANTED_DATA: MostWantedCriminal[] = [
     caution: 'Subject has extensive weapons cache and is known to be heavily armed. Approach with extreme caution.',
     dateAdded: '2023-08-25',
     caseNumber: 'FBI-2023-088901',
+    category: 'Terrorism',
+    coordinates: { lat: 4.7110, lng: -74.0721 }
   },
   {
     id: '10',
@@ -164,6 +184,8 @@ const MOST_WANTED_DATA: MostWantedCriminal[] = [
     caution: 'Subject may have fled the country and could be using false documents. Monitor international travel.',
     dateAdded: '2023-08-30',
     caseNumber: 'FBI-2023-080123',
+    category: 'Financial Crimes',
+    coordinates: { lat: 25.7617, lng: -80.1918 }
   },
   {
     id: '11',
@@ -178,6 +200,73 @@ const MOST_WANTED_DATA: MostWantedCriminal[] = [
     caution: 'Subject is extremely violent and has ordered the deaths of several victims. Do not approach without proper backup and negotiation team.',
     dateAdded: '2023-09-05',
     caseNumber: 'FBI-2023-092345',
+    category: 'Violent Crimes',
+    coordinates: { lat: 25.6866, lng: -100.3161 }
+  },
+  // Adding more criminals for pagination demo
+  {
+    id: '12',
+    name: 'Alexei Petrov',
+    image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3',
+    status: 'active',
+    dangerLevel: 'high',
+    crimes: ['Nuclear Smuggling', 'Terrorism'],
+    lastSeen: 'Prague, Czech Republic',
+    reward: 175000,
+    description: 'Petrov is suspected of attempting to sell nuclear materials to terrorist organizations. Former Russian nuclear scientist with access to classified information.',
+    caution: 'Subject is highly intelligent and dangerous. Has connections with multiple terrorist groups.',
+    dateAdded: '2023-10-12',
+    caseNumber: 'FBI-2023-104567',
+    category: 'Terrorism',
+    coordinates: { lat: 50.0755, lng: 14.4378 }
+  },
+  {
+    id: '13',
+    name: 'Maria Santos',
+    image: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=1976&auto=format&fit=crop&ixlib=rb-4.0.3',
+    status: 'active',
+    dangerLevel: 'moderate',
+    crimes: ['Human Trafficking', 'Child Exploitation'],
+    lastSeen: 'São Paulo, Brazil',
+    reward: 85000,
+    description: 'Santos operates an international human trafficking ring specializing in child exploitation. Has connections throughout South America and Europe.',
+    caution: 'Subject is known to be violent when confronted. Has multiple safe houses.',
+    dateAdded: '2023-10-18',
+    caseNumber: 'FBI-2023-107890',
+    category: 'Human Trafficking',
+    coordinates: { lat: -23.5505, lng: -46.6333 }
+  },
+  {
+    id: '14',
+    name: 'Thomas Reed',
+    image: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3',
+    status: 'active',
+    dangerLevel: 'extreme',
+    crimes: ['Biological Weapons', 'Terrorism'],
+    lastSeen: 'Geneva, Switzerland',
+    reward: 250000,
+    description: 'Reed is a biochemist suspected of developing biological weapons for terrorist organizations. Has a PhD in molecular biology and access to laboratory equipment.',
+    caution: 'Subject is extremely dangerous and should not be approached without hazmat protocols.',
+    dateAdded: '2023-10-25',
+    caseNumber: 'FBI-2023-102345',
+    category: 'Terrorism',
+    coordinates: { lat: 46.2044, lng: 6.1432 }
+  },
+  {
+    id: '15',
+    name: 'Yuki Tanaka',
+    image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=1976&auto=format&fit=crop&ixlib=rb-4.0.3',
+    status: 'active',
+    dangerLevel: 'high',
+    crimes: ['Art Theft', 'Forgery', 'Money Laundering'],
+    lastSeen: 'Tokyo, Japan',
+    reward: 60000,
+    description: 'Tanaka is an expert art thief who has stolen over $50 million in artwork from museums and private collections worldwide. Also forges documents and currency.',
+    caution: 'Subject is highly intelligent and has extensive knowledge of security systems.',
+    dateAdded: '2023-11-01',
+    caseNumber: 'FBI-2023-113456',
+    category: 'Financial Crimes',
+    coordinates: { lat: 35.6762, lng: 139.6503 }
   },
 ];
 
@@ -200,63 +289,80 @@ const saveMostWantedToStorage = (criminals: MostWantedCriminal[]) => {
 };
 
 const MostWanted: React.FC = () => {
-  const [criminals, setCriminals] = useState<MostWantedCriminal[]>(getMostWantedFromStorage());
+  const [criminals, setCriminals] = useState<MostWantedCriminal[]>(() => {
+    const stored = getMostWantedFromStorage();
+    return stored.length > 0 ? stored : MOST_WANTED_DATA;
+  });
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'captured'>('all');
   const [dangerFilter, setDangerFilter] = useState<'all' | 'extreme' | 'high' | 'moderate' | 'low'>('all');
-  const [sortByState, setSortByState] = useState<'name' | 'bounty' | 'lastSeen' | 'dateAdded'>('dateAdded');
-  const [sortDirectionState, setSortDirectionState] = useState<'asc' | 'desc'>('asc');
+  const [categoryFilter, setCategoryFilter] = useState<'all' | string>('all'); // New category filter
+  const [minReward, setMinReward] = useState<number>(0); // Reward range filter
+  const [maxReward, setMaxReward] = useState<number>(500000); // Reward range filter
+  const [currentPage, setCurrentPage] = useState(1); // Pagination
+  const [itemsPerPage] = useState(6); // Items per page
+  const [currentSortBy, setCurrentSortBy] = useState<'name' | 'bounty' | 'lastSeen' | 'dateAdded' | 'reward'>('dateAdded');
+  const [currentSortDirection, setCurrentSortDirection] = useState<'asc' | 'desc'>('desc');
   const [selectedCriminal, setSelectedCriminal] = useState<MostWantedCriminal | null>(null);
+  const [showMap, setShowMap] = useState(false); // Map visualization toggle
   
-  // 2. On mount, seed with mock data if localStorage is empty
+  // Save to localStorage whenever criminals change
   useEffect(() => {
-    if (criminals.length === 0) {
-      setCriminals(MOST_WANTED_DATA);
-      saveMostWantedToStorage(MOST_WANTED_DATA);
-    }
+    saveMostWantedToStorage(criminals);
+  }, [criminals]);
+
+  // Get unique categories for filter
+  const categories = useMemo(() => {
+    const uniqueCategories = new Set(criminals.map(criminal => criminal.category));
+    return Array.from(uniqueCategories);
   }, [criminals]);
 
   // Create a safe getter function for sortBy
-  const getSortBy = useCallback(() => {
-    return sortByState || 'dateAdded';
-  }, [sortByState]);
+  const getSortByValue = useCallback(() => {
+    return currentSortBy || 'dateAdded';
+  }, [currentSortBy]);
 
   // Create a safe getter function for sortDirection
-  const getSortDirection = useCallback(() => {
-    return sortDirectionState || 'asc';
-  }, [sortDirectionState]);
+  const getSortDirectionValue = useCallback(() => {
+    return currentSortDirection || 'desc';
+  }, [currentSortDirection]);
 
-  const filteredCriminals = useMemo(() => {
+  // Filter and sort criminals
+  const filteredAndSortedCriminals = useMemo(() => {
     return criminals
       .filter(criminal => {
         const matchesSearch = criminal.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                              criminal.crimes.some(crime => crime.toLowerCase().includes(searchTerm.toLowerCase())) ||
                              criminal.lastSeen.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                             criminal.caseNumber.toLowerCase().includes(searchTerm.toLowerCase());
+                             criminal.caseNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                             criminal.category.toLowerCase().includes(searchTerm.toLowerCase());
         
         const matchesStatus = statusFilter === 'all' || criminal.status === statusFilter;
         const matchesDanger = dangerFilter === 'all' || criminal.dangerLevel === dangerFilter;
+        const matchesCategory = categoryFilter === 'all' || criminal.category === categoryFilter;
+        const matchesReward = criminal.reward >= minReward && criminal.reward <= maxReward;
         
-        return matchesSearch && matchesStatus && matchesDanger;
+        return matchesSearch && matchesStatus && matchesDanger && matchesCategory && matchesReward;
       })
       .sort((a, b) => {
         let comparison = 0;
         
         // Use getter functions to ensure we always have valid values
-        const sortByValue = getSortBy();
-        const sortDirectionValue = getSortDirection();
+        const sortByValue = getSortByValue();
+        const sortDirectionValue = getSortDirectionValue();
         
         // Validate sortBy value
-        const sortField = ['name', 'bounty', 'lastSeen', 'dateAdded'].includes(sortByValue) ? sortByValue : 'dateAdded';
+        const sortField = ['name', 'bounty', 'lastSeen', 'dateAdded', 'reward'].includes(sortByValue) ? sortByValue : 'dateAdded';
         
         // Validate sortDirection value
-        const direction = sortDirectionValue === 'asc' || sortDirectionValue === 'desc' ? sortDirectionValue : 'asc';
+        const direction = sortDirectionValue === 'asc' || sortDirectionValue === 'desc' ? sortDirectionValue : 'desc';
         
         switch (sortField) {
           case 'name':
             comparison = a.name.localeCompare(b.name);
             break;
           case 'bounty':
+          case 'reward':
             comparison = a.reward - b.reward;
             break;
           case 'lastSeen':
@@ -271,7 +377,19 @@ const MostWanted: React.FC = () => {
         
         return direction === 'asc' ? comparison : -comparison;
       });
-  }, [criminals, searchTerm, statusFilter, dangerFilter, sortByState, sortDirectionState, getSortBy, getSortDirection]);
+  }, [criminals, searchTerm, statusFilter, dangerFilter, categoryFilter, minReward, maxReward, currentSortBy, currentSortDirection, getSortByValue, getSortDirectionValue]);
+
+  // Pagination
+  const totalPages = Math.ceil(filteredAndSortedCriminals.length / itemsPerPage);
+  const currentCriminals = filteredAndSortedCriminals.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  // Reset to first page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, statusFilter, dangerFilter, categoryFilter, minReward, maxReward]);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -316,6 +434,39 @@ const MostWanted: React.FC = () => {
         return 'bg-gray-500 text-white hover:bg-gray-600';
     }
   };
+
+  // Export to CSV function
+  const exportToCSV = () => {
+    const headers = ['Name', 'Status', 'Danger Level', 'Crimes', 'Last Seen', 'Reward', 'Case Number', 'Date Added', 'Category'];
+    const rows = filteredAndSortedCriminals.map(criminal => [
+      criminal.name,
+      criminal.status,
+      criminal.dangerLevel,
+      criminal.crimes.join('; '),
+      criminal.lastSeen,
+      criminal.reward,
+      criminal.caseNumber,
+      criminal.dateAdded,
+      criminal.category
+    ]);
+    
+    let csvContent = headers.join(',') + '\n';
+    rows.forEach(row => {
+      csvContent += row.map(field => `"${field}"`).join(',') + '\n';
+    });
+    
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'most_wanted_criminals.csv');
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  
 
   const renderDetailedView = () => {
     if (!selectedCriminal) return null;
@@ -409,6 +560,16 @@ const MostWanted: React.FC = () => {
                     <p className="font-mono text-lg text-blue-500">{formatDate(selectedCriminal.dateAdded)}</p>
                   </div>
                 </div>
+                
+                <div className="border border-border rounded-md p-4">
+                  <h4 className="text-sm font-medium text-muted-foreground mb-1 flex items-center">
+                    <FileWarning size={14} className="mr-1" />
+                    Category
+                  </h4>
+                  <Badge variant="outline" className="bg-background">
+                    {selectedCriminal.category}
+                  </Badge>
+                </div>
               </div>
               
               <div className="w-full md:w-1/3 space-y-4">
@@ -481,51 +642,165 @@ const MostWanted: React.FC = () => {
           <p className="text-muted-foreground">FBI's most wanted criminals</p>
         </div>
         <div className="flex gap-2">
-          <Input
-            type="text"
-            placeholder="Search by name, crime, or last seen..."
-            value={searchTerm}
-            onChange={e => setSearchTerm(e.target.value)}
-            className="w-64"
-          />
-          <select
-            value={statusFilter}
-            onChange={e => setStatusFilter(e.target.value as any)}
-            className="border rounded px-2 py-1 text-sm"
+          <Button variant="outline" onClick={exportToCSV}>
+            <Download size={16} className="mr-2" />
+            Export
+          </Button>
+          <Button variant="outline" onClick={() => setShowMap(!showMap)}>
+            <Map size={16} className="mr-2" />
+            {showMap ? 'Hide Map' : 'Show Map'}
+          </Button>
+        </div>
+      </div>
+      
+      {/* Advanced Filters */}
+      <Card className="glass-card">
+        <CardContent className="p-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div>
+              <label className="text-sm font-medium">Search</label>
+              <Input
+                type="text"
+                placeholder="Name, crime, location..."
+                value={searchTerm}
+                onChange={e => setSearchTerm(e.target.value)}
+                className="w-full"
+              />
+            </div>
+            
+            <div>
+              <label className="text-sm font-medium">Status</label>
+              <select
+                value={statusFilter}
+                onChange={e => setStatusFilter(e.target.value as any)}
+                className="border rounded px-2 py-1 text-sm w-full"
+              >
+                <option value="all">All Statuses</option>
+                <option value="active">Active</option>
+                <option value="captured">Captured</option>
+              </select>
+            </div>
+            
+            <div>
+              <label className="text-sm font-medium">Danger Level</label>
+              <select
+                value={dangerFilter}
+                onChange={e => setDangerFilter(e.target.value as any)}
+                className="border rounded px-2 py-1 text-sm w-full"
+              >
+                <option value="all">All Danger Levels</option>
+                <option value="extreme">Extreme</option>
+                <option value="high">High</option>
+                <option value="moderate">Moderate</option>
+                <option value="low">Low</option>
+              </select>
+            </div>
+            
+            <div>
+              <label className="text-sm font-medium">Category</label>
+              <select
+                value={categoryFilter}
+                onChange={e => setCategoryFilter(e.target.value as any)}
+                className="border rounded px-2 py-1 text-sm w-full"
+              >
+                <option value="all">All Categories</option>
+                {categories.map(category => (
+                  <option key={category} value={category}>{category}</option>
+                ))}
+              </select>
+            </div>
+            
+            <div>
+              <label className="text-sm font-medium">Min Reward</label>
+              <Input
+                type="number"
+                value={minReward}
+                onChange={e => setMinReward(Number(e.target.value))}
+                className="w-full"
+              />
+            </div>
+            
+            <div>
+              <label className="text-sm font-medium">Max Reward</label>
+              <Input
+                type="number"
+                value={maxReward}
+                onChange={e => setMaxReward(Number(e.target.value))}
+                className="w-full"
+              />
+            </div>
+            
+            <div>
+              <label className="text-sm font-medium">Sort By</label>
+              <select
+                value={currentSortBy || 'dateAdded'}
+                onChange={e => setCurrentSortBy(e.target.value as any)}
+                className="border rounded px-2 py-1 text-sm w-full"
+              >
+                <option value="dateAdded">Date Added</option>
+                <option value="name">Name</option>
+                <option value="reward">Reward</option>
+                <option value="lastSeen">Last Seen</option>
+              </select>
+            </div>
+            
+            <div>
+              <label className="text-sm font-medium">Order</label>
+              <select
+                value={currentSortDirection || 'desc'}
+                onChange={e => setCurrentSortDirection(e.target.value as 'asc' | 'desc')}
+                className="border rounded px-2 py-1 text-sm w-full"
+              >
+                <option value="desc">Descending</option>
+                <option value="asc">Ascending</option>
+              </select>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+      
+      {/* Map Visualization */}
+      {showMap && (
+        <Card className="glass-card">
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <Map className="mr-2" />
+              Criminal Locations
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-64 bg-gray-200 dark:bg-gray-700 rounded-md flex items-center justify-center">
+              <p>Map visualization would be implemented here with a library like Leaflet or Google Maps</p>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+      
+      {/* Results Info */}
+      <div className="flex justify-between items-center">
+        <p className="text-muted-foreground">
+          Showing {currentCriminals.length} of {filteredAndSortedCriminals.length} criminals
+        </p>
+        <div className="flex gap-2">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
           >
-            <option value="all">All Statuses</option>
-            <option value="active">Active</option>
-            <option value="captured">Captured</option>
-          </select>
-          <select
-            value={dangerFilter}
-            onChange={e => setDangerFilter(e.target.value as any)}
-            className="border rounded px-2 py-1 text-sm"
+            Previous
+          </Button>
+          <span className="flex items-center px-3 py-1 text-sm">
+            Page {currentPage} of {totalPages || 1}
+          </span>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+            disabled={currentPage === totalPages || totalPages === 0}
           >
-            <option value="all">All Danger Levels</option>
-            <option value="extreme">Extreme</option>
-            <option value="high">High</option>
-            <option value="moderate">Moderate</option>
-            <option value="low">Low</option>
-          </select>
-          <select
-            value={sortByState || 'dateAdded'}
-            onChange={e => setSortByState(e.target.value as 'name' | 'bounty' | 'lastSeen' | 'dateAdded')}
-            className="border rounded px-2 py-1 text-sm"
-          >
-            <option value="dateAdded">Sort by Date Added</option>
-            <option value="name">Sort by Name</option>
-            <option value="bounty">Sort by Bounty</option>
-            <option value="lastSeen">Sort by Last Seen</option>
-          </select>
-          <select
-            value={sortDirectionState || 'asc'}
-            onChange={e => setSortDirectionState(e.target.value as 'asc' | 'desc')}
-            className="border rounded px-2 py-1 text-sm"
-          >
-            <option value="asc">Ascending</option>
-            <option value="desc">Descending</option>
-          </select>
+            Next
+          </Button>
         </div>
       </div>
       
@@ -537,7 +812,7 @@ const MostWanted: React.FC = () => {
         
         <TabsContent value="grid" className="animate-fade-in">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredCriminals.map((criminal) => (
+            {currentCriminals.map((criminal) => (
               <Card 
                 key={criminal.id} 
                 className="overflow-hidden glass-card cursor-pointer hover:shadow-glass-hover transition-shadow duration-300"
@@ -587,6 +862,11 @@ const MostWanted: React.FC = () => {
                       </Badge>
                     )}
                   </div>
+                  <div className="mb-2">
+                    <Badge variant="outline" className="bg-muted/50 text-xs">
+                      {criminal.category}
+                    </Badge>
+                  </div>
                   <p className="text-sm text-muted-foreground line-clamp-2">
                     {criminal.description}
                   </p>
@@ -604,7 +884,7 @@ const MostWanted: React.FC = () => {
           <Card className="glass-card overflow-hidden">
             <CardContent className="p-0">
               <div className="divide-y divide-border/30">
-                {filteredCriminals.map((criminal) => (
+                {currentCriminals.map((criminal) => (
                   <div 
                     key={criminal.id} 
                     className="flex items-center gap-4 p-4 hover:bg-primary/5 cursor-pointer transition-colors"
@@ -651,6 +931,9 @@ const MostWanted: React.FC = () => {
                       <div className="text-xs text-muted-foreground">
                         {criminal.caseNumber}
                       </div>
+                      <Badge variant="outline" className="text-xs bg-muted/50">
+                        {criminal.category}
+                      </Badge>
                     </div>
                   </div>
                 ))}
@@ -659,6 +942,39 @@ const MostWanted: React.FC = () => {
           </Card>
         </TabsContent>
       </Tabs>
+      
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex justify-center gap-2">
+          <Button 
+            variant="outline" 
+            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+          >
+            Previous
+          </Button>
+          {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+            const startPage = Math.max(1, Math.min(currentPage - 2, totalPages - 4));
+            const page = startPage + i;
+            return (
+              <Button
+                key={page}
+                variant={currentPage === page ? "default" : "outline"}
+                onClick={() => setCurrentPage(page)}
+              >
+                {page}
+              </Button>
+            );
+          })}
+          <Button 
+            variant="outline" 
+            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+            disabled={currentPage === totalPages}
+          >
+            Next
+          </Button>
+        </div>
+      )}
       
       {selectedCriminal && renderDetailedView()}
     </div>
