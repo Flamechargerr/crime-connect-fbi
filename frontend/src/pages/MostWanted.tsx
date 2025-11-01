@@ -208,10 +208,6 @@ const MostWanted: React.FC = () => {
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [selectedCriminal, setSelectedCriminal] = useState<MostWantedCriminal | null>(null);
   
-  // Add defensive check for sortBy
-  const safeSortBy = sortBy && ['name', 'bounty', 'lastSeen', 'dateAdded'].includes(sortBy) ? sortBy : 'dateAdded';
-  const safeSortDirection = sortDirection && ['asc', 'desc'].includes(sortDirection) ? sortDirection : 'asc';
-  
   // 2. On mount, seed with mock data if localStorage is empty
   useEffect(() => {
     if (criminals.length === 0) {
@@ -219,6 +215,19 @@ const MostWanted: React.FC = () => {
       saveMostWantedToStorage(MOST_WANTED_DATA);
     }
   }, [criminals]);
+
+  // Ensure sortBy always has a valid value
+  const getValidSortBy = (): 'name' | 'bounty' | 'lastSeen' | 'dateAdded' => {
+    if (!sortBy) return 'dateAdded';
+    const validValues: Array<'name' | 'bounty' | 'lastSeen' | 'dateAdded'> = ['name', 'bounty', 'lastSeen', 'dateAdded'];
+    return validValues.includes(sortBy) ? sortBy : 'dateAdded';
+  };
+
+  // Ensure sortDirection always has a valid value
+  const getValidSortDirection = (): 'asc' | 'desc' => {
+    if (!sortDirection) return 'asc';
+    return sortDirection === 'asc' || sortDirection === 'desc' ? sortDirection : 'asc';
+  };
 
   const filteredCriminals = criminals
     .filter(criminal => {
@@ -235,10 +244,11 @@ const MostWanted: React.FC = () => {
     .sort((a, b) => {
       let comparison = 0;
       
-      // Use safe variables with fallbacks
-      const sortField = safeSortBy || 'dateAdded';
+      // Use validated values
+      const validSortBy = getValidSortBy();
+      const validSortDirection = getValidSortDirection();
       
-      switch (sortField) {
+      switch (validSortBy) {
         case 'name':
           comparison = a.name.localeCompare(b.name);
           break;
@@ -255,8 +265,7 @@ const MostWanted: React.FC = () => {
           comparison = 0;
       }
       
-      const direction = safeSortDirection || 'asc';
-      return direction === 'asc' ? comparison : -comparison;
+      return validSortDirection === 'asc' ? comparison : -comparison;
     });
 
   const formatCurrency = (amount: number) => {
@@ -495,7 +504,7 @@ const MostWanted: React.FC = () => {
             <option value="low">Low</option>
           </select>
           <select
-            value={safeSortBy}
+            value={getValidSortBy()}
             onChange={e => setSortBy(e.target.value as 'name' | 'bounty' | 'lastSeen' | 'dateAdded')}
             className="border rounded px-2 py-1 text-sm"
           >
@@ -505,7 +514,7 @@ const MostWanted: React.FC = () => {
             <option value="lastSeen">Sort by Last Seen</option>
           </select>
           <select
-            value={safeSortDirection}
+            value={getValidSortDirection()}
             onChange={e => setSortDirection(e.target.value as 'asc' | 'desc')}
             className="border rounded px-2 py-1 text-sm"
           >
