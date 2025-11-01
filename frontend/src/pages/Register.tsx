@@ -43,8 +43,9 @@ const Register: React.FC = () => {
       </div>
       <div className="w-full max-w-md glass-card p-8 animate-scale-in">
         <div className="text-center mb-8">
-          <div className="w-12 h-12 rounded-lg bg-primary flex items-center justify-center mx-auto mb-4">
-            <Shield className="text-primary-foreground" />
+          <div className="w-12 h-12 rounded-lg bg-primary flex items-center justify-center mx-auto mb-4 relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-cyan-400/20 to-transparent animate-pulse"></div>
+            <Shield className="text-primary-foreground relative z-10" />
           </div>
           <h1 className="text-2xl font-bold">CrimeConnect</h1>
           <p className="text-muted-foreground mt-2">Create a new account</p>

@@ -27,3 +27,6 @@
 *.env
 *.env.*
 .env
+
+# Local Netlify folder
+.netlify

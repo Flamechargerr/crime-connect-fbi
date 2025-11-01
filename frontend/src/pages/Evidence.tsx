@@ -241,7 +241,7 @@ const Evidence: React.FC = () => {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Evidence</h1>
-          <p className="text-muted-foreground">All evidence in the system</p>
+          <p className="text-muted-foreground">All FBI evidence in the system</p>
         </div>
         <div className="flex gap-2">
           <Input

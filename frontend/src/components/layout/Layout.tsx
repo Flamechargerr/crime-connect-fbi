@@ -29,6 +29,7 @@ const Layout: React.FC = () => {
   return (
     <div className="h-screen w-full bg-background text-foreground">
       {/* Watermark */}
+      {/* FBI Classified Watermark */}
       <ClassifiedWatermark />
       {/* Glitch on route change */}
       <GlitchTransition key={location.pathname} />

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { Hop as Home, FileText, Database, Users, Shield, Gavel, FileStack, User, Flag, ChartBar as BarChart2, Globe, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Hop as Home, FileText, Database, Users, Shield, Gavel, FileStack, User, Flag, ChartBar as BarChart2, Globe, ChevronLeft, ChevronRight, Lock, Eye, Radio, Server, Cpu, Target } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 
@@ -11,10 +11,10 @@ const navItems = [
   { name: 'Evidence', path: '/evidence', icon: FileStack },
   { name: 'Witnesses', path: '/witnesses', icon: Users },
   { name: 'Officers', path: '/officers', icon: Shield },
-  { name: 'Courts', path: '/courts', icon: Gavel },
+  { name: 'Surveillance', path: '/courts', icon: Eye },
   { name: 'Reports', path: '/reports', icon: BarChart2 },
   { name: '3D Globe', path: '/globe', icon: Globe },
-  { name: 'Most Wanted', path: '/most-wanted', icon: Flag },
+  { name: 'Most Wanted', path: '/most-wanted', icon: Target },
   { name: 'Profile', path: '/profile', icon: User },
 ];
 
@@ -30,7 +30,8 @@ const Sidebar: React.FC = () => {
         'border-r border-cyan-500/20',
         collapsed ? 'w-20' : 'w-72',
         'transition-all duration-300 ease-in-out hidden md:flex flex-col',
-        'before:absolute before:inset-0 before:bg-gradient-to-b before:from-cyan-500/5 before:to-transparent before:pointer-events-none'
+        'before:absolute before:inset-0 before:bg-gradient-to-b before:from-cyan-500/5 before:to-transparent before:pointer-events-none',
+        'scan-line'
       )}
     >
       <div className="absolute top-0 right-0 w-px h-full bg-gradient-to-b from-transparent via-cyan-500/50 to-transparent"></div>
@@ -43,8 +44,8 @@ const Sidebar: React.FC = () => {
           </div>
           {!collapsed && (
             <div className="flex flex-col">
-              <span className="font-bold text-base bg-gradient-to-r from-cyan-300 to-blue-400 bg-clip-text text-transparent">CrimeConnect</span>
-              <span className="text-xs text-muted-foreground">Command Center</span>
+              <span className="font-bold text-base bg-gradient-to-r from-cyan-300 to-blue-400 bg-clip-text text-transparent">FBI CRIMECONNECT</span>
+              <span className="text-[10px] text-muted-foreground uppercase tracking-widest">CLASSIFIED FBI SYSTEM</span>
             </div>
           )}
         </div>
@@ -127,15 +128,29 @@ const Sidebar: React.FC = () => {
         'before:absolute before:top-0 before:left-0 before:right-0 before:h-px',
         'before:bg-gradient-to-r before:from-transparent before:via-cyan-500/50 before:to-transparent'
       )}>
-        <div className={cn(
-          'flex items-center gap-3 px-3 py-2 rounded-lg bg-cyan-500/5 border border-cyan-500/10',
-          collapsed && 'justify-center px-0'
-        )}>
-          <div className="h-2 w-2 rounded-full bg-green-400 animate-pulse shadow-lg shadow-green-400/50"></div>
-          {!collapsed && (
-            <span className="text-xs text-muted-foreground">System Online</span>
-          )}
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-2">
+            <div className="h-2 w-2 rounded-full bg-green-400 animate-pulse shadow-lg shadow-green-400/50"></div>
+            <span className="text-xs text-muted-foreground uppercase tracking-wider">SYSTEM STATUS</span>
+          </div>
+          <Lock className="h-3 w-3 text-green-400" />
         </div>
+        {!collapsed && (
+          <div className="text-[10px] text-muted-foreground space-y-1">
+            <div className="flex items-center gap-1">
+              <Server className="h-2.5 w-2.5 text-green-400" />
+              <span>Database: Operational</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <Radio className="h-2.5 w-2.5 text-green-400" />
+              <span>Communications: Secure</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <Cpu className="h-2.5 w-2.5 text-amber-400" />
+              <span>AI Analysis: Running</span>
+            </div>
+          </div>
+        )}
       </div>
     </aside>
   );

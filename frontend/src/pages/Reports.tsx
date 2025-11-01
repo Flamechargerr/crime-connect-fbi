@@ -138,7 +138,7 @@ const Reports: React.FC = () => {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Reports</h1>
-          <p className="text-muted-foreground">All intelligence and crime reports</p>
+          <p className="text-muted-foreground">All FBI intelligence and crime reports</p>
         </div>
         <div className="flex gap-2">
           <Input

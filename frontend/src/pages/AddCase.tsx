@@ -74,7 +74,7 @@ const AddCase = () => {
     <div className="space-y-8 animate-fade-in">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Add New Case</h1>
-        <p className="text-muted-foreground">Create a new case file in the system.</p>
+        <p className="text-muted-foreground">Create a new FBI case file in the system.</p>
       </div>
 
       <Card>

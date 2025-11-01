@@ -1,3 +1,4 @@
+// FBI CrimeConnect Types
 export type CorkboardItemType = 'photo' | 'note' | 'document' | 'wanted' | 'evidence' | 'location' | 'clue' | 'question';
 
 export interface CorkboardItemData {

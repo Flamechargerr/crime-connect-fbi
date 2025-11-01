@@ -1,4 +1,4 @@
-// Centralized mock data for the FBI-style UI (frontend-only for now)
+// FBI Centralized mock data for the FBI-style UI (frontend-only for now)
 // NOTE: This is mocked data. We'll wire it to backend APIs later per contracts.md
 
 export const opsMetrics = [

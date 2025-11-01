@@ -185,7 +185,7 @@ const Criminals: React.FC = () => {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Criminals</h1>
-          <p className="text-muted-foreground">All criminals in the system</p>
+          <p className="text-muted-foreground">All criminals in the FBI system</p>
         </div>
         <div className="flex gap-2">
           <Input

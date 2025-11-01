@@ -116,7 +116,7 @@ const Corkboard: React.FC = () => {
           <h1 className="text-2xl font-semibold tracking-tight">
             <DecryptText text="Investigation Board" />
           </h1>
-          <p className="text-sm text-muted-foreground">Map relationships between suspects, evidence and locations</p>
+          <p className="text-sm text-muted-foreground">Map FBI relationships between suspects, evidence and locations</p>
         </div>
         <div className="flex items-center gap-2">
           <select value={activeBoardId} onChange={(e) => setActiveBoardId(e.target.value)} className="border rounded px-2 py-1 text-sm">

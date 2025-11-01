@@ -76,6 +76,24 @@
     pointer-events: none;
     z-index: 0;
   }
+  
+  /* FBI Matrix-style background effect */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: 
+      linear-gradient(0deg, transparent 0%, rgba(0, 200, 255, 0.01) 2%, transparent 4%),
+      linear-gradient(90deg, transparent 0%, rgba(0, 200, 255, 0.01) 1%, transparent 2%);
+    pointer-events: none;
+    z-index: -1;
+    animation: matrix-bg 20s linear infinite;
+  }
+  
+  @keyframes matrix-bg {
+    0% { background-position: 0 0; }
+    100% { background-position: 1000px 1000px; }
+  }
 }
 
 @layer components {
@@ -316,5 +334,242 @@
     100% {
       transform: translate(50%, 50%);
     }
+  }
+  
+  /* FBI-specific styles */
+  .fbi-header {
+    position: relative;
+    padding: 1rem 0;
+    border-bottom: 1px solid rgba(0, 156, 255, 0.3);
+  }
+  
+  .fbi-header::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100px;
+    height: 2px;
+    background: linear-gradient(90deg, #00c8ff, transparent);
+  }
+  
+  .classified-badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    background: linear-gradient(45deg, #dc2626, #b91c1c);
+    color: white;
+    border-radius: 0.25rem;
+    letter-spacing: 1px;
+  }
+  
+  .terminal-text {
+    font-family: 'Courier New', monospace;
+    font-size: 0.875rem;
+    line-height: 1.4;
+  }
+  
+  .glitch-text {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .glitch-text::before,
+  .glitch-text::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+  
+  .glitch-text::before {
+    left: 2px;
+    text-shadow: -2px 0 #ff00c1;
+    clip: rect(44px, 450px, 56px, 0);
+    animation: glitch-anim 5s infinite linear alternate-reverse;
+  }
+  
+  .glitch-text::after {
+    left: -2px;
+    text-shadow: -2px 0 #00fff9, 2px 2px #ff00c1;
+    clip: rect(44px, 450px, 56px, 0);
+    animation: glitch-anim2 5s infinite linear alternate-reverse;
+  }
+  
+  @keyframes glitch-anim {
+    0% { clip: rect(42px, 9999px, 44px, 0); }
+    5% { clip: rect(12px, 9999px, 59px, 0); }
+    10% { clip: rect(48px, 9999px, 29px, 0); }
+    15% { clip: rect(42px, 9999px, 73px, 0); }
+    20% { clip: rect(63px, 9999px, 27px, 0); }
+    25% { clip: rect(34px, 9999px, 55px, 0); }
+    30% { clip: rect(86px, 9999px, 73px, 0); }
+    35% { clip: rect(20px, 9999px, 20px, 0); }
+    40% { clip: rect(26px, 9999px, 60px, 0); }
+    45% { clip: rect(25px, 9999px, 66px, 0); }
+    50% { clip: rect(57px, 9999px, 98px, 0); }
+    55% { clip: rect(5px, 9999px, 46px, 0); }
+    60% { clip: rect(82px, 9999px, 31px, 0); }
+    65% { clip: rect(54px, 9999px, 27px, 0); }
+    70% { clip: rect(28px, 9999px, 99px, 0); }
+    75% { clip: rect(45px, 9999px, 69px, 0); }
+    80% { clip: rect(23px, 9999px, 85px, 0); }
+    85% { clip: rect(1px, 9999px, 83px, 0); }
+    90% { clip: rect(72px, 9999px, 11px, 0); }
+    95% { clip: rect(60px, 9999px, 89px, 0); }
+    100% { clip: rect(52px, 9999px, 73px, 0); }
+  }
+  
+  @keyframes glitch-anim2 {
+    0% { clip: rect(65px, 9999px, 100px, 0); }
+    5% { clip: rect(52px, 9999px, 74px, 0); }
+    10% { clip: rect(79px, 9999px, 85px, 0); }
+    15% { clip: rect(75px, 9999px, 5px, 0); }
+    20% { clip: rect(67px, 9999px, 61px, 0); }
+    25% { clip: rect(14px, 9999px, 79px, 0); }
+    30% { clip: rect(1px, 9999px, 66px, 0); }
+    35% { clip: rect(86px, 9999px, 30px, 0); }
+    40% { clip: rect(23px, 9999px, 98px, 0); }
+    45% { clip: rect(85px, 9999px, 72px, 0); }
+    50% { clip: rect(71px, 9999px, 75px, 0); }
+    55% { clip: rect(2px, 9999px, 48px, 0); }
+    60% { clip: rect(30px, 9999px, 16px, 0); }
+    65% { clip: rect(59px, 9999px, 50px, 0); }
+    70% { clip: rect(41px, 9999px, 62px, 0); }
+    75% { clip: rect(2px, 9999px, 82px, 0); }
+    80% { clip: rect(47px, 9999px, 73px, 0); }
+    85% { clip: rect(3px, 9999px, 27px, 0); }
+    90% { clip: rect(26px, 9999px, 55px, 0); }
+    95% { clip: rect(42px, 9999px, 97px, 0); }
+    100% { clip: rect(38px, 9999px, 49px, 0); }
+  }
+  
+  /* Hacker terminal styles */
+  .terminal-window {
+    background: #0a0a0a;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  }
+  
+  .terminal-header {
+    background: #1a1a1a;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #333;
+  }
+  
+  .terminal-button {
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: 50%;
+    margin-right: 0.25rem;
+  }
+  
+  .terminal-button.red { background: #ff5f56; }
+  .terminal-button.yellow { background: #ffbd2e; }
+  .terminal-button.green { background: #27c93f; }
+  
+  .terminal-body {
+    padding: 1rem;
+    font-family: 'Courier New', monospace;
+    font-size: 0.875rem;
+    line-height: 1.4;
+    color: #00ff00;
+    white-space: pre-wrap;
+    overflow-y: auto;
+    max-height: 200px;
+  }
+  
+  .terminal-prompt {
+    color: #00ff00;
+    display: flex;
+    align-items: center;
+  }
+  
+  .terminal-cursor {
+    display: inline-block;
+    width: 8px;
+    height: 16px;
+    background: #00ff00;
+    margin-left: 4px;
+    animation: blink 1s infinite;
+  }
+  
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+  
+  /* FBI badge styling */
+  .fbi-badge {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 0.5rem;
+    background: linear-gradient(135deg, #1e40af, #3b82f6);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .fbi-badge::before {
+    content: 'FBI';
+    position: absolute;
+    font-size: 0.6rem;
+    font-weight: bold;
+    color: white;
+    letter-spacing: 0.5px;
+  }
+  
+  /* Enhanced scan lines for hacker effect */
+  .hacker-scan {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .hacker-scan::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      rgba(0, 255, 0, 0.1) 0%,
+      rgba(0, 255, 0, 0.05) 1%,
+      transparent 2%,
+      transparent 98%,
+      rgba(0, 255, 0, 0.05) 99%,
+      rgba(0, 255, 0, 0.1) 100%
+    );
+    animation: scan-down 4s linear infinite;
+  }
+  
+  @keyframes scan-down {
+    0% { transform: translateY(-100%); }
+    100% { transform: translateY(100%); }
+  }
+  
+  /* Grid pattern background */
+  .bg-grid-pattern {
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23009cff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+  
+  /* Scan lines effect */
+  .scan-lines {
+    background: repeating-linear-gradient(
+      0deg,
+      rgba(0, 200, 255, 0.03),
+      rgba(0, 200, 255, 0.03) 1px,
+      transparent 1px,
+      transparent 20px
+    );
   }
 }

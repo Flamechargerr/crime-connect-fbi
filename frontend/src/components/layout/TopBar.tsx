@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, Sun, Moon, Bell, Zap } from 'lucide-react';
+import { Search, Sun, Moon, Bell, Zap, Shield, Lock, Eye } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from 'next-themes';
 import { NavLink } from 'react-router-dom';
@@ -7,7 +7,6 @@ import { NavLink } from 'react-router-dom';
 const TopBar: React.FC = () => {
   const { user } = useAuth();
   const { theme, resolvedTheme, setTheme } = useTheme();
-
   const toggleTheme = () => setTheme((resolvedTheme || theme) === 'light' ? 'dark' : 'light');
   const stored = (()=>{ try { const s = localStorage.getItem('userProfile'); return s? JSON.parse(s) : null; } catch { return null; } })();
   const avatar = stored?.avatar || user?.avatar || '/placeholder.svg';
@@ -21,9 +20,15 @@ const TopBar: React.FC = () => {
         <NavLink to="/dashboard" className="flex items-center gap-2 group">
           <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 flex items-center justify-center relative overflow-hidden group-hover:border-cyan-500/50 transition-all">
             <div className="absolute inset-0 bg-gradient-to-br from-cyan-400/10 to-transparent group-hover:animate-pulse"></div>
-            <Zap className="h-4 w-4 text-cyan-400 relative z-10" />
+            <Shield className="h-4 w-4 text-cyan-400 relative z-10" />
           </div>
-          <span className="font-bold text-base bg-gradient-to-r from-cyan-300 to-blue-400 bg-clip-text text-transparent hidden lg:block">CrimeConnect</span>
+          <div className="hidden lg:block">
+            <span className="font-bold text-base bg-gradient-to-r from-cyan-300 to-blue-400 bg-clip-text text-transparent">FBI CRIMECONNECT</span>
+            <div className="flex items-center gap-1">
+              <Lock className="h-2.5 w-2.5 text-green-400" />
+              <span className="text-[9px] text-muted-foreground uppercase tracking-widest">FBI CLASSIFIED</span>
+            </div>
+          </div>
         </NavLink>
 
         <div className="flex-1 max-w-2xl ml-2">
@@ -43,32 +48,35 @@ const TopBar: React.FC = () => {
         <nav className="hidden lg:flex items-center gap-1">
           <NavLink
             to="/dashboard"
-            className={({isActive}) => `px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
+            className={({isActive}) => `px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 flex items-center gap-2 ${
               isActive
                 ? 'bg-gradient-to-r from-cyan-500/20 to-blue-500/20 text-cyan-300 border border-cyan-500/30'
                 : 'text-muted-foreground hover:text-foreground hover:bg-cyan-500/5 border border-transparent hover:border-cyan-500/10'
             }`}
           >
+            <Zap className="h-4 w-4" />
             Dashboard
           </NavLink>
           <NavLink
             to="/cases"
-            className={({isActive}) => `px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
+            className={({isActive}) => `px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 flex items-center gap-2 ${
               isActive
                 ? 'bg-gradient-to-r from-cyan-500/20 to-blue-500/20 text-cyan-300 border border-cyan-500/30'
                 : 'text-muted-foreground hover:text-foreground hover:bg-cyan-500/5 border border-transparent hover:border-cyan-500/10'
             }`}
           >
+            <Eye className="h-4 w-4" />
             Cases
           </NavLink>
           <NavLink
             to="/reports"
-            className={({isActive}) => `px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
+            className={({isActive}) => `px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 flex items-center gap-2 ${
               isActive
                 ? 'bg-gradient-to-r from-cyan-500/20 to-blue-500/20 text-cyan-300 border border-cyan-500/30'
                 : 'text-muted-foreground hover:text-foreground hover:bg-cyan-500/5 border border-transparent hover:border-cyan-500/10'
             }`}
           >
+            <Shield className="h-4 w-4" />
             Reports
           </NavLink>
         </nav>
@@ -107,7 +115,10 @@ const TopBar: React.FC = () => {
             </div>
             <div className="hidden sm:flex flex-col items-start">
               <span className="text-xs font-medium text-foreground leading-none">{user?.email?.split('@')[0] || 'Agent'}</span>
-              <span className="text-[10px] text-muted-foreground leading-none mt-0.5">Online</span>
+              <span className="text-[10px] text-muted-foreground leading-none mt-0.5 flex items-center gap-1">
+                <div className="h-1.5 w-1.5 rounded-full bg-green-400 animate-pulse"></div>
+                Online
+              </span>
             </div>
           </NavLink>
         </div>

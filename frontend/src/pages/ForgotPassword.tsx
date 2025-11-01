@@ -63,7 +63,7 @@ const ForgotPassword: React.FC = () => {
             <Shield className="text-primary-foreground" />
           </div>
           <h1 className="text-2xl font-bold">CrimeConnect</h1>
-          <p className="text-muted-foreground mt-2">Reset your password</p>
+          <p className="text-muted-foreground mt-2">Reset your FBI password</p>
         </div>
         <form onSubmit={handleSubmit} className="space-y-5">
           <div className="space-y-2">

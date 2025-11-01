@@ -5,6 +5,7 @@ import type {
   ToastProps,
 } from "@/components/ui/toast"
 
+// FBI Toast limit
 const TOAST_LIMIT = 1
 const TOAST_REMOVE_DELAY = 1000000
 

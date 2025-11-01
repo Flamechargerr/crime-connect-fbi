@@ -1,192 +1,188 @@
-
-import React, { useEffect, useState } from 'react';
-import { Navigate, Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { Eye, EyeOff, Shield, Lock, User, Zap } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Shield, Eye, EyeOff, KeyRound } from 'lucide-react';
 
 const Login: React.FC = () => {
-  const { login, isAuthenticated, loading } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isLoggingIn, setIsLoggingIn] = useState(false);
-  const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [remember, setRemember] = useState(true);
-
-  useEffect(() => {
-    // Autofill from last session if available
-    try {
-      const lastEmail = localStorage.getItem('last_email');
-      if (lastEmail) setEmail(lastEmail);
-    } catch {}
-  }, []);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !password) {
-      setError('Please enter both email and password');
-      return;
-    }
+    setLoading(true);
+    setError('');
+
     try {
-      setIsLoggingIn(true);
-      setError('');
       await login(email, password);
-      if (remember) localStorage.setItem('last_email', email);
-      toast.success('Login successful');
-    } catch (error: any) {
-      setError(error.message || 'Invalid email or password');
-      toast.error('Login failed');
+      navigate('/dashboard');
+    } catch (err) {
+      setError('Invalid credentials. Please try again.');
     } finally {
-      setIsLoggingIn(false);
+      setLoading(false);
     }
   };
-
-  const handleDemoLogin = async () => {
-    setEmail('admin@gmail.com');
-    setPassword('password');
-    try {
-      setIsLoggingIn(true);
-      await login('admin@gmail.com', 'password');
-      toast.success('Signed in as Demo Admin');
-    } catch {
-      toast.error('Demo sign-in failed');
-    } finally {
-      setIsLoggingIn(false);
-    }
-  };
-
-  if (isAuthenticated) {
-    return <Navigate to="/dashboard" />;
-  }
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
-      <div className="fixed inset-0 -z-10">
-        <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-blue-500/5 to-background" />
-        <div className="absolute inset-0 grid-lines opacity-30"></div>
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-      </div>
+      {/* Background effects */}
+      <div className="absolute inset-0 bg-gradient-to-br from-background to-cyan-900/5"></div>
+      <div className="absolute inset-0 bg-grid-pattern"></div>
+      
+      {/* Scan lines effect */}
+      <div className="absolute inset-0 pointer-events-none scan-lines"></div>
 
-      <div className="w-full max-w-md glass-card rounded-2xl p-8 animate-scale-in scan-line relative" role="region" aria-label="Login panel">
-        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-cyan-500 to-transparent"></div>
+      <div className="w-full max-w-md relative z-10">
+        <div className="glass-card rounded-2xl p-8 shadow-2xl border-cyan-500/30">
+          {/* FBI Header */}
+          <div className="text-center mb-8">
+            <div className="flex justify-center mb-4">
+              <div className="h-16 w-16 rounded-xl bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 flex items-center justify-center relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-cyan-400/20 to-transparent animate-pulse"></div>
+                <Shield className="h-8 w-8 text-cyan-400 relative z-10" />
+              </div>
+            </div>
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-cyan-300 to-blue-400 bg-clip-text text-transparent mb-2">
+              FBI CRIMECONNECT
+            </h1>
+            <p className="text-sm text-muted-foreground uppercase tracking-widest">
+              CLASSIFIED LAW ENFORCEMENT SYSTEM
+            </p>
+            <div className="flex items-center justify-center gap-2 mt-3">
+              <Lock className="h-4 w-4 text-green-400 animate-pulse" />
+              <span className="text-xs text-green-400 font-medium">SECURE CONNECTION ESTABLISHED</span>
+            </div>
+          </div>
 
-        <div className="text-center mb-8">
-          <div className="relative inline-block mb-4">
-            <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-cyan-500/30 to-blue-500/30 border-2 border-cyan-500/50 flex items-center justify-center mx-auto relative overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-cyan-400/20 to-transparent animate-pulse"></div>
-              <Shield className="text-cyan-400 h-8 w-8 relative z-10" />
-            </div>
-            <div className="absolute -inset-2 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 rounded-xl blur-xl -z-10 animate-pulse"></div>
-          </div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-cyan-300 to-blue-400 bg-clip-text text-transparent">CrimeConnect</h1>
-          <p className="text-muted-foreground mt-2">Secure Access Portal</p>
-          <div className="mt-4 inline-flex items-center gap-2 text-xs text-cyan-400/70 bg-cyan-500/10 border border-cyan-500/20 rounded-lg px-3 py-2">
-            <KeyRound size={14} className="text-cyan-400" />
-            <span>Demo: admin@gmail.com / password</span>
-          </div>
-        </div>
-        <form onSubmit={handleSubmit} className="space-y-5" aria-label="Login form">
-          <div className="space-y-2">
-            <label htmlFor="email" className="text-sm font-medium flex items-center gap-2">
-              <span>Email</span>
-              <div className="h-1 w-1 rounded-full bg-cyan-400 animate-pulse"></div>
-            </label>
-            <div className="relative group">
-              <Input
-                id="email"
-                type="email"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                placeholder="agent@crimeconnect.fbi"
-                className="w-full bg-cyan-500/5 border-cyan-500/20 focus:border-cyan-500/50 focus:ring-cyan-500/20"
-                autoComplete="email"
-                disabled={isLoggingIn}
-                required
-                aria-required="true"
-                autoFocus
-              />
-              <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-cyan-400/0 via-cyan-400/5 to-cyan-400/0 opacity-0 group-focus-within:opacity-100 transition-opacity pointer-events-none"></div>
-            </div>
-          </div>
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <label htmlFor="password" className="text-sm font-medium flex items-center gap-2">
-                <span>Password</span>
-                <div className="h-1 w-1 rounded-full bg-cyan-400 animate-pulse"></div>
-              </label>
-              <Link to="/forgot-password" className="text-xs text-cyan-400 hover:text-cyan-300 transition-colors">Forgot password?</Link>
-            </div>
-            <div className="relative group">
-              <Input
-                id="password"
-                type={showPassword ? 'text' : 'password'}
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                placeholder="Enter your password"
-                className="w-full pr-10 bg-cyan-500/5 border-cyan-500/20 focus:border-cyan-500/50 focus:ring-cyan-500/20"
-                autoComplete="current-password"
-                disabled={isLoggingIn}
-                required
-                aria-required="true"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(v => !v)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 rounded-lg hover:bg-cyan-500/10 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 transition-all"
-                aria-label={showPassword ? 'Hide password' : 'Show password'}
-              >
-                {showPassword ? <EyeOff size={16} className="text-cyan-400/70" /> : <Eye size={16} className="text-cyan-400/70" />}
-              </button>
-              <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-cyan-400/0 via-cyan-400/5 to-cyan-400/0 opacity-0 group-focus-within:opacity-100 transition-opacity pointer-events-none"></div>
-            </div>
-            <div className="flex items-center justify-between text-xs">
-              <label className="inline-flex items-center gap-2 select-none cursor-pointer text-muted-foreground hover:text-foreground transition-colors">
-                <input
-                  type="checkbox"
-                  className="accent-cyan-500 rounded"
-                  checked={remember}
-                  onChange={e => setRemember(e.target.checked)}
-                />
-                Remember email
-              </label>
-              <button
-                type="button"
-                onClick={handleDemoLogin}
-                className="text-cyan-400 hover:text-cyan-300 font-medium transition-colors"
-              >
-                Quick demo login
-              </button>
-            </div>
-          </div>
           {error && (
-            <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-sm text-red-400" role="alert">
+            <div className="mb-6 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm flex items-center gap-2">
+              <Zap className="h-4 w-4" />
               {error}
             </div>
           )}
-          <Button
-            type="submit"
-            className="w-full h-11 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white font-medium rounded-lg transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-cyan-500/25"
-            disabled={isLoggingIn || loading}
-            aria-busy={isLoggingIn}
-          >
-            {isLoggingIn ? (
-              <span className="flex items-center gap-2">
-                <div className="h-4 w-4 rounded-full border-2 border-white/30 border-t-white animate-spin"></div>
-                Authenticating...
-              </span>
-            ) : (
-              'Sign In'
-            )}
-          </Button>
-          <div className="text-center text-sm">
-            <span className="text-muted-foreground">Don't have an account? </span>
-            <Link to="/register" className="text-cyan-400 hover:text-cyan-300 font-medium transition-colors">Register</Link>
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-foreground mb-2">
+                AGENT IDENTIFICATION
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <User className="h-5 w-5 text-cyan-400/70" />
+                </div>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  autoComplete="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="input-pro w-full pl-10 pr-4 py-3 bg-cyan-500/5 border-cyan-500/20 focus:border-cyan-500/50 focus:bg-cyan-500/10"
+                  placeholder="agent.username@fbi.gov"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-foreground mb-2">
+                SECURITY CLEARANCE
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Lock className="h-5 w-5 text-cyan-400/70" />
+                </div>
+                <input
+                  id="password"
+                  name="password"
+                  type={showPassword ? 'text' : 'password'}
+                  autoComplete="current-password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="input-pro w-full pl-10 pr-12 py-3 bg-cyan-500/5 border-cyan-500/20 focus:border-cyan-500/50 focus:bg-cyan-500/10"
+                  placeholder="••••••••"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-5 w-5 text-cyan-400/70 hover:text-cyan-400 transition-colors" />
+                  ) : (
+                    <Eye className="h-5 w-5 text-cyan-400/70 hover:text-cyan-400 transition-colors" />
+                  )}
+                </button>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <input
+                  id="remember-me"
+                  name="remember-me"
+                  type="checkbox"
+                  className="h-4 w-4 text-cyan-500 focus:ring-cyan-500 border-cyan-500/30 rounded bg-cyan-500/5"
+                />
+                <label htmlFor="remember-me" className="ml-2 block text-sm text-foreground">
+                  Remember device
+                </label>
+              </div>
+
+              <div className="text-sm">
+                <Link to="/forgot-password" className="font-medium text-cyan-400 hover:text-cyan-300 transition-colors">
+                  Forgot credentials?
+                </Link>
+              </div>
+            </div>
+
+            <div>
+              <Button
+                type="submit"
+                disabled={loading}
+                className="w-full btn-pro bg-gradient-to-r from-cyan-500 to-blue-500 border-cyan-500/50 hover:from-cyan-600 hover:to-blue-600 hover:border-cyan-500/70 text-white py-3"
+              >
+                {loading ? (
+                  <div className="flex items-center justify-center gap-2">
+                    <div className="h-4 w-4 rounded-full border-2 border-t-transparent border-white animate-spin"></div>
+                    <span>AUTHENTICATING...</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center gap-2">
+                    <Shield className="h-5 w-5" />
+                    <span>ACCESS SYSTEM</span>
+                  </div>
+                )}
+              </Button>
+            </div>
+          </form>
+
+          <div className="mt-6 text-center">
+            <p className="text-xs text-muted-foreground text-center">
+              This system is restricted to authorized FBI personnel only.
+              Unauthorized access is prohibited and will be prosecuted.
+            </p>
+            <div className="flex items-center justify-center gap-2 mt-3">
+              <div className="h-1.5 w-1.5 rounded-full bg-green-400 animate-pulse"></div>
+              <span className="text-[10px] text-green-400 font-medium">CONNECTION SECURE</span>
+            </div>
           </div>
-        </form>
+        </div>
+
+        <div className="mt-6 text-center">
+          <p className="text-sm text-muted-foreground">
+            Don't have access?{' '}
+            <Link to="/register" className="font-medium text-cyan-400 hover:text-cyan-300 transition-colors">
+              Request authorization
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );

@@ -154,7 +154,11 @@ const Cases: React.FC = () => {
   };
   const handleEditSave = () => {
     if (!editingCase) return;
-    const updated = cases.map(c => c.id === editingCase.id ? { ...c, ...editForm, updatedAt: new Date().toISOString() } : c);
+    const updated = cases.map(c => 
+      c.id === editingCase.id 
+        ? { ...c, ...editForm, updatedAt: new Date() } 
+        : c
+    ) as Case[];
     setCases(updated);
     localStorage.setItem('cases', JSON.stringify(updated));
     setEditingCase(null);
@@ -230,7 +234,7 @@ const Cases: React.FC = () => {
       <div className="flex justify-between items-start">
         <div className="relative">
           <h1 className="text-4xl font-bold tracking-tight neon-text bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Cases</h1>
-          <p className="text-sm text-muted-foreground mt-2">Manage all active investigations</p>
+          <p className="text-sm text-muted-foreground mt-2">Manage all FBI active investigations</p>
           <div className="absolute -bottom-2 left-0 w-24 h-1 bg-gradient-to-r from-cyan-400 to-transparent rounded-full"></div>
         </div>
         <div className="flex gap-2">

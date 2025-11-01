@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils"
 
+// FBI Skeleton Component
 function Skeleton({
   className,
   ...props

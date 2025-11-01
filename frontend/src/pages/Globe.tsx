@@ -40,7 +40,7 @@ const GlobePage: React.FC = () => {
       <div className="lg:col-span-2 space-y-3">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Global 3D Map</h1>
-          <p className="text-sm text-muted-foreground">Interactive globe with live threat markers and arcs</p>
+          <p className="text-sm text-muted-foreground">Interactive FBI globe with live threat markers and arcs</p>
         </div>
         <Card>
           <CardHeader>

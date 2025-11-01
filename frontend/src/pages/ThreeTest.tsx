@@ -17,6 +17,7 @@ const ThreeTest: React.FC = () => {
         <ambientLight intensity={0.5} />
         <pointLight position={[10,10,10]} />
         <Box />
+        {/* FBI 3D Test Component */}
       </Canvas>
     </div>
   );
