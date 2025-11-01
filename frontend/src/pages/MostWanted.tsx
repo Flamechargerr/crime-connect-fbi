@@ -231,7 +231,10 @@ const MostWanted: React.FC = () => {
     .sort((a, b) => {
       let comparison = 0;
       
-      switch (sortBy) {
+      // Make sure sortBy is defined
+      const sortField = sortBy || 'dateAdded';
+      
+      switch (sortField) {
         case 'name':
           comparison = a.name.localeCompare(b.name);
           break;
@@ -487,7 +490,7 @@ const MostWanted: React.FC = () => {
             <option value="low">Low</option>
           </select>
           <select
-            value={sortBy}
+            value={sortBy || 'dateAdded'}
             onChange={e => setSortBy(e.target.value as 'name' | 'bounty' | 'lastSeen' | 'dateAdded')}
             className="border rounded px-2 py-1 text-sm"
           >
@@ -497,7 +500,7 @@ const MostWanted: React.FC = () => {
             <option value="lastSeen">Sort by Last Seen</option>
           </select>
           <select
-            value={sortDirection}
+            value={sortDirection || 'asc'}
             onChange={e => setSortDirection(e.target.value as 'asc' | 'desc')}
             className="border rounded px-2 py-1 text-sm"
           >
