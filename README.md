@@ -121,6 +121,29 @@ The design philosophy centers around creating an authentic hacker experience whi
 
 ## 🛠️ BUILDING & CUSTOMIZATION GUIDE
 
+### 🚀 RUNNING THE APPLICATION LOCALLY
+
+#### Backend Server
+```bash
+cd backend
+python server.py
+```
+The backend server will start on port 8002.
+
+#### Frontend Development Server
+```bash
+cd frontend
+npm install
+npm run dev
+```
+The frontend development server will start on port 5174.
+
+#### Production Build
+```bash
+cd frontend
+npm run build
+```
+
 ### 🎯 COMPONENT ARCHITECTURE
 The project is built with a modular component architecture that makes it easy to extend and customize:
 
