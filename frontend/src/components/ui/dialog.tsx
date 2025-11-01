@@ -4,7 +4,7 @@ import { X } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
-// FBI Dialog Component
+// FBI Dialog Component - Secure Protocol
 const Dialog = DialogPrimitive.Root
 
 const DialogTrigger = DialogPrimitive.Trigger
