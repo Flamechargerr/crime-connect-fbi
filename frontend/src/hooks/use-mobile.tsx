@@ -1,6 +1,6 @@
 import * as React from "react"
 
-// FBI Mobile breakpoint
+// FBI Mobile breakpoint - Security Edition
 const MOBILE_BREAKPOINT = 768
 
 export function useIsMobile() {
