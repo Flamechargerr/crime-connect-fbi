@@ -164,3 +164,4 @@
 - [2025-11-02 20:08] feat(graph): add force-directed node layout
 - [2025-11-03 01:40] feat(graph): implement edge weight rendering
 - [2025-11-02 22:16] feat(filter): add crime type dropdown filter
+- [2025-11-03 03:37] feat(search): fuzzy search across entities
