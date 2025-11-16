@@ -612,3 +612,4 @@
 - [2025-12-02 05:15] feat: add error boundary handling
 - [2025-11-16 21:44] refactor: simplify conditional logic
 - [2025-11-17 04:38] refactor: optimize render pipeline
+- [2025-11-16 22:53] docs: update API documentation
