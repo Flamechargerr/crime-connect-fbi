@@ -610,3 +610,4 @@
 - [2025-12-01 22:24] fix: handle null reference gracefully
 - [2025-12-02 00:14] style: responsive layout adjustments
 - [2025-12-02 05:15] feat: add error boundary handling
+- [2025-11-16 21:44] refactor: simplify conditional logic
