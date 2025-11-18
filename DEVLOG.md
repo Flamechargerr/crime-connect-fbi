@@ -218,3 +218,4 @@
 - [2025-11-17 23:40] perf(graph): WebGL renderer for large datasets
 - [2025-11-17 20:05] feat(link): auto-discover hidden connections
 - [2025-11-18 23:30] test(analysis): validate PageRank results
+- [2025-11-19 01:40] docs(schema): document data model ERD
