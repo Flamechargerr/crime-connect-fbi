@@ -223,3 +223,4 @@
 - [2025-11-19 02:40] style(ui): glassmorphic investigation panel
 - [2025-11-19 00:30] feat(graph): add force-directed node layout
 - [2025-11-19 04:17] feat(graph): implement edge weight rendering
+- [2025-11-19 01:02] feat(filter): add crime type dropdown filter
