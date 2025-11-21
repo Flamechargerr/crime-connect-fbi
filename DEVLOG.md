@@ -254,3 +254,4 @@
 - [2025-11-21 23:10] feat(export): generate PDF investigation report
 - [2025-11-21 23:23] feat(map): geographic crime clustering
 - [2025-11-22 04:10] fix(layout): stabilize graph physics engine
+- [2025-11-22 01:40] feat(detail): add suspect profile sidebar
