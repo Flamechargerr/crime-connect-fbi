@@ -259,3 +259,4 @@
 - [2025-11-21 21:37] feat(link): auto-discover hidden connections
 - [2025-11-22 02:46] test(analysis): validate PageRank results
 - [2025-11-21 20:20] docs(schema): document data model ERD
+- [2025-11-22 00:49] feat(alert): anomaly detection in patterns
