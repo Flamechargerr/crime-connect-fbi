@@ -276,3 +276,4 @@
 - [2025-11-24 21:03] fix(layout): stabilize graph physics engine
 - [2025-11-26 20:26] feat(detail): add suspect profile sidebar
 - [2025-11-28 02:26] perf(graph): WebGL renderer for large datasets
+- [2025-11-28 04:18] feat(link): auto-discover hidden connections
