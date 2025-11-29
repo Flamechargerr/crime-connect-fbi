@@ -293,3 +293,4 @@
 - [2025-11-29 00:49] refactor(data): normalize entity relationships
 - [2025-11-28 20:04] feat(export): generate PDF investigation report
 - [2025-11-30 00:18] feat(map): geographic crime clustering
+- [2025-11-29 19:46] fix(layout): stabilize graph physics engine
