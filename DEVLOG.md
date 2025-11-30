@@ -461,3 +461,4 @@
 - [2025-11-30 21:32] perf: reduce memory allocation overhead
 - [2025-11-30 21:30] fix: handle null reference gracefully
 - [2025-12-01 02:27] style: responsive layout adjustments
+- [2025-11-30 20:52] feat: add error boundary handling
