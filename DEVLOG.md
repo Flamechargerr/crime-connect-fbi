@@ -816,3 +816,4 @@
 - [2025-12-05 03:53] style: responsive layout adjustments
 - [2025-12-04 23:10] feat: add error boundary handling
 - [2025-12-05 04:26] style: apply consistent code formatting
+- [2025-12-04 23:01] perf: optimize database query plan
