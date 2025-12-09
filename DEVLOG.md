@@ -300,3 +300,4 @@
 - [2025-12-03 20:08] test(analysis): validate PageRank results
 - [2025-12-05 01:29] docs(schema): document data model ERD
 - [2025-12-08 03:18] feat(alert): anomaly detection in patterns
+- [2025-12-10 03:13] style(ui): glassmorphic investigation panel
