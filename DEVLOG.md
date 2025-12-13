@@ -306,3 +306,4 @@
 - [2025-12-11 03:33] feat(filter): add crime type dropdown filter
 - [2025-12-12 00:39] feat(search): fuzzy search across entities
 - [2025-12-12 23:38] feat(timeline): add temporal crime viewer
+- [2025-12-13 22:36] fix(graph): prevent node collision overlap
