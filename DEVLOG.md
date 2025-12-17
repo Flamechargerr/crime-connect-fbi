@@ -322,3 +322,4 @@
 - [2025-12-17 23:19] feat(alert): anomaly detection in patterns
 - [2025-12-17 19:54] style(ui): glassmorphic investigation panel
 - [2025-12-18 04:23] feat(graph): add force-directed node layout
+- [2025-12-18 02:46] feat(graph): implement edge weight rendering
