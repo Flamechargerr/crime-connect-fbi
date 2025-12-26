@@ -39,7 +39,7 @@
 
 ## 🚀 LIVE DEMO
 
-**Deployed Application:** [https://crimeconnect2fbi.vercel.app](https://crimeconnect2fbi.vercel.app)
+**Deployed Application:** [https://crime-connect-fbi.vercel.app](https://crime-connect-fbi.vercel.app)
 
 **Test Credentials:**
 - Email: `test@test.com`
