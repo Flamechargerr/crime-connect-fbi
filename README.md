@@ -1,317 +1,233 @@
-# 🕵️ FBI CrimeConnect - Criminal Intelligence Dashboard
+# 🛡️ FBI CrimeConnect - Criminal Intelligence System
 
 <p align="center">
   <img src="https://img.shields.io/badge/React-18+-61DAFB?style=for-the-badge&logo=react" alt="React">
   <img src="https://img.shields.io/badge/TypeScript-5.0+-3178C6?style=for-the-badge&logo=typescript" alt="TypeScript">
   <img src="https://img.shields.io/badge/Tailwind_CSS-3.0+-38B2AC?style=for-the-badge&logo=tailwind-css" alt="Tailwind CSS">
   <img src="https://img.shields.io/badge/Vite-5.0+-646CFF?style=for-the-badge&logo=vite" alt="Vite">
-  <img src="https://img.shields.io/badge/FastAPI-0.100+-009688?style=for-the-badge&logo=fastapi" alt="FastAPI">
-  <img src="https://img.shields.io/badge/MongoDB-7.0+-47A248?style=for-the-badge&logo=mongodb" alt="MongoDB">
   <img src="https://img.shields.io/badge/License-MIT-blue?style=for-the-badge" alt="License">
 </p>
 
 <p align="center">
-  <strong>A sleek criminal intelligence dashboard with FBI-inspired design and hacker aesthetics</strong>
+  <strong>A professional FBI-inspired criminal intelligence dashboard with cinematic design aesthetics</strong>
+</p>
+
+<p align="center">
+  <em>"Not just connecting clues — connecting dots with data."</em>
 </p>
 
 ---
 
-## 🎯 PROJECT VISION & GOALS
+## 🎯 PROJECT OVERVIEW
 
-**FBI CrimeConnect** is designed to revolutionize how criminal intelligence is managed and visualized. This project combines the precision of federal law enforcement systems with the creativity of modern web design to create an engaging and functional platform.
+**FBI CrimeConnect** is a comprehensive criminal intelligence management system featuring a professional, cinematic FBI aesthetic. The application combines sleek dark themes with refined visual effects to create an immersive yet functional law enforcement dashboard.
 
-### 🎯 CORE OBJECTIVES
-- **User Engagement**: Create an immersive experience that keeps users engaged
-- **Data Visualization**: Present complex criminal data in an intuitive way
-- **Performance**: Ensure lightning-fast interactions and smooth navigation
-- **Aesthetics**: Deliver a visually stunning interface with hacker vibes
-- **Functionality**: Provide comprehensive tools for case management
+### ✨ KEY FEATURES
 
----
-
-## 🚀 LIVE DEMO & VISUAL SHOWCASE
-
-### 🔥 LIVE APPLICATION
-Check out the deployed application: [https://crime-connect-fbi.netlify.app](https://crime-connect-fbi.netlify.app)
-
-### 🎯 DASHBOARD OVERVIEW
-![Dashboard](https://customer-assets.emergentagent.com/job_6c7378a1-9e3e-45bb-a9a3-4c6db8ffca0b/artifacts/8q7odfrq_image.png)
-*Main dashboard featuring real-time metrics, global crime monitor, and quick action buttons*
-
-### 📊 REPORTS MODULE
-![Reports](https://customer-assets.emergentagent.com/job_6c7378a1-9e3e-45bb-a9a3-4c6db8ffca0b/artifacts/39184krj_image.png)
-*Comprehensive reporting system with statistical analysis and trend visualization*
-
-### 🗺️ INVESTIGATION BOARD
-![Investigation Board](https://customer-assets.emergentagent.com/job_6c7378a1-9e3e-45bb-a9a3-4c6db8ffca0b/artifacts/h2mqmzro_image.png)
-*Interactive corkboard for mapping connections between suspects, evidence, and locations*
+- **Command Center Dashboard** - Real-time metrics, case status, and quick actions
+- **Case Management** - Comprehensive case files with priority badges and status tracking
+- **Criminal Database (NCIC)** - Threat levels, biometric data, and warrant status
+- **Evidence Vault** - Chain of custody management with evidence categorization
+- **Witness Protection Database** - Protected witness records and statements
+- **Agent Directory** - Personnel records with security clearances
+- **Federal Court System** - Court registries and case scheduling
+- **3D Global Threat Map** - Interactive revolving globe with threat markers
+- **Most Wanted Fugitives** - High-priority targets with reward information
+- **Intelligence Reports** - Classified report generation and viewing
 
 ---
 
-## 🎬 USER EXPERIENCE WALKTHROUGH
+## 🚀 LIVE DEMO
 
-### 🔐 AUTHENTICATION FLOW
-1. **Login Screen**: Hacker-style terminal interface with glowing text effects
-2. **Credential Entry**: Secure form with validation and error handling
-3. **Dashboard Access**: Smooth transition to main intelligence hub
-4. **Session Management**: Persistent login with secure token handling
+**Deployed Application:** [https://crime-connect-fbi.netlify.app](https://crime-connect-fbi.netlify.app)
 
-### 📊 DASHBOARD EXPLORATION
-1. **Global Crime Monitor**: Real-time visualization of crime activity worldwide
-2. **Statistics Cards**: Key metrics with animated counters and trend indicators
-3. **Recent Activity**: Timeline of latest case updates and system alerts
-4. **Quick Actions**: One-click access to common tasks and new case creation
-
-### 🗂️ CASE MANAGEMENT WORKFLOW
-1. **Case Creation**: Intuitive form for filing new criminal cases
-2. **Evidence Upload**: Secure document and media attachment system
-3. **Personnel Assignment**: Agent allocation with role-based permissions
-4. **Progress Tracking**: Visual timeline and status updates
-
-### 🎯 CRIMINAL DATABASE NAVIGATION
-1. **Profile Search**: Advanced filtering and search capabilities
-2. **Detailed Records**: Comprehensive criminal history and biometric data
-3. **Most Wanted Lists**: Priority fugitive tracking with BOLO alerts
-4. **Case Connections**: Linked cases and relationship mapping
+**Test Credentials:**
+- Email: `test@test.com`
+- Password: `password123`
 
 ---
 
-## 🎨 DESIGN PHILOSOPHY & AESTHETICS
+## 🎨 DESIGN PHILOSOPHY
 
-### 🔥 HACKER AESTHETIC PRINCIPLES
-The design philosophy centers around creating an authentic hacker experience while maintaining professional usability:
+### Professional Cinematic FBI Aesthetic
 
-#### **Terminal Authenticity**
-- Glowing green text reminiscent of classic computer terminals
-- Scan line effects for CRT monitor simulation
-- Matrix-style background animations with falling code
-- Blinking cursor effects for interactive elements
+The design philosophy centers on creating an authentic FBI command center experience while maintaining professional usability:
 
-#### **Cyberpunk Visual Language**
-- Dark color schemes with vibrant accent colors
-- Glass morphism effects for modern UI components
-- Neon glow effects for interactive elements
-- Animated transitions between states
+#### **Visual Identity**
+- Deep slate and blue color palette with atmospheric glows
+- Subtle scan effects and pulse animations for real-time data
+- CLASSIFIED badges and security level indicators
+- Clean, organized layouts with clear information hierarchy
 
-#### **FBI Professionalism**
-- Clean, organized layout for efficient information consumption
-- Clear hierarchy and visual grouping of related elements
-- Consistent typography and spacing standards
-- Accessible color contrast for readability
+#### **Key Design Elements**
+- **Command Center Headers** - FBI-style section headers with status indicators
+- **Card-Modern Components** - Glassmorphism cards with subtle glow effects
+- **Status Badges** - Threat levels, clearance levels, and case priorities
+- **Stat Cards** - Animated metrics with color-coded categories
 
 ### 🎨 COLOR SYSTEM
-| Color Name | Hex | Usage |
-|------------|-----|-------|
-| **Terminal Black** | `#0a0a0a` | Primary backgrounds |
-| **FBI Navy** | `#0c1824` | Secondary backgrounds |
-| **Hacker Green** | `#00ff00` | Primary text and accents |
-| **FBI Blue** | `#009cff` | Interactive elements |
-| **Alert Red** | `#C41230` | Warnings and errors |
-| **Glass White** | `rgba(255,255,255,0.1)` | Card backgrounds |
-| **Scan Line** | `rgba(0,255,0,0.05)` | Overlay effects |
 
-### ✨ ANIMATION & EFFECTS
-- **Matrix Background**: Continuous falling code animation
-- **Scan Lines**: Moving horizontal lines for CRT effect
-- **Glow Transitions**: Neon-style hover and focus states
-- **Data Loading**: Hacker-style progress indicators
-- **Card Reveal**: Smooth entrance animations for content
+| Element | Description |
+|---------|------------|
+| **Background** | Deep slate (`slate-950`) with blue-tinted gradients |
+| **Primary** | FBI Blue (`#3b82f6`) for interactive elements |
+| **Success** | Green for active/resolved status |
+| **Warning** | Amber for pending/medium priority |
+| **Danger** | Red for critical/high threat |
+| **Cards** | Dark `slate-900` with subtle borders |
 
 ---
 
-## 🛠️ BUILDING & CUSTOMIZATION GUIDE
+## 🛠️ QUICK START
 
-### 🚀 RUNNING THE APPLICATION LOCALLY
+### Prerequisites
+- Node.js 18+
+- npm or yarn
 
-#### Backend Server
+### Installation
+
 ```bash
-cd backend
-python server.py
-```
-The backend server will start on port 8002.
+# Clone the repository
+git clone https://github.com/Flamechargerr/crime-connect-fbi.git
 
-#### Frontend Development Server
-```bash
-cd frontend
+# Navigate to frontend
+cd crime-connect-fbi/frontend
+
+# Install dependencies
 npm install
+
+# Start development server
 npm run dev
 ```
-The frontend development server will start on port 5174.
 
-#### Production Build
+The application will be available at `http://localhost:3000`
+
+### Production Build
+
 ```bash
-cd frontend
 npm run build
 ```
 
-### 🎯 COMPONENT ARCHITECTURE
-The project is built with a modular component architecture that makes it easy to extend and customize:
+---
 
-#### **Layout Components**
-- **Sidebar**: Navigation menu with collapsible sections
-- **TopBar**: Header with user controls and notifications
-- **DashboardGrid**: Responsive grid for dashboard widgets
-- **ClassifiedWatermark**: Security level indicators
+## 📁 PROJECT STRUCTURE
 
-#### **UI Components**
-- **GlassCard**: Frosted glass effect containers
-- **HackerButton**: Terminal-style interactive buttons
-- **ScanInput**: Input fields with scan line effects
-- **MatrixLoader**: Animated loading indicators
-
-#### **Data Components**
-- **CrimeChart**: Interactive data visualization
-- **CaseTable**: Sortable and filterable case listings
-- **ProfileCard**: Criminal profile display components
-- **EvidenceGallery**: Media display for evidence files
-
-### 🎨 CUSTOMIZATION OPTIONS
-1. **Theme Colors**: Easily modify the color palette in CSS variables
-2. **Animation Speed**: Adjust timing for all animated effects
-3. **Security Levels**: Customize clearance level indicators
-4. **Dashboard Widgets**: Add or remove dashboard components
-5. **Data Fields**: Extend case and criminal data structures
-
-### 🔧 DEVELOPMENT WORKFLOW
-1. **Component Creation**: Build new UI elements with consistent styling
-2. **State Management**: Use React Context for global state
-3. **API Integration**: Connect to backend endpoints with React Query
-4. **Testing**: Implement unit and integration tests
-5. **Deployment**: Build and deploy with Vite and Netlify
+```
+frontend/
+├── src/
+│   ├── components/
+│   │   ├── layout/          # Sidebar, TopBar, Layout
+│   │   ├── ui/              # Shadcn UI components
+│   │   ├── globe/           # 3D Globe component
+│   │   └── effects/         # Visual effects
+│   ├── pages/
+│   │   ├── Dashboard.tsx    # Command Center
+│   │   ├── Cases.tsx        # Case Files
+│   │   ├── Criminals.tsx    # NCIC Database
+│   │   ├── Evidence.tsx     # Evidence Vault
+│   │   ├── Witnesses.tsx    # Witness Database
+│   │   ├── Officers.tsx     # Agent Directory
+│   │   ├── Courts.tsx       # Federal Courts
+│   │   ├── Globe.tsx        # 3D Threat Map
+│   │   ├── MostWanted.tsx   # Fugitive List
+│   │   ├── Reports.tsx      # Intelligence Reports
+│   │   ├── Profile.tsx      # Agent Profile
+│   │   ├── Login.tsx        # Authentication
+│   │   └── Register.tsx     # New Agent Registration
+│   ├── context/             # Auth context
+│   ├── hooks/               # Custom hooks
+│   └── index.css            # Global styles & design tokens
+├── index.html
+└── package.json
+```
 
 ---
 
-## 🎯 MODULE DEEP DIVE
+## 🎯 MODULE BREAKDOWN
 
-### 📊 DASHBOARD MODULE
-The central hub for criminal intelligence featuring:
-- **Real-time Metrics**: Live counters for open cases, active operations, and alerts
-- **Global Crime Monitor**: Interactive world map with crime hotspots
-- **Agent Activity**: Current workload and case assignments
-- **System Status**: Backend health and performance indicators
+### 📊 Command Center (Dashboard)
+- Real-time case statistics
+- Active cases and alerts
+- Quick action buttons
+- System status indicators
 
-### 🗂️ CASES MODULE
-Comprehensive case management system:
-- **Case Creation**: Detailed forms for new case filing
-- **Evidence Tracking**: Document and media attachment system
-- **Timeline View**: Chronological case progression
-- **Personnel Management**: Agent assignment and collaboration tools
+### 🗂️ Case Files
+- Priority levels (High/Medium/Low)
+- Case ID formatting
+- Status tracking (Open/Pending/Closed)
+- Last updated timestamps
 
-### 🎯 CRIMINALS MODULE
-Extensive criminal database with:
-- **Profile Management**: Biometric data and criminal history
-- **Most Wanted Lists**: Priority tracking with BOLO alerts
-- **Relationship Mapping**: Connections between criminals
-- **Risk Assessment**: Automated threat level evaluation
+### 🔍 Criminal Database (NCIC)
+- Threat level indicators (Extreme/High/Medium/Low)
+- Warrant status (Wanted/Incarcerated/Released)
+- Biometric data types
+- Last known locations
 
-### 🛡️ EVIDENCE MODULE
-Secure digital evidence locker:
-- **File Upload**: Support for documents, images, and videos
-- **Chain of Custody**: Tracking and verification system
-- **Metadata Management**: Detailed evidence information
-- **Access Control**: Role-based permissions for evidence access
+### 📦 Evidence Vault
+- Chain of custody tracking
+- Evidence categories (Physical/Digital/Biometric)
+- Storage locations
+- Case linking
 
-### 👥 OFFICERS MODULE
-Federal agent management:
-- **Profile Registry**: Agent information and clearance levels
-- **Assignment Tracking**: Current cases and workload
-- **Performance Metrics**: Case closure rates and statistics
-- **Communication Tools**: Internal messaging system
+### 👥 Witness Database
+- Protection status
+- Witness statements
+- Credibility ratings
+- Case associations
 
-### 🗺️ CORKBOARD MODULE
-Visual investigation workspace:
-- **Connection Mapping**: Drag-and-drop relationship building
-- **Evidence Linking**: Visual connections between data points
-- **Timeline Reconstruction**: Event sequencing tools
-- **Collaboration Features**: Multi-user editing and comments
+### 🕵️ Agent Directory
+- Security clearance levels (SECRET/TOP SECRET/SCI)
+- Cases solved metrics
+- Years of service
+- Division assignments
 
----
+### ⚖️ Federal Court System
+- Jurisdiction types
+- Session status
+- Pending case counts
+- Judge assignments
 
-## 🚀 PERFORMANCE OPTIMIZATION
-
-### ⚡ LOADING OPTIMIZATIONS
-- **Code Splitting**: Dynamic imports for faster initial load
-- **Image Optimization**: Compressed assets with lazy loading
-- **Bundle Analysis**: Regular performance auditing
-- **Caching Strategies**: Browser and service worker caching
-
-### 🎯 USER EXPERIENCE ENHANCEMENTS
-- **Responsive Design**: Mobile-first approach for all devices
-- **Keyboard Navigation**: Full keyboard support for accessibility
-- **Loading States**: Skeleton screens and progress indicators
-- **Error Handling**: Graceful degradation and user feedback
-
-### 🔧 DEVELOPMENT EFFICIENCY
-- **Hot Reload**: Instant feedback during development
-- **Component Libraries**: Reusable UI elements
-- **Type Safety**: TypeScript for error prevention
-- **Automated Testing**: Jest and React Testing Library
+### 🌍 3D Global Threat Map
+- Interactive revolving globe
+- Real-time threat markers
+- Target intelligence panel
+- Coordinate tracking
 
 ---
 
-## 🎨 VISUAL DESIGN SYSTEM
+## 🔧 TECH STACK
 
-### 🎯 TYPOGRAPHY HIERARCHY
-- **Headers**: Bold, attention-grabbing titles
-- **Body Text**: Clear, readable content
-- **Labels**: Concise form and button text
-- **Data**: Monospace fonts for technical information
-
-### 🎨 SPACING & LAYOUT
-- **Grid System**: Consistent 8px spacing scale
-- **Component Padding**: Balanced internal spacing
-- **Section Margins**: Clear separation between elements
-- **Responsive Breakpoints**: Mobile, tablet, and desktop layouts
-
-### ✨ INTERACTIVE STATES
-- **Hover Effects**: Subtle animations for interactive elements
-- **Focus States**: Clear keyboard navigation indicators
-- **Active States**: Visual feedback for selections
-- **Disabled States**: Clear indication of unavailable actions
+| Technology | Purpose |
+|------------|---------|
+| **React 18** | UI Framework |
+| **TypeScript** | Type Safety |
+| **Tailwind CSS** | Styling |
+| **Vite** | Build Tool |
+| **Shadcn/UI** | Component Library |
+| **React Router** | Navigation |
+| **React Query** | Data Fetching |
+| **Lucide Icons** | Iconography |
+| **Three.js** | 3D Globe Visualization |
 
 ---
 
-## 🤝 CONTRIBUTION & EXTENSION
+## 📄 LICENSE
 
-### 🛠️ EXTENDING FUNCTIONALITY
-1. **New Modules**: Create additional intelligence gathering tools
-2. **Data Sources**: Integrate with external crime databases
-3. **Visualization Types**: Add new chart and graph options
-4. **Export Features**: Generate reports in multiple formats
-
-### 🎯 CUSTOMIZATION SCENARIOS
-- **Agency Branding**: Adapt colors and logos for different organizations
-- **Feature Toggles**: Enable/disable modules based on user roles
-- **Data Fields**: Add custom fields for specialized investigations
-- **Workflow Automation**: Implement case routing and notifications
-
-### 🔧 DEVELOPMENT BEST PRACTICES
-- **Component Reusability**: Build flexible, configurable components
-- **State Management**: Use context for global state, props for local
-- **Performance Monitoring**: Regular Lighthouse audits
-- **Cross-Browser Testing**: Ensure compatibility across platforms
-
----
-
-## 📄 LICENSE & ACKNOWLEDGEMENTS
-
-### 📄 LICENSE
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-### 🙏 ACKNOWLEDGEMENTS
-- [React](https://reactjs.org/) - Frontend framework
-- [TypeScript](https://www.typescriptlang.org/) - Type safety
-- [Tailwind CSS](https://tailwindcss.com/) - Styling framework
-- [Vite](https://vitejs.dev/) - Build tool
-- [FastAPI](https://fastapi.tiangolo.com/) - Backend framework
-- [MongoDB](https://www.mongodb.com/) - Database
-- [Shadcn/UI](https://ui.shadcn.com/) - UI components
-- [Lucide Icons](https://lucide.dev/) - Icon library
-- [Netlify](https://netlify.com/) - Deployment platform
+---
+
+## 🙏 ACKNOWLEDGEMENTS
+
+- [Shadcn/UI](https://ui.shadcn.com/) - Beautiful UI components
+- [Lucide Icons](https://lucide.dev/) - Clean icon library
+- [Tailwind CSS](https://tailwindcss.com/) - Utility-first CSS
+- [React Globe.gl](https://github.com/vasturiano/react-globe.gl) - 3D Globe
 
 ---
 
 <div align="center">
-  <h3>Built with 🔥 Passion & 🕶️ Style</h3>
-  <p><em>A fun project showcasing modern web development with FBI-inspired aesthetics</em></p>
+  <h3>🛡️ FBI CrimeConnect</h3>
+  <p><em>Professional Criminal Intelligence System</em></p>
+  <p>Built with precision and style</p>
 </div>
