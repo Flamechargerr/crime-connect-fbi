@@ -1,996 +1,383 @@
-
-import React, { useState, useEffect } from 'react';
-import { 
-  BarChart2, 
-  PieChart, 
-  LineChart, 
-  Download, 
-  Calendar, 
-  Filter, 
-  RefreshCw, 
-  Shield, 
-  AlertTriangle, 
+import React, { useState } from 'react';
+import {
+  BarChart3,
+  PieChart,
+  TrendingUp,
+  Download,
+  Calendar,
+  Filter,
+  RefreshCw,
   FileText,
-  Eye,
+  ArrowUpRight,
+  ArrowDownRight,
+  Plus,
+  Shield,
   Lock,
-  Share2,
-  Check,
-  MapPin,
-  Database,
-  Terminal,
-  Scan,
-  Fingerprint,
-  FileDigit,
-  ServerCrash,
-  Satellite,
-  Radio
+  Radio,
+  AlertTriangle,
+  Eye,
+  Globe
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { toast } from 'sonner';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
-import { Switch } from '@/components/ui/switch';
-import { Textarea } from '@/components/ui/textarea';
-import { format } from 'date-fns';
 import { Input } from '@/components/ui/input';
 
 const Reports: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [reportType, setReportType] = useState('crime-statistics');
   const [selectedRegion, setSelectedRegion] = useState('national');
-  const [activeAlerts, setActiveAlerts] = useState(3);
-  const [securityLevel, setSecurityLevel] = useState('alpha-4');
-  const [dataRefreshInterval, setDataRefreshInterval] = useState(60);
-  const [isLiveData, setIsLiveData] = useState(true);
-  const [currentTime, setCurrentTime] = useState(new Date());
-  const [searchTerm, setSearchTerm] = useState('');
-  const [sortBy, setSortBy] = useState<'type' | 'region' | 'date'>('type');
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
-  
-  useEffect(() => {
-    // Update time every second for the real-time clock
-    const intervalId = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 1000);
-    
-    // Simulate data refresh
-    const dataRefreshId = setInterval(() => {
-      if (isLiveData) {
-        const timestamp = format(new Date(), 'HH:mm:ss');
-        console.log(`[DATA_REFRESH] Polling secure database at ${timestamp}`);
-      }
-    }, dataRefreshInterval * 1000);
-    
-    // Simulate occasional security alerts
-    const alertId = setTimeout(() => {
-      toast.warning('Potential security anomaly detected', {
-        description: 'System performing automated countermeasure protocol',
-        duration: 5000,
-      });
-    }, 45000);
-    
-    return () => {
-      clearInterval(intervalId);
-      clearInterval(dataRefreshId);
-      clearTimeout(alertId);
-    };
-  }, [isLiveData, dataRefreshInterval]);
-  
+
   const generateReport = () => {
     setLoading(true);
-    // Simulate API call with typing effect in console
-    console.log('[REPORT_GEN] Initializing secure connection to FBI database...');
-    setTimeout(() => {
-      console.log('[REPORT_GEN] Authenticating credentials...');
-    }, 500);
-    setTimeout(() => {
-      console.log('[REPORT_GEN] Access granted. Decrypting data streams...');
-    }, 1200);
-    setTimeout(() => {
-      console.log('[REPORT_GEN] Compiling intelligence report...');
-    }, 1800);
-    
     setTimeout(() => {
       setLoading(false);
       toast.success('Intelligence report generated', {
-        description: 'Report SEC-' + Math.floor(10000 + Math.random() * 90000) + ' added to secure vault',
-        duration: 5000,
+        description: 'Report SEC-' + Math.floor(10000 + Math.random() * 90000) + ' added to secure vault'
       });
-      console.log('[REPORT_GEN] Report generation complete. Classification: TOP SECRET');
-    }, 2500);
+    }, 2000);
   };
-  
+
   const downloadReport = () => {
-    console.log('[SECURITY] Initiating biometric verification sequence...');
-    toast.info('Biometric verification required', {
-      description: 'Place your fingerprint on the scanner to proceed with download',
-      duration: 5000,
-    });
-    
-    setTimeout(() => {
-      console.log('[SECURITY] Biometric match confirmed. Preparing encrypted payload...');
-      toast.success('Identity verified', {
-        description: 'Preparing AES-256 encrypted document for secure transfer',
-        duration: 5000,
-      });
-    }, 3000);
+    toast.success('Initiating secure download...');
   };
-  
-  const handleDataRefreshChange = (value: string) => {
-    setDataRefreshInterval(parseInt(value));
-    toast.success(`Data refresh interval updated to ${value} seconds`);
-  };
-  
-  const toggleLiveData = () => {
-    setIsLiveData(!isLiveData);
-    toast(isLiveData ? 'Live data feed paused' : 'Live data feed activated', {
-      description: isLiveData ? 'Manual refresh only' : 'Auto-refreshing every ' + dataRefreshInterval + ' seconds',
-    });
+
+  // Stats data
+  const stats = [
+    { label: 'Active Investigations', value: '256', change: '+15%', isPositive: true, icon: FileText },
+    { label: 'Persons of Interest', value: '648', change: '+5%', isPositive: true, icon: Eye },
+    { label: 'Cases Resolved', value: '124', change: '+23%', isPositive: true, icon: Shield },
+    { label: 'Threat Level', value: 'ELEVATED', change: '', isPositive: false, icon: AlertTriangle },
+  ];
+
+  const recentReports = [
+    { id: 1, name: 'Monthly Crime Statistics - December 2023', type: 'Statistical Analysis', date: '2023-12-15', status: 'completed', classification: 'SECRET' },
+    { id: 2, name: 'Q4 Regional Threat Assessment', type: 'Threat Assessment', date: '2023-12-10', status: 'completed', classification: 'TOP SECRET' },
+    { id: 3, name: 'Cybercrime Trends Analysis', type: 'Trend Analysis', date: '2023-12-08', status: 'completed', classification: 'CONFIDENTIAL' },
+    { id: 4, name: 'Organized Crime Network Mapping', type: 'Network Analysis', date: '2023-12-05', status: 'in-progress', classification: 'TOP SECRET' },
+    { id: 5, name: 'White-Collar Crime Report', type: 'Statistical Analysis', date: '2023-12-01', status: 'completed', classification: 'SECRET' },
+  ];
+
+  const regionData = [
+    { region: 'Northeast', cases: 75, threat: 'HIGH', color: 'bg-red-500' },
+    { region: 'Southeast', cases: 58, threat: 'MODERATE', color: 'bg-amber-500' },
+    { region: 'Midwest', cases: 42, threat: 'LOW', color: 'bg-green-500' },
+    { region: 'Southwest', cases: 36, threat: 'MODERATE', color: 'bg-amber-500' },
+    { region: 'Western', cases: 64, threat: 'HIGH', color: 'bg-red-500' },
+  ];
+
+  const categoryData = [
+    { category: 'Cybercrime', percentage: 78, color: 'from-blue-500 to-blue-400' },
+    { category: 'Organized Crime', percentage: 62, color: 'from-red-500 to-red-400' },
+    { category: 'White-Collar', percentage: 47, color: 'from-amber-500 to-amber-400' },
+    { category: 'Violent Crime', percentage: 53, color: 'from-purple-500 to-purple-400' },
+    { category: 'Drug Trafficking', percentage: 41, color: 'from-green-500 to-green-400' },
+  ];
+
+  const classificationColors: Record<string, string> = {
+    'TOP SECRET': 'bg-red-500/10 text-red-500 border-red-500/30',
+    'SECRET': 'bg-amber-500/10 text-amber-500 border-amber-500/30',
+    'CONFIDENTIAL': 'bg-blue-500/10 text-blue-500 border-blue-500/30',
   };
 
   return (
-    <div className="space-y-8 animate-fade-in">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Reports</h1>
-          <p className="text-muted-foreground">All FBI intelligence and crime reports</p>
+    <div className="space-y-6 animate-fade-in">
+      {/* Header */}
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+        <div className="fbi-header">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
+              <BarChart3 className="h-5 w-5 text-primary" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h1 className="text-2xl font-bold text-foreground">Intelligence Reports</h1>
+                <span className="classified-badge">CLASSIFIED</span>
+              </div>
+              <p className="text-sm text-muted-foreground">FBI Intelligence Analysis Center</p>
+            </div>
+          </div>
         </div>
-        <div className="flex gap-2">
-          <Input
-            type="text"
-            placeholder="Search by report type or region..."
-            value={searchTerm}
-            onChange={e => setSearchTerm(e.target.value)}
-            className="w-64"
-          />
-          <select
-            value={sortBy}
-            onChange={e => setSortBy(e.target.value as 'type' | 'region' | 'date')}
-            className="border rounded px-2 py-1 text-sm"
-          >
-            <option value="type">Sort by Type</option>
-            <option value="region">Sort by Region</option>
-            <option value="date">Sort by Date</option>
-          </select>
-          <select
-            value={sortDirection}
-            onChange={e => setSortDirection(e.target.value as 'asc' | 'desc')}
-            className="border rounded px-2 py-1 text-sm"
-          >
-            <option value="asc">Ascending</option>
-            <option value="desc">Descending</option>
-          </select>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-green-500/10 border border-green-500/20">
+            <Radio className="h-3 w-3 text-green-500 animate-pulse" />
+            <span className="text-xs text-green-600 dark:text-green-400 font-medium">LIVE DATA</span>
+          </div>
+          <Button variant="outline" onClick={downloadReport}>
+            <Download className="h-4 w-4 mr-2" />
+            Secure Export
+          </Button>
+          <Button onClick={generateReport} disabled={loading} className="btn-pro">
+            {loading ? (
+              <>
+                <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                Processing...
+              </>
+            ) : (
+              <>
+                <Plus className="h-4 w-4 mr-2" />
+                Generate Report
+              </>
+            )}
+          </Button>
         </div>
       </div>
-      {/* System status bar */}
-      <div className="flex justify-between items-center sticky top-0 bg-black/40 backdrop-blur-md z-10 -mt-6 -mx-6 px-6 py-2 border-b border-primary/30 text-xs">
-        <div className="flex items-center space-x-3">
-          <div className="flex items-center">
-            <div className="h-2 w-2 bg-secure-green rounded-full animate-pulse mr-1.5"></div>
-            <span>SYSTEM ACTIVE</span>
+
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {stats.map((stat, i) => (
+          <div key={stat.label} className="card-modern stat-card p-5 group hover:shadow-xl transition-all duration-300">
+            <div className="flex items-center justify-between mb-3">
+              <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center transition-transform group-hover:scale-110">
+                <stat.icon className="h-5 w-5 text-primary" />
+              </div>
+              {stat.change && (
+                <div className={`flex items-center gap-1 text-sm ${stat.isPositive ? 'text-green-600 dark:text-green-400' : 'text-amber-600 dark:text-amber-400'}`}>
+                  {stat.isPositive ? <ArrowUpRight className="h-4 w-4" /> : <ArrowDownRight className="h-4 w-4" />}
+                  {stat.change}
+                </div>
+              )}
+            </div>
+            <p className="text-sm text-muted-foreground">{stat.label}</p>
+            <p className={`text-2xl font-bold mt-1 ${stat.label === 'Threat Level' ? 'text-amber-500' : 'text-foreground'}`}>
+              {stat.value}
+            </p>
           </div>
-          <div className="flex items-center">
-            <Terminal size={10} className="mr-1 text-secure-blue" />
-            <span>TERMINAL ID: TRM-{Math.floor(10000 + Math.random() * 90000)}</span>
+        ))}
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Filters Card */}
+        <div className="card-modern p-6 scan-effect">
+          <div className="section-header mb-4">
+            <Filter className="section-header-icon" />
+            <span>Intelligence Filters</span>
           </div>
-          <div className="flex items-center">
-            <Database size={10} className="mr-1 text-primary" />
-            <span>DB STATUS: CONNECTED</span>
+
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm font-medium text-foreground mb-2 block">Report Classification</label>
+              <select
+                className="input-pro w-full"
+                value={reportType}
+                onChange={(e) => setReportType(e.target.value)}
+              >
+                <option value="crime-statistics">Crime Statistical Analysis</option>
+                <option value="criminal-profiling">Subject Psychological Profiling</option>
+                <option value="case-analytics">Case Progression Analytics</option>
+                <option value="geographic-analysis">Geo-Spatial Intelligence</option>
+                <option value="temporal-patterns">Temporal Pattern Recognition</option>
+                <option value="network-analysis">Criminal Network Mapping</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="text-sm font-medium text-foreground mb-2 block">Jurisdictional Scope</label>
+              <select
+                className="input-pro w-full"
+                value={selectedRegion}
+                onChange={(e) => setSelectedRegion(e.target.value)}
+              >
+                <option value="national">National (All Territories)</option>
+                <option value="northeast">Northeast Region</option>
+                <option value="southeast">Southeast Region</option>
+                <option value="midwest">Midwest Region</option>
+                <option value="southwest">Southwest Region</option>
+                <option value="west">Western Region</option>
+                <option value="international">International Operations</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="text-sm font-medium text-foreground mb-2 block">Analysis Timeframe</label>
+              <div className="grid grid-cols-2 gap-2">
+                <div className="relative">
+                  <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input type="date" className="pl-9" />
+                </div>
+                <div className="relative">
+                  <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input type="date" className="pl-9" />
+                </div>
+              </div>
+            </div>
+
+            <Button className="w-full btn-pro" onClick={generateReport} disabled={loading}>
+              {loading ? 'Processing...' : 'Process Intelligence Query'}
+            </Button>
+
+            {/* Security notice */}
+            <div className="p-3 rounded-lg bg-muted/50 border border-border/50 mt-4">
+              <div className="flex items-start gap-2">
+                <Lock className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
+                <p className="text-xs text-muted-foreground">
+                  All queries are logged and subject to security audit. Unauthorized access attempts will be reported.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
-        <div className="flex items-center space-x-3">
-          <div className="flex items-center">
-            <Satellite size={10} className="mr-1 text-secure-yellow" />
-            <span>SIGNAL: ENCRYPTED</span>
-          </div>
-          <div className="flex items-center">
-            <Fingerprint size={10} className="mr-1 text-secure-green" />
-            <span>USER: VERIFIED</span>
-          </div>
-          <div className="font-mono bg-black/30 px-2 py-0.5 rounded border border-primary/20">
-            {format(currentTime, 'HH:mm:ss')}
+
+        {/* Main Content */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* Tabs */}
+          <div className="card-modern overflow-hidden">
+            <Tabs defaultValue="overview" className="w-full">
+              <div className="border-b border-border bg-muted/30">
+                <TabsList className="w-full justify-start rounded-none border-0 bg-transparent p-0">
+                  <TabsTrigger
+                    value="overview"
+                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-4 py-3"
+                  >
+                    <BarChart3 className="h-4 w-4 mr-2" />
+                    Regional Analysis
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="trends"
+                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-4 py-3"
+                  >
+                    <TrendingUp className="h-4 w-4 mr-2" />
+                    Threat Vectors
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="distribution"
+                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-4 py-3"
+                  >
+                    <Globe className="h-4 w-4 mr-2" position={1} />
+                    Global View
+                  </TabsTrigger>
+                </TabsList>
+              </div>
+
+              <TabsContent value="overview" className="p-6 m-0">
+                <h4 className="font-semibold text-foreground mb-4 flex items-center gap-2">
+                  <Globe className="h-4 w-4 text-primary" />
+                  Regional Threat Distribution
+                </h4>
+                <div className="space-y-4">
+                  {regionData.map((item) => (
+                    <div key={item.region} className="flex items-center gap-4 p-3 rounded-lg bg-muted/30 border border-border/50 group hover:border-primary/30 transition-all">
+                      <div className="w-24 text-sm font-medium text-foreground">{item.region}</div>
+                      <div className="flex-1">
+                        <div className="data-bar">
+                          <div
+                            className="data-bar-fill"
+                            style={{ width: `${item.cases}%` }}
+                          />
+                        </div>
+                      </div>
+                      <div className="w-12 text-sm text-right font-medium">{item.cases}%</div>
+                      <div className={`px-2 py-0.5 rounded text-xs font-medium border ${item.threat === 'HIGH' ? 'bg-red-500/10 text-red-500 border-red-500/30' :
+                          item.threat === 'MODERATE' ? 'bg-amber-500/10 text-amber-500 border-amber-500/30' :
+                            'bg-green-500/10 text-green-500 border-green-500/30'
+                        }`}>
+                        {item.threat}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </TabsContent>
+
+              <TabsContent value="trends" className="p-6 m-0">
+                <h4 className="font-semibold text-foreground mb-4 flex items-center gap-2">
+                  <AlertTriangle className="h-4 w-4 text-amber-500" />
+                  Crime Category Analysis
+                </h4>
+                <div className="space-y-4">
+                  {categoryData.map((item) => (
+                    <div key={item.category} className="flex items-center gap-4">
+                      <div className="w-32 text-sm text-foreground">{item.category}</div>
+                      <div className="flex-1">
+                        <div className="h-3 bg-muted rounded-full overflow-hidden">
+                          <div
+                            className={`h-full bg-gradient-to-r ${item.color} rounded-full transition-all duration-500`}
+                            style={{ width: `${item.percentage}%` }}
+                          />
+                        </div>
+                      </div>
+                      <div className="w-12 text-sm text-right font-bold">{item.percentage}%</div>
+                    </div>
+                  ))}
+                </div>
+              </TabsContent>
+
+              <TabsContent value="distribution" className="p-6 m-0">
+                <div className="flex flex-col items-center justify-center py-12 text-center">
+                  <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                    <Globe className="h-8 w-8 text-primary" />
+                  </div>
+                  <h4 className="font-semibold text-foreground mb-2">Global Intelligence Map</h4>
+                  <p className="text-muted-foreground text-sm max-w-md">
+                    Interactive global threat visualization requires elevated security clearance.
+                  </p>
+                  <Button variant="outline" className="mt-4">
+                    <Lock className="h-4 w-4 mr-2" />
+                    Request Access
+                  </Button>
+                </div>
+              </TabsContent>
+            </Tabs>
           </div>
         </div>
       </div>
 
-      <div className="flex justify-between items-center">
-        <div>
-          <div className="flex items-center">
-            <div className="mr-3 relative">
-              <div className="text-3xl font-bold tracking-tight inline-block bg-gradient-to-r from-white via-primary/70 to-white bg-clip-text text-transparent">
-                Intelligence Reports
-              </div>
-              <div className="absolute -bottom-1 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary to-transparent"></div>
-            </div>
-            <HoverCard>
-              <HoverCardTrigger>
-                <span className="secure-badge-red cursor-help">TOP SECRET</span>
-              </HoverCardTrigger>
-              <HoverCardContent className="w-80 bg-black/80 border border-fbi-red/50 text-xs">
-                <div className="flex items-start">
-                  <AlertTriangle className="h-4 w-4 text-fbi-red mr-2 mt-0.5 flex-shrink-0" />
-                  <div>
-                    <p className="font-bold mb-1">RESTRICTED ACCESS</p>
-                    <p className="text-muted-foreground">This intelligence data is classified TOP SECRET under Executive Order 13526. Unauthorized access or disclosure may result in severe criminal penalties.</p>
-                  </div>
-                </div>
-              </HoverCardContent>
-            </HoverCard>
-          </div>
-          <p className="text-muted-foreground mt-1 max-w-3xl">
-            Comprehensive intelligence analytics and threat assessment reports derived from multi-source classified data networks.
-          </p>
-        </div>
-        
-        <div className="flex space-x-2">
-          <Button className="flex items-center relative overflow-hidden group" onClick={generateReport} disabled={loading}>
-            <div className="absolute inset-0 bg-gradient-to-r from-primary/0 via-primary/30 to-primary/0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 animate-data-flow"></div>
-            {loading ? (
-              <>
-                <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
-                <span className="relative z-10">Processing...</span>
-              </>
-            ) : (
-              <>
-                <BarChart2 className="mr-2 h-4 w-4" />
-                <span className="relative z-10">Generate Report</span>
-              </>
-            )}
-          </Button>
-          <Button variant="outline" className="flex items-center relative overflow-hidden group" onClick={downloadReport}>
-            <div className="absolute inset-0 bg-gradient-to-r from-secure-blue/0 via-secure-blue/20 to-secure-blue/0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 animate-data-flow"></div>
-            <Download className="mr-2 h-4 w-4" />
-            <span className="relative z-10">Secure Export</span>
-          </Button>
-        </div>
-      </div>
-      
-      <Alert variant="destructive" className="border-fbi-red/40 bg-black/40 backdrop-blur-md border-l-4 border-l-fbi-red">
-        <AlertTriangle className="h-4 w-4 text-fbi-red" />
-        <AlertTitle className="text-fbi-red font-bold tracking-wide">SECURITY ADVISORY</AlertTitle>
-        <AlertDescription className="text-foreground/90">
-          All data accessed through this terminal is subject to continuous monitoring and audit. 
-          Unauthorized access, use, or distribution is strictly prohibited by federal law.
-        </AlertDescription>
-      </Alert>
-      
-      <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
-        <div className="xl:col-span-3 space-y-6">
-          <Card className="glass-card border-primary/20 bg-black/40 backdrop-blur-xl shadow-[0_0_15px_rgba(0,87,184,0.15)]">
-            <CardHeader className="border-b border-primary/10 bg-gradient-to-r from-black/60 to-transparent pb-3">
-              <CardTitle className="flex items-center text-lg text-white">
-                <Shield className="mr-2 h-5 w-5 text-secure-green" />
-                Security Clearance
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4 pt-4">
-              <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium">Clearance Level:</span>
-                  <span className="secure-badge-green">ALPHA-{securityLevel.split('-')[1]}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium">Authentication:</span>
-                  <span className="secure-badge-green flex items-center">
-                    <Check size={10} className="mr-1" /> VERIFIED
-                  </span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium">Data Access:</span>
-                  <span className="secure-badge-yellow">COMPARTMENTALIZED</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium">Network Status:</span>
-                  <span className="secure-badge-green flex items-center">
-                    <Radio size={10} className="mr-1 animate-pulse" /> SECURE
-                  </span>
-                </div>
-              </div>
-              
-              <div className="h-px w-full bg-gradient-to-r from-transparent via-primary/40 to-transparent my-3"></div>
-              
-              <div className="terminal-box text-xs relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-b from-secure-green/5 to-transparent pointer-events-none"></div>
-                <div className="relative z-10">
-                  <div className="flex justify-between">
-                    <span>INTEL_ACCESS:</span>
-                    <span className="text-secure-green"><Check size={12} className="inline" /> GRANTED</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>FIELD_OPS:</span>
-                    <span className="text-secure-yellow">⚠ LIMITED</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>SPEC_CLEARANCE:</span>
-                    <span className="text-secure-red">⛔ DENIED</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>SESSION_TIMEOUT:</span>
-                    <span className="text-secure-green">30:00</span>
-                  </div>
-                  <div className="h-px w-full bg-secure-green/30 my-1.5"></div>
-                  <div className="text-xs text-secure-green/70 typing-effect">
-                    System monitoring active...
-                  </div>
-                </div>
-              </div>
-              
-              <div className="mt-3 space-y-3">
-                <div className="space-y-1.5">
-                  <div className="text-xs font-medium flex items-center">
-                    <Database size={12} className="inline mr-1.5 text-secure-blue" />
-                    Data Refresh Interval
-                  </div>
-                  <ToggleGroup type="single" value={dataRefreshInterval.toString()} onValueChange={handleDataRefreshChange} className="justify-between bg-black/50 p-1 rounded border border-primary/10">
-                    <ToggleGroupItem value="30" size="sm" className="text-xs">30s</ToggleGroupItem>
-                    <ToggleGroupItem value="60" size="sm" className="text-xs">60s</ToggleGroupItem>
-                    <ToggleGroupItem value="120" size="sm" className="text-xs">120s</ToggleGroupItem>
-                  </ToggleGroup>
-                </div>
-                
-                <div className="space-y-1.5">
-                  <div className="text-xs font-medium flex items-center">
-                    <Radio size={12} className="inline mr-1.5 text-secure-blue" />
-                    Live Data Feed
-                  </div>
-                  <div className="flex items-center justify-between bg-black/50 px-3 py-2 rounded border border-primary/10">
-                    <span className="text-xs text-muted-foreground">Auto-Refresh</span>
-                    <Switch 
-                      checked={isLiveData} 
-                      onCheckedChange={toggleLiveData}
-                      className="data-[state=checked]:bg-secure-green"
-                    />
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card className="glass-card border-primary/20 bg-black/40 backdrop-blur-xl shadow-[0_0_15px_rgba(0,87,184,0.15)]">
-            <CardHeader className="border-b border-primary/10 bg-gradient-to-r from-black/60 to-transparent pb-3">
-              <CardTitle className="flex items-center text-lg text-white">
-                <Filter className="mr-2 h-5 w-5 text-secure-blue" />
-                Intelligence Filters
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pt-4">
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Report Classification</label>
-                  <select 
-                    className="w-full bg-black/60 border border-input rounded-md px-3 py-2 text-sm focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
-                    value={reportType}
-                    onChange={(e) => setReportType(e.target.value)}
-                  >
-                    <option value="crime-statistics">Crime Statistical Analysis</option>
-                    <option value="criminal-profiling">Subject Psychological Profiling</option>
-                    <option value="case-analytics">Case Progression Analytics</option>
-                    <option value="geographic-analysis">Geo-Spatial Intelligence</option>
-                    <option value="temporal-patterns">Temporal Pattern Recognition</option>
-                    <option value="network-analysis">Criminal Network Mapping</option>
-                  </select>
-                </div>
-                
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Jurisdictional Scope</label>
-                  <select 
-                    className="w-full bg-black/60 border border-input rounded-md px-3 py-2 text-sm focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
-                    value={selectedRegion}
-                    onChange={(e) => setSelectedRegion(e.target.value)}
-                  >
-                    <option value="national">National (All Territories)</option>
-                    <option value="northeast">Northeast Region (Field Office 03)</option>
-                    <option value="southeast">Southeast Region (Field Office 06)</option>
-                    <option value="midwest">Midwest Region (Field Office 09)</option>
-                    <option value="southwest">Southwest Region (Field Office 12)</option>
-                    <option value="west">Western Region (Field Office 15)</option>
-                    <option value="international">International Operations</option>
-                  </select>
-                </div>
-                
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Analysis Timeframe</label>
-                  <div className="grid grid-cols-2 gap-2">
-                    <div className="relative">
-                      <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                      <input
-                        type="text"
-                        placeholder="From"
-                        className="w-full pl-10 pr-3 py-2 text-sm bg-black/60 border border-input rounded-md focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
-                      />
-                    </div>
-                    <div className="relative">
-                      <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                      <input
-                        type="text"
-                        placeholder="To"
-                        className="w-full pl-10 pr-3 py-2 text-sm bg-black/60 border border-input rounded-md focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
-                      />
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Additional Criteria</label>
-                  <Textarea 
-                    placeholder="Enter search parameters..."
-                    className="resize-none h-20 bg-black/60 focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
-                  />
-                </div>
-                
-                <Button className="w-full bg-gradient-to-r from-secure-blue/80 to-primary/80 hover:from-secure-blue hover:to-primary transition-all duration-300">
-                  <Scan className="mr-2 h-4 w-4" />
-                  Process Intelligence Query
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-        
-        <div className="xl:col-span-9 space-y-6">
-          <Card className="glass-card border-primary/20 bg-black/40 backdrop-blur-xl shadow-[0_0_15px_rgba(0,87,184,0.15)] relative overflow-hidden">
-            <div className="absolute inset-0 pointer-events-none">
-              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-50"></div>
-              <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-30"></div>
-              <div className="absolute top-1 bottom-1 left-0 w-1 bg-gradient-to-b from-transparent via-primary to-transparent opacity-30"></div>
-              <div className="absolute top-1 bottom-1 right-0 w-1 bg-gradient-to-b from-transparent via-primary to-transparent opacity-30"></div>
-            </div>
-            
-            <CardHeader className="flex flex-row items-center justify-between pb-2 border-b border-primary/10 bg-gradient-to-r from-black/70 to-black/40 relative z-10">
-              <div>
-                <CardTitle className="text-xl flex items-center">
-                  <FileDigit className="mr-2 h-5 w-5 text-secure-blue" />
-                  <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-white to-primary/90">
-                    FBI Intelligence Report #{Math.floor(10000 + Math.random() * 90000)}
-                  </span>
-                </CardTitle>
-                <CardDescription>
-                  Advanced analysis of criminal activity patterns with multi-source intelligence integration
-                </CardDescription>
-              </div>
-              <div className="flex items-center space-x-2">
-                <span className="text-xs border border-secure-red/50 bg-secure-red/10 px-2 py-1 rounded-md flex items-center">
-                  <Lock size={10} className="inline mr-1.5" /> CLASSIFIED
-                </span>
-                <span className="text-xs border border-primary/40 bg-primary/10 px-2 py-1 rounded-md flex items-center animate-pulse">
-                  <Radio size={10} className="mr-1.5" /> LIVE DATA
-                </span>
-                <span className="text-xs border border-primary/40 bg-primary/10 px-2 py-1 rounded-md flex items-center">
-                  <MapPin size={10} className="mr-1.5" /> {selectedRegion.toUpperCase()}
-                </span>
-              </div>
-            </CardHeader>
-            <div className="relative z-10">
-              <Tabs defaultValue="statistics" className="w-full">
-                <TabsList className="w-full bg-gradient-to-r from-black/70 via-black/60 to-black/70 border border-primary/20 p-0 h-auto">
-                  <TabsTrigger value="statistics" className="flex-1 data-[state=active]:bg-primary/20 data-[state=active]:text-white py-1.5">
-                    <BarChart2 size={14} className="mr-2" /> Analytics
-                  </TabsTrigger>
-                  <TabsTrigger value="trends" className="flex-1 data-[state=active]:bg-primary/20 data-[state=active]:text-white py-1.5">
-                    <LineChart size={14} className="mr-2" /> Trends
-                  </TabsTrigger>
-                  <TabsTrigger value="demographics" className="flex-1 data-[state=active]:bg-primary/20 data-[state=active]:text-white py-1.5">
-                    <PieChart size={14} className="mr-2" /> Demographics
-                  </TabsTrigger>
-                  <TabsTrigger value="analysis" className="flex-1 data-[state=active]:bg-primary/20 data-[state=active]:text-white py-1.5">
-                    <Eye size={14} className="mr-2" /> Threat Assessment
-                  </TabsTrigger>
-                </TabsList>
-                
-                <TabsContent value="statistics" className="p-4 bg-black/60 border border-primary/20 mt-4 rounded-md scanner-effect">
-                  <div className="confidential-stamp opacity-20 rotate-[-12deg] z-10">TOP SECRET</div>
-                  <div className="flex justify-between items-center mb-4">
-                    <h3 className="font-bold text-lg px-3 py-1 bg-gradient-to-r from-black/80 to-transparent border-l-4 border-secure-blue text-white flex items-center">
-                      <FileText size={16} className="mr-2 text-secure-blue" />
-                      Criminal Activity Statistical Analysis
-                    </h3>
-                    <div className="text-xs text-muted-foreground">
-                      Reference: INT-{Math.floor(10000 + Math.random() * 90000)}
-                    </div>
-                  </div>
-                  
-                  <ScrollArea className="h-[400px] pr-4">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                      <div className="bg-gradient-to-br from-black/80 via-black/60 to-black/80 p-4 rounded-md border border-primary/30 relative overflow-hidden group">
-                        <div className="absolute inset-0 bg-gradient-to-r from-secure-blue/0 via-secure-blue/5 to-secure-blue/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                        <div className="text-2xl font-bold text-white mb-1">256</div>
-                        <div className="text-sm text-muted-foreground">Active Investigations</div>
-                        <div className="text-xs text-secure-green mt-2 flex items-center">
-                          <svg className="w-3 h-3 mr-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M7 17L17 7M17 7H8M17 7V16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                          </svg>
-                          15% increase from previous period
-                        </div>
-                        <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-secure-blue to-transparent opacity-30"></div>
-                      </div>
-                      
-                      <div className="bg-gradient-to-br from-black/80 via-black/60 to-black/80 p-4 rounded-md border border-primary/30 relative overflow-hidden group">
-                        <div className="absolute inset-0 bg-gradient-to-r from-secure-blue/0 via-secure-blue/5 to-secure-blue/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                        <div className="text-2xl font-bold text-white mb-1">648</div>
-                        <div className="text-sm text-muted-foreground">Persons of Interest</div>
-                        <div className="text-xs text-secure-yellow mt-2 flex items-center">
-                          <svg className="w-3 h-3 mr-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M7 17L17 7M17 7H8M17 7V16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                          </svg>
-                          5% increase from previous period
-                        </div>
-                        <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-secure-yellow to-transparent opacity-30"></div>
-                      </div>
-                      
-                      <div className="bg-gradient-to-br from-black/80 via-black/60 to-black/80 p-4 rounded-md border border-primary/30 relative overflow-hidden group">
-                        <div className="absolute inset-0 bg-gradient-to-r from-secure-blue/0 via-secure-blue/5 to-secure-blue/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                        <div className="text-2xl font-bold text-white mb-1">124</div>
-                        <div className="text-sm text-muted-foreground">Cases Resolved</div>
-                        <div className="text-xs text-secure-green mt-2 flex items-center">
-                          <svg className="w-3 h-3 mr-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M7 17L17 7M17 7H8M17 7V16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                          </svg>
-                          23% increase from previous period
-                        </div>
-                        <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-secure-green to-transparent opacity-30"></div>
-                      </div>
-                    </div>
-                    
-                    <div className="bg-black/70 rounded-md border border-primary/20 p-5 mb-6 relative overflow-hidden">
-                      <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiMwMDU3YjgiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0di00aC0ydjRoLTR2Mmg0djRoMnYtNGg0di0yaC00em0wLTMwVjBoLTJ2NGgtNHYyaDR2NGgyVjZoNFY0aC00ek02IDM0di00SDR2NGgwdjJoNHY0aDJ2LTRoNHYtMkg2ek02IDRWMEg0djRIMHYyaDR2NGgyVjZoNFY0SDZ6Ii8+PC9nPjwvZz48L3N2Zz4=')] opacity-5"></div>
-                      <div className="mb-4 flex justify-between items-center">
-                        <h4 className="font-semibold text-white">Intelligence Visualization</h4>
-                        <div className="text-xs bg-secure-blue/20 border border-secure-blue/30 px-2 py-0.5 rounded text-secure-blue">
-                          REAL-TIME DATA
-                        </div>
-                      </div>
-                      <div className="relative h-60 rounded bg-black/40 border border-primary/10 flex items-center justify-center overflow-hidden">
-                        <div className="absolute inset-0">
-                          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent"></div>
-                          <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent"></div>
-                          <div className="grid grid-cols-6 h-full w-full">
-                            {Array.from({ length: 6 }).map((_, i) => (
-                              <div key={i} className="border-r border-primary/10 h-full" />
-                            ))}
-                          </div>
-                          <div className="grid grid-rows-6 h-full w-full">
-                            {Array.from({ length: 6 }).map((_, i) => (
-                              <div key={i} className="border-b border-primary/10 w-full" />
-                            ))}
-                          </div>
-                        </div>
-                        <div className="text-center text-muted-foreground z-10">
-                          <BarChart2 size={48} className="mx-auto mb-3 opacity-40 text-primary" />
-                          <p>Advanced visualization requires ALPHA-6 clearance</p>
-                          <p className="text-xs mt-1 text-primary/70">Contact your security officer for access</p>
-                        </div>
-                      </div>
-                      <div className="mt-2 text-xs text-right text-muted-foreground">
-                        Source: Integrated Criminal Intelligence System (ICIS)
-                      </div>
-                    </div>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                      <div className="bg-black/70 p-4 rounded-md border border-primary/20 space-y-3">
-                        <h4 className="text-sm font-semibold text-white">Geographic Distribution</h4>
-                        <div className="space-y-2">
-                          <div className="flex justify-between items-center">
-                            <span className="text-xs">Northeast Region</span>
-                            <div className="flex items-center">
-                              <div className="h-2 w-32 bg-black/40 rounded-full overflow-hidden mr-2">
-                                <div className="h-full bg-gradient-to-r from-secure-blue to-primary rounded-full" style={{ width: '75%' }}></div>
-                              </div>
-                              <span className="text-xs">75%</span>
-                            </div>
-                          </div>
-                          <div className="flex justify-between items-center">
-                            <span className="text-xs">Southeast Region</span>
-                            <div className="flex items-center">
-                              <div className="h-2 w-32 bg-black/40 rounded-full overflow-hidden mr-2">
-                                <div className="h-full bg-gradient-to-r from-secure-blue to-primary rounded-full" style={{ width: '58%' }}></div>
-                              </div>
-                              <span className="text-xs">58%</span>
-                            </div>
-                          </div>
-                          <div className="flex justify-between items-center">
-                            <span className="text-xs">Midwest Region</span>
-                            <div className="flex items-center">
-                              <div className="h-2 w-32 bg-black/40 rounded-full overflow-hidden mr-2">
-                                <div className="h-full bg-gradient-to-r from-secure-blue to-primary rounded-full" style={{ width: '42%' }}></div>
-                              </div>
-                              <span className="text-xs">42%</span>
-                            </div>
-                          </div>
-                          <div className="flex justify-between items-center">
-                            <span className="text-xs">Southwest Region</span>
-                            <div className="flex items-center">
-                              <div className="h-2 w-32 bg-black/40 rounded-full overflow-hidden mr-2">
-                                <div className="h-full bg-gradient-to-r from-secure-blue to-primary rounded-full" style={{ width: '36%' }}></div>
-                              </div>
-                              <span className="text-xs">36%</span>
-                            </div>
-                          </div>
-                          <div className="flex justify-between items-center">
-                            <span className="text-xs">Western Region</span>
-                            <div className="flex items-center">
-                              <div className="h-2 w-32 bg-black/40 rounded-full overflow-hidden mr-2">
-                                <div className="h-full bg-gradient-to-r from-secure-blue to-primary rounded-full" style={{ width: '64%' }}></div>
-                              </div>
-                              <span className="text-xs">64%</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <div className="bg-black/70 p-4 rounded-md border border-primary/20 space-y-3">
-                        <h4 className="text-sm font-semibold text-white">Case Classification</h4>
-                        <div className="space-y-2">
-                          <div className="flex justify-between items-center">
-                            <span className="text-xs">Organized Crime</span>
-                            <div className="flex items-center">
-                              <div className="h-2 w-32 bg-black/40 rounded-full overflow-hidden mr-2">
-                                <div className="h-full bg-gradient-to-r from-secure-red to-fbi-red rounded-full" style={{ width: '62%' }}></div>
-                              </div>
-                              <span className="text-xs">62%</span>
-                            </div>
-                          </div>
-                          <div className="flex justify-between items-center">
-                            <span className="text-xs">White-Collar</span>
-                            <div className="flex items-center">
-                              <div className="h-2 w-32 bg-black/40 rounded-full overflow-hidden mr-2">
-                                <div className="h-full bg-gradient-to-r from-secure-blue to-primary rounded-full" style={{ width: '47%' }}></div>
-                              </div>
-                              <span className="text-xs">47%</span>
-                            </div>
-                          </div>
-                          <div className="flex justify-between items-center">
-                            <span className="text-xs">Terrorism</span>
-                            <div className="flex items-center">
-                              <div className="h-2 w-32 bg-black/40 rounded-full overflow-hidden mr-2">
-                                <div className="h-full bg-gradient-to-r from-secure-red to-fbi-red rounded-full" style={{ width: '31%' }}></div>
-                              </div>
-                              <span className="text-xs">31%</span>
-                            </div>
-                          </div>
-                          <div className="flex justify-between items-center">
-                            <span className="text-xs">Cybercrimes</span>
-                            <div className="flex items-center">
-                              <div className="h-2 w-32 bg-black/40 rounded-full overflow-hidden mr-2">
-                                <div className="h-full bg-gradient-to-r from-secure-yellow to-fbi-gold rounded-full" style={{ width: '78%' }}></div>
-                              </div>
-                              <span className="text-xs">78%</span>
-                            </div>
-                          </div>
-                          <div className="flex justify-between items-center">
-                            <span className="text-xs">Violent Crimes</span>
-                            <div className="flex items-center">
-                              <div className="h-2 w-32 bg-black/40 rounded-full overflow-hidden mr-2">
-                                <div className="h-full bg-gradient-to-r from-secure-blue to-primary rounded-full" style={{ width: '53%' }}></div>
-                              </div>
-                              <span className="text-xs">53%</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </ScrollArea>
-                  
-                  <div className="flex justify-end space-x-2 mt-4">
-                    <Button variant="outline" size="sm" className="text-xs">
-                      <Eye size={12} className="mr-1" /> Access Complete Dataset
-                    </Button>
-                    <Button variant="outline" size="sm" className="text-xs">
-                      <Share2 size={12} className="mr-1" /> Distribute Report
-                    </Button>
-                    <Button size="sm" className="text-xs bg-gradient-to-r from-secure-blue/80 to-primary/80 hover:from-secure-blue hover:to-primary border-none">
-                      <Download size={12} className="mr-1" /> Secure Download
-                    </Button>
-                  </div>
-                </TabsContent>
-                
-                <TabsContent value="trends" className="p-4 bg-black/60 border border-primary/20 mt-4 rounded-md scanner-effect">
-                  <div className="flex justify-between items-center mb-4">
-                    <h3 className="font-bold text-lg px-3 py-1 bg-gradient-to-r from-black/80 to-transparent border-l-4 border-secure-blue text-white flex items-center">
-                      <LineChart size={16} className="mr-2 text-secure-blue" />
-                      Temporal Pattern Analysis
-                    </h3>
-                    <div className="text-xs text-muted-foreground">
-                      Data Refresh: {format(new Date(), 'HH:mm:ss')}
-                    </div>
-                  </div>
-                  <div className="text-muted-foreground text-sm mb-6">
-                    Advanced time-series analysis of criminal activity patterns with predictive modeling.
-                  </div>
-                  
-                  <div className="relative h-60 rounded bg-black/40 border border-primary/10 flex items-center justify-center overflow-hidden">
-                    <div className="absolute inset-0">
-                      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent"></div>
-                      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent"></div>
-                      <div className="grid grid-cols-6 h-full w-full">
-                        {Array.from({ length: 6 }).map((_, i) => (
-                          <div key={i} className="border-r border-primary/10 h-full" />
-                        ))}
-                      </div>
-                      <div className="grid grid-rows-6 h-full w-full">
-                        {Array.from({ length: 6 }).map((_, i) => (
-                          <div key={i} className="border-b border-primary/10 w-full" />
-                        ))}
-                      </div>
-                    </div>
-                    <div className="text-center text-muted-foreground z-10">
-                      <LineChart size={48} className="mx-auto mb-3 opacity-40 text-primary" />
-                      <p>Temporal analysis visualization</p>
-                      <p className="text-xs mt-1">(Decrypting secure data...)</p>
-                    </div>
-                  </div>
-                </TabsContent>
-                
-                <TabsContent value="demographics" className="mt-4 text-center text-muted-foreground py-6 bg-black/60 border border-primary/20 rounded-md">
-                  <div className="relative">
-                    <PieChart size={48} className="mx-auto mb-4 opacity-40" />
-                    <div className="bg-secure-yellow/80 text-black font-bold px-4 py-2 rounded-md inline-block transform -rotate-3">
-                      CLEARANCE LEVEL INSUFFICIENT
-                    </div>
-                    <p className="text-xs mt-4 max-w-md mx-auto">
-                      Demographic analysis requires ALPHA-6 clearance. Your current clearance level is ALPHA-{securityLevel.split('-')[1]}.
-                      Please contact your supervisor to request elevated access privileges.
-                    </p>
-                    <div className="mt-4">
-                      <Button variant="outline" size="sm" className="text-xs border-secure-yellow text-secure-yellow hover:bg-secure-yellow/10">
-                        Request Access Elevation
-                      </Button>
-                    </div>
-                  </div>
-                </TabsContent>
-                
-                <TabsContent value="analysis" className="mt-4 text-center text-muted-foreground py-6 bg-black/60 border border-primary/20 rounded-md">
-                  <div className="relative">
-                    <div className="absolute inset-0 bg-fbi-red/5 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-fbi-red/20 via-transparent to-transparent opacity-50"></div>
-                    <div className="relative z-10">
-                      <Lock size={48} className="mx-auto mb-4 opacity-60 text-fbi-red" />
-                      <div className="bg-fbi-red/90 text-white font-bold px-4 py-2 rounded-md inline-block transform -rotate-3">
-                        ACCESS DENIED
-                      </div>
-                      <p className="text-xs mt-4 max-w-md mx-auto text-fbi-red">
-                        This section contains TOP SECRET intelligence data. Access is restricted to personnel with ALPHA-7 clearance and above.
-                      </p>
-                      <p className="text-xs mt-2 max-w-md mx-auto text-muted-foreground">
-                        NOTICE: All access attempts are logged and monitored. Unauthorized access attempts may result in administrative action.
-                      </p>
-                    </div>
-                  </div>
-                </TabsContent>
-              </Tabs>
-            </div>
-            <CardContent className="pt-4 relative z-10">
-              <Accordion type="single" collapsible className="bg-black/60 rounded-md shadow-inner">
-                <AccordionItem value="item-1" className="border-b border-primary/10">
-                  <AccordionTrigger className="px-4 hover:no-underline">
-                    <div className="flex items-center text-sm font-medium">
-                      <Shield className="mr-2 h-4 w-4 text-secure-green" />
-                      Security Protocols
-                    </div>
-                  </AccordionTrigger>
-                  <AccordionContent className="px-4 pb-4 text-sm">
-                    <ul className="space-y-2 text-muted-foreground">
-                      <li className="flex items-start">
-                        <AlertTriangle size={14} className="mr-2 mt-0.5 text-secure-yellow" />
-                        <span>This intelligence report contains sensitive law enforcement information (LEI).</span>
-                      </li>
-                      <li className="flex items-start">
-                        <AlertTriangle size={14} className="mr-2 mt-0.5 text-secure-yellow" />
-                        <span>Distribution restricted to personnel with minimum ALPHA-4 clearance.</span>
-                      </li>
-                      <li className="flex items-start">
-                        <AlertTriangle size={14} className="mr-2 mt-0.5 text-secure-yellow" />
-                        <span>All system interactions are cryptographically logged in accordance with CFR 28.543.</span>
-                      </li>
-                    </ul>
-                  </AccordionContent>
-                </AccordionItem>
-                
-                <AccordionItem value="item-2" className="border-b border-primary/10">
-                  <AccordionTrigger className="px-4 hover:no-underline">
-                    <div className="flex items-center text-sm font-medium">
-                      <FileText className="mr-2 h-4 w-4 text-primary" />
-                      Analytical Methodology
-                    </div>
-                  </AccordionTrigger>
-                  <AccordionContent className="px-4 pb-4 text-sm text-muted-foreground">
-                    <p>
-                      This intelligence report leverages advanced machine learning algorithms and predictive analytics to identify patterns across multiple federal criminal databases. Data sources include the FBI's National Crime Information Center (NCIC), Uniform Crime Reporting (UCR) program, Terrorist Screening Database (TSDB), and classified internal repositories.
-                    </p>
-                    <div className="mt-2 px-3 py-2 bg-black/40 border border-primary/10 rounded text-xs">
-                      <div className="font-mono text-primary/80">Algorithm: ADA-ML59 (Adaptive Decision Architecture)</div>
-                      <div className="font-mono text-primary/80">Confidence Level: 94.7%</div>
-                      <div className="font-mono text-primary/80">Margin of Error: ±2.3%</div>
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-                
-                <AccordionItem value="item-3">
-                  <AccordionTrigger className="px-4 hover:no-underline">
-                    <div className="flex items-center text-sm font-medium">
-                      <Calendar className="mr-2 h-4 w-4 text-primary" />
-                      Data Lifecycle
-                    </div>
-                  </AccordionTrigger>
-                  <AccordionContent className="px-4 pb-4 text-sm text-muted-foreground">
-                    <p>
-                      This intelligence report is automatically updated every {dataRefreshInterval} seconds with the latest data from field offices nationwide. Tactical intelligence has a 4-hour refresh cycle, while strategic intelligence is updated every 24 hours. Manual refreshes may be initiated by personnel with appropriate authorization.
-                    </p>
-                    <div className="mt-2 flex justify-between text-xs">
-                      <span>Last Full Update: {format(new Date(Date.now() - 1000 * 60 * 30), 'yyyy-MM-dd HH:mm:ss')} UTC</span>
-                      <span>Next Scheduled Update: {format(new Date(Date.now() + 1000 * 60 * 60 * 4), 'yyyy-MM-dd HH:mm:ss')} UTC</span>
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
-            </CardContent>
-          </Card>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card className="glass-card border-primary/20 bg-black/40 backdrop-blur-xl shadow-[0_0_15px_rgba(0,87,184,0.15)]">
-              <CardHeader className="border-b border-primary/10 bg-gradient-to-r from-black/60 to-transparent pb-3">
-                <CardTitle className="text-lg flex items-center">
-                  <AlertTriangle className="mr-2 h-5 w-5 text-secure-yellow" />
-                  Priority Intelligence Notifications
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="pt-4">
-                <ScrollArea className="h-[250px] pr-4">
-                  <div className="space-y-4">
-                    <div className="bg-black/70 p-3 rounded-md border-l-4 border-secure-yellow relative group animate-pulse hover:animate-none">
-                      <div className="absolute inset-0 bg-gradient-to-r from-secure-yellow/0 via-secure-yellow/5 to-secure-yellow/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-md"></div>
-                      <div className="flex justify-between items-start">
-                        <div className="flex items-start">
-                          <AlertTriangle size={16} className="mr-2 mt-0.5 text-secure-yellow flex-shrink-0" />
-                          <div className="relative z-10">
-                            <p className="text-sm font-medium flex items-center">
-                              Facial Recognition Alert
-                              <span className="ml-2 px-1.5 py-0.5 rounded text-[10px] bg-secure-yellow/20 text-secure-yellow">ACTIVE</span>
-                            </p>
-                            <p className="text-xs text-muted-foreground">Subject match detected for case #FBI-45B28 (87% confidence)</p>
-                          </div>
-                        </div>
-                        <span className="text-xs text-muted-foreground">15m ago</span>
-                      </div>
-                    </div>
-                    
-                    <div className="bg-black/70 p-3 rounded-md border-l-4 border-secure-red relative group">
-                      <div className="absolute inset-0 bg-gradient-to-r from-secure-red/0 via-secure-red/5 to-secure-red/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-md"></div>
-                      <div className="flex justify-between items-start">
-                        <div className="flex items-start">
-                          <ServerCrash size={16} className="mr-2 mt-0.5 text-secure-red flex-shrink-0" />
-                          <div>
-                            <p className="text-sm font-medium">Security Breach Attempt</p>
-                            <p className="text-xs text-muted-foreground">Unauthorized access attempt from 192.168.14.23</p>
-                          </div>
-                        </div>
-                        <span className="text-xs text-muted-foreground">2h ago</span>
-                      </div>
-                    </div>
-                    
-                    <div className="bg-black/70 p-3 rounded-md border-l-4 border-secure-blue relative group">
-                      <div className="absolute inset-0 bg-gradient-to-r from-secure-blue/0 via-secure-blue/5 to-secure-blue/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-md"></div>
-                      <div className="flex justify-between items-start">
-                        <div className="flex items-start">
-                          <Database size={16} className="mr-2 mt-0.5 text-secure-blue flex-shrink-0" />
-                          <div>
-                            <p className="text-sm font-medium">Database Synchronization Complete</p>
-                            <p className="text-xs text-muted-foreground">Criminal records updated with latest NCIC data</p>
-                          </div>
-                        </div>
-                        <span className="text-xs text-muted-foreground">5h ago</span>
-                      </div>
-                    </div>
-                    
-                    <div className="bg-black/70 p-3 rounded-md border-l-4 border-primary relative group">
-                      <div className="absolute inset-0 bg-gradient-to-r from-primary/0 via-primary/5 to-primary/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-md"></div>
-                      <div className="flex justify-between items-start">
-                        <div className="flex items-start">
-                          <Eye size={16} className="mr-2 mt-0.5 text-primary flex-shrink-0" />
-                          <div>
-                            <p className="text-sm font-medium">Surveillance System Update</p>
-                            <p className="text-xs text-muted-foreground">Citywide CCTV integration completed for Boston area</p>
-                          </div>
-                        </div>
-                        <span className="text-xs text-muted-foreground">8h ago</span>
-                      </div>
-                    </div>
-                    
-                    <div className="bg-black/70 p-3 rounded-md border-l-4 border-secure-green relative group">
-                      <div className="absolute inset-0 bg-gradient-to-r from-secure-green/0 via-secure-green/5 to-secure-green/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-md"></div>
-                      <div className="flex justify-between items-start">
-                        <div className="flex items-start">
-                          <Shield size={16} className="mr-2 mt-0.5 text-secure-green flex-shrink-0" />
-                          <div>
-                            <p className="text-sm font-medium">System Security Update</p>
-                            <p className="text-xs text-muted-foreground">Cryptographic protocols upgraded to AES-512</p>
-                          </div>
-                        </div>
-                        <span className="text-xs text-muted-foreground">12h ago</span>
-                      </div>
-                    </div>
-                  </div>
-                </ScrollArea>
-                
-                <Button variant="outline" size="sm" className="w-full mt-4 text-xs bg-black/60 border-primary/20 hover:bg-primary/10 hover:text-white transition-colors">
-                  <Eye className="mr-2 h-4 w-4" />
-                  View All Intelligence Alerts ({activeAlerts} Active)
-                </Button>
-              </CardContent>
-            </Card>
-            
-            <Card className="glass-card border-primary/20 bg-black/40 backdrop-blur-xl shadow-[0_0_15px_rgba(0,87,184,0.15)]">
-              <CardHeader className="border-b border-primary/10 bg-gradient-to-r from-black/60 to-transparent pb-3">
-                <CardTitle className="text-lg flex items-center">
-                  <FileDigit className="mr-2 h-5 w-5 text-primary" />
-                  Recent Intelligence Activity
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="pt-4">
-                <ScrollArea className="h-[250px] pr-4">
-                  <div className="space-y-3">
-                    {[
-                      { user: "SA Johnson", action: "Generated Statistical Analysis Report", time: "10:45 AM", avatar: "J", color: "bg-secure-blue/30 text-secure-blue" },
-                      { user: "Director Martinez", action: "Accessed Classified Subject Profile", time: "Yesterday", avatar: "M", color: "bg-secure-red/30 text-secure-red" },
-                      { user: "SA Thompson", action: "Downloaded Geographic Analysis", time: "2 days ago", avatar: "T", color: "bg-primary/30 text-primary" },
-                      { user: "Analyst Wilson", action: "Updated Case Analytics", time: "3 days ago", avatar: "W", color: "bg-secure-green/30 text-secure-green" },
-                      { user: "SA Rodriguez", action: "Initiated Cross-Reference Search", time: "4 days ago", avatar: "R", color: "bg-secure-yellow/30 text-secure-yellow" },
-                      { user: "Tech Chen", action: "Updated Analysis Algorithm", time: "5 days ago", avatar: "C", color: "bg-primary/30 text-primary" }
-                    ].map((activity, index) => (
-                      <div key={index} className="flex items-start pb-3 border-b border-primary/10 last:border-0 last:pb-0 group">
-                        <div className={`h-8 w-8 rounded-full ${activity.color} flex items-center justify-center mr-3 group-hover:ring-2 group-hover:ring-primary/30 transition-all`}>
-                          <span className="text-xs font-medium">
-                            {activity.avatar}
-                          </span>
-                        </div>
-                        <div className="flex-1">
-                          <div className="flex justify-between">
-                            <p className="text-sm font-medium">{activity.user}</p>
-                            <span className="text-xs text-muted-foreground">{activity.time}</span>
-                          </div>
-                          <p className="text-xs text-muted-foreground">{activity.action}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </ScrollArea>
-                
-                <Button variant="outline" size="sm" className="w-full mt-4 text-xs bg-black/60 border-primary/20 hover:bg-primary/10 hover:text-white transition-colors">
-                  <FileText className="mr-2 h-4 w-4" />
-                  Access Complete Activity Logs
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </div>
-      
-      {/* Bottom status bar */}
-      <div className="fixed bottom-0 left-0 right-0 bg-black/50 backdrop-blur-md py-1 px-6 z-10 border-t border-primary/30 flex justify-between items-center text-xs">
-        <div className="flex items-center space-x-3">
-          <div className="flex items-center">
-            <div className="h-1.5 w-1.5 bg-secure-green rounded-full animate-pulse mr-1"></div>
-            <span>SECURE CONNECTION</span>
-          </div>
+      {/* Recent Reports Table */}
+      <div className="card-modern overflow-hidden">
+        <div className="p-6 border-b border-border flex items-center justify-between">
           <div>
-            SESSION ID: {Math.random().toString(36).substring(2, 15).toUpperCase()}
+            <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
+              <FileText className="h-5 w-5 text-primary" />
+              Recent Intelligence Reports
+            </h3>
+            <p className="text-sm text-muted-foreground mt-1">Previously generated classified documents</p>
           </div>
+          <span className="text-xs text-muted-foreground font-mono">Showing last 5 reports</span>
         </div>
-        <div className="flex items-center space-x-3">
-          <div>
-            <span className="text-muted-foreground mr-1">API:</span>
-            <span className="text-secure-green">ONLINE</span>
-          </div>
-          <div>
-            <span className="text-muted-foreground mr-1">ENCRYPTION:</span>
-            <span className="text-secure-green">AES-256</span>
-          </div>
-          <div className="font-mono text-primary/80">
-            {format(currentTime, 'HH:mm:ss')}
-          </div>
+
+        <div className="overflow-x-auto">
+          <table className="table-modern">
+            <thead>
+              <tr>
+                <th>Report Name</th>
+                <th>Classification</th>
+                <th>Type</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th className="text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {recentReports.map((report) => (
+                <tr key={report.id}>
+                  <td>
+                    <div className="flex items-center gap-3">
+                      <div className="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center">
+                        <FileText className="h-4 w-4 text-primary" />
+                      </div>
+                      <span className="font-medium text-foreground">{report.name}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase border ${classificationColors[report.classification]}`}>
+                      {report.classification}
+                    </span>
+                  </td>
+                  <td className="text-muted-foreground">{report.type}</td>
+                  <td className="text-muted-foreground font-mono text-xs">{new Date(report.date).toLocaleDateString()}</td>
+                  <td>
+                    <span className={`badge ${report.status === 'completed' ? 'badge-success' : 'badge-warning'}`}>
+                      {report.status === 'completed' ? 'Completed' : 'In Progress'}
+                    </span>
+                  </td>
+                  <td className="text-right">
+                    <Button variant="ghost" size="sm" className="h-8">
+                      <Download className="h-4 w-4" />
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -998,4 +385,3 @@ const Reports: React.FC = () => {
 };
 
 export default Reports;
-

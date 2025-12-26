@@ -1,126 +1,220 @@
-import React from 'react';
-import { Search, Sun, Moon, Bell, Zap, Shield, Lock, Eye } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
+import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import {
+  Search,
+  Moon,
+  Sun,
+  Bell,
+  User,
+  LogOut,
+  Settings,
+  ChevronDown,
+  Shield,
+  Lock,
+  Radio,
+  AlertTriangle,
+  FileText,
+  X
+} from 'lucide-react';
 import { useTheme } from 'next-themes';
-import { NavLink } from 'react-router-dom';
+import { useAuth } from '@/context/AuthContext';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
 const TopBar: React.FC = () => {
-  const { user } = useAuth();
-  const { theme, resolvedTheme, setTheme } = useTheme();
-  const toggleTheme = () => setTheme((resolvedTheme || theme) === 'light' ? 'dark' : 'light');
-  const stored = (()=>{ try { const s = localStorage.getItem('userProfile'); return s? JSON.parse(s) : null; } catch { return null; } })();
-  const avatar = stored?.avatar || user?.avatar || '/placeholder.svg';
+  const { theme, setTheme } = useTheme();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login');
+  };
+
+  const notifications = [
+    { id: 1, type: 'alert', title: 'New case assigned', desc: 'Case FBI-2023-092345 requires your attention', time: '2m ago' },
+    { id: 2, type: 'update', title: 'Evidence logged', desc: 'New evidence added to Case FBI-2023-045789', time: '1h ago' },
+    { id: 3, type: 'system', title: 'System maintenance', desc: 'Scheduled downtime at 02:00 EST', time: '3h ago' },
+  ];
 
   return (
-    <header className="sticky top-0 z-20 border-b border-cyan-500/20 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/80 relative">
-      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-cyan-500/50 to-transparent"></div>
-      <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-cyan-500/30 to-transparent"></div>
-
-      <div className="container-pro h-16 flex items-center gap-4">
-        <NavLink to="/dashboard" className="flex items-center gap-2 group">
-          <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 flex items-center justify-center relative overflow-hidden group-hover:border-cyan-500/50 transition-all">
-            <div className="absolute inset-0 bg-gradient-to-br from-cyan-400/10 to-transparent group-hover:animate-pulse"></div>
-            <Shield className="h-4 w-4 text-cyan-400 relative z-10" />
-          </div>
-          <div className="hidden lg:block">
-            <span className="font-bold text-base bg-gradient-to-r from-cyan-300 to-blue-400 bg-clip-text text-transparent">FBI CRIMECONNECT</span>
-            <div className="flex items-center gap-1">
-              <Lock className="h-2.5 w-2.5 text-green-400" />
-              <span className="text-[9px] text-muted-foreground uppercase tracking-widest">FBI CLASSIFIED</span>
-            </div>
-          </div>
-        </NavLink>
-
-        <div className="flex-1 max-w-2xl ml-2">
-          <div className="relative group">
-            <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none z-10">
-              <Search className="h-4 w-4 text-cyan-400/70 group-focus-within:text-cyan-400 transition-colors" />
-            </div>
-            <input
-              type="search"
+    <header className="h-14 border-b border-border bg-card/80 backdrop-blur-sm sticky top-0 z-40">
+      <div className="h-full px-4 flex items-center justify-between gap-4">
+        {/* Left Section - Search */}
+        <div className="flex-1 max-w-md">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              type="text"
               placeholder="Search cases, criminals, evidence..."
-              className="w-full h-10 pl-11 pr-4 rounded-lg bg-cyan-500/5 border border-cyan-500/20 text-sm focus:outline-none focus:border-cyan-500/50 focus:bg-cyan-500/10 transition-all duration-300 placeholder:text-muted-foreground/70"
+              className="pl-9 h-9 bg-muted/50 border-transparent focus:border-primary/30"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
-            <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-cyan-400/0 via-cyan-400/5 to-cyan-400/0 opacity-0 group-focus-within:opacity-100 transition-opacity pointer-events-none"></div>
+            {searchTerm && (
+              <button
+                onClick={() => setSearchTerm('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2"
+              >
+                <X className="h-4 w-4 text-muted-foreground hover:text-foreground" />
+              </button>
+            )}
           </div>
         </div>
 
-        <nav className="hidden lg:flex items-center gap-1">
-          <NavLink
-            to="/dashboard"
-            className={({isActive}) => `px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 flex items-center gap-2 ${
-              isActive
-                ? 'bg-gradient-to-r from-cyan-500/20 to-blue-500/20 text-cyan-300 border border-cyan-500/30'
-                : 'text-muted-foreground hover:text-foreground hover:bg-cyan-500/5 border border-transparent hover:border-cyan-500/10'
-            }`}
-          >
-            <Zap className="h-4 w-4" />
-            Dashboard
-          </NavLink>
-          <NavLink
-            to="/cases"
-            className={({isActive}) => `px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 flex items-center gap-2 ${
-              isActive
-                ? 'bg-gradient-to-r from-cyan-500/20 to-blue-500/20 text-cyan-300 border border-cyan-500/30'
-                : 'text-muted-foreground hover:text-foreground hover:bg-cyan-500/5 border border-transparent hover:border-cyan-500/10'
-            }`}
-          >
-            <Eye className="h-4 w-4" />
-            Cases
-          </NavLink>
-          <NavLink
-            to="/reports"
-            className={({isActive}) => `px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 flex items-center gap-2 ${
-              isActive
-                ? 'bg-gradient-to-r from-cyan-500/20 to-blue-500/20 text-cyan-300 border border-cyan-500/30'
-                : 'text-muted-foreground hover:text-foreground hover:bg-cyan-500/5 border border-transparent hover:border-cyan-500/10'
-            }`}
-          >
-            <Shield className="h-4 w-4" />
-            Reports
-          </NavLink>
-        </nav>
-
+        {/* Right Section */}
         <div className="flex items-center gap-2">
-          <button
-            className="relative h-10 w-10 rounded-lg bg-cyan-500/5 border border-cyan-500/20 hover:bg-cyan-500/10 hover:border-cyan-500/40 transition-all duration-300 flex items-center justify-center group"
-            aria-label="Notifications"
-          >
-            <Bell className="h-4 w-4 text-cyan-400/70 group-hover:text-cyan-400 transition-colors" />
-            <div className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-gradient-to-br from-red-500 to-orange-500 border-2 border-background flex items-center justify-center">
-              <span className="text-[9px] font-bold text-white">3</span>
-            </div>
-            <div className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-red-500/50 animate-ping"></div>
-          </button>
+          {/* System Status */}
+          <div className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-green-500/10 border border-green-500/20">
+            <div className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse"></div>
+            <span className="text-[10px] font-medium text-green-600 dark:text-green-400 uppercase tracking-wider">Online</span>
+          </div>
 
-          <button
-            onClick={toggleTheme}
-            aria-label="Toggle theme"
-            className="h-10 w-10 rounded-lg bg-cyan-500/5 border border-cyan-500/20 hover:bg-cyan-500/10 hover:border-cyan-500/40 transition-all duration-300 flex items-center justify-center group"
-          >
-            {(resolvedTheme || theme) === 'light'
-              ? <Moon className="h-4 w-4 text-cyan-400/70 group-hover:text-cyan-400 transition-colors" />
-              : <Sun className="h-4 w-4 text-cyan-400/70 group-hover:text-cyan-400 transition-colors" />
-            }
-          </button>
+          {/* Secure Connection */}
+          <div className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-primary/10 border border-primary/20">
+            <Lock className="h-3 w-3 text-primary" />
+            <span className="text-[10px] font-medium text-primary uppercase tracking-wider">Secure</span>
+          </div>
 
-          <NavLink to="/profile" className="group flex items-center gap-3 pl-3 pr-4 py-2 rounded-lg bg-cyan-500/5 border border-cyan-500/20 hover:bg-cyan-500/10 hover:border-cyan-500/40 transition-all duration-300">
-            <div className="relative">
-              <img
-                src={avatar}
-                alt="Profile"
-                className="w-7 h-7 rounded-lg border-2 border-cyan-500/30 object-cover group-hover:border-cyan-500/50 transition-all"
-              />
-              <div className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-green-400 border-2 border-background"></div>
-            </div>
-            <div className="hidden sm:flex flex-col items-start">
-              <span className="text-xs font-medium text-foreground leading-none">{user?.email?.split('@')[0] || 'Agent'}</span>
-              <span className="text-[10px] text-muted-foreground leading-none mt-0.5 flex items-center gap-1">
-                <div className="h-1.5 w-1.5 rounded-full bg-green-400 animate-pulse"></div>
-                Online
-              </span>
-            </div>
-          </NavLink>
+          {/* Theme Toggle */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-9 w-9"
+            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+          >
+            {theme === 'dark' ? (
+              <Sun className="h-4 w-4" />
+            ) : (
+              <Moon className="h-4 w-4" />
+            )}
+          </Button>
+
+          {/* Notifications */}
+          <div className="relative">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-9 w-9 relative"
+              onClick={() => setShowNotifications(!showNotifications)}
+            >
+              <Bell className="h-4 w-4" />
+              <span className="absolute top-1.5 right-1.5 h-2 w-2 bg-red-500 rounded-full"></span>
+            </Button>
+
+            {showNotifications && (
+              <>
+                <div
+                  className="fixed inset-0 z-40"
+                  onClick={() => setShowNotifications(false)}
+                ></div>
+                <div className="absolute right-0 top-full mt-2 w-80 rounded-xl border border-border bg-card shadow-xl z-50 overflow-hidden">
+                  <div className="p-3 border-b border-border flex items-center justify-between">
+                    <span className="font-semibold text-foreground">Notifications</span>
+                    <span className="text-xs text-muted-foreground">{notifications.length} new</span>
+                  </div>
+                  <div className="max-h-80 overflow-y-auto">
+                    {notifications.map((notif) => (
+                      <div
+                        key={notif.id}
+                        className="p-3 border-b border-border/50 hover:bg-muted/50 transition-colors cursor-pointer"
+                      >
+                        <div className="flex items-start gap-3">
+                          <div className={`h-8 w-8 rounded-lg flex items-center justify-center flex-shrink-0 ${notif.type === 'alert' ? 'bg-red-500/10' :
+                            notif.type === 'update' ? 'bg-blue-500/10' : 'bg-muted'
+                            }`}>
+                            {notif.type === 'alert' ? <AlertTriangle className="h-4 w-4 text-red-500" /> :
+                              notif.type === 'update' ? <FileText className="h-4 w-4 text-blue-500" /> :
+                                <Radio className="h-4 w-4 text-muted-foreground" />}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-foreground">{notif.title}</p>
+                            <p className="text-xs text-muted-foreground line-clamp-1">{notif.desc}</p>
+                            <p className="text-xs text-muted-foreground/60 mt-1">{notif.time}</p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="p-2 border-t border-border bg-muted/30">
+                    <Button variant="ghost" size="sm" className="w-full text-xs">
+                      View all notifications
+                    </Button>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+
+          {/* Profile Dropdown */}
+          <div className="relative">
+            <button
+              onClick={() => setShowProfile(!showProfile)}
+              className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-muted transition-colors"
+            >
+              <div className="h-7 w-7 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden border border-border">
+                <User className="h-4 w-4 text-primary" />
+              </div>
+              <div className="hidden sm:block text-left">
+                <p className="text-xs font-medium text-foreground leading-none">Agent</p>
+                <p className="text-[10px] text-muted-foreground">Level 5</p>
+              </div>
+              <ChevronDown className="h-3 w-3 text-muted-foreground hidden sm:block" />
+            </button>
+
+            {showProfile && (
+              <>
+                <div
+                  className="fixed inset-0 z-40"
+                  onClick={() => setShowProfile(false)}
+                ></div>
+                <div className="absolute right-0 top-full mt-2 w-56 rounded-xl border border-border bg-card shadow-xl z-50 overflow-hidden">
+                  <div className="p-3 border-b border-border">
+                    <div className="flex items-center gap-3">
+                      <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                        <User className="h-5 w-5 text-primary" />
+                      </div>
+                      <div>
+                        <p className="font-medium text-foreground text-sm">Special Agent</p>
+                        <p className="text-xs text-muted-foreground">{user?.email || 'agent@fbi.gov'}</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="p-1">
+                    <Link
+                      to="/profile"
+                      className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm hover:bg-muted transition-colors"
+                      onClick={() => setShowProfile(false)}
+                    >
+                      <User className="h-4 w-4 text-muted-foreground" />
+                      <span>Profile</span>
+                    </Link>
+                    <Link
+                      to="/profile"
+                      className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm hover:bg-muted transition-colors"
+                      onClick={() => setShowProfile(false)}
+                    >
+                      <Settings className="h-4 w-4 text-muted-foreground" />
+                      <span>Settings</span>
+                    </Link>
+                  </div>
+                  <div className="p-1 border-t border-border">
+                    <button
+                      onClick={handleLogout}
+                      className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
+                    >
+                      <LogOut className="h-4 w-4" />
+                      <span>Sign Out</span>
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
         </div>
       </div>
     </header>

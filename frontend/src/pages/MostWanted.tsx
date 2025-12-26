@@ -1,12 +1,27 @@
-﻿import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+﻿import React, { useState, useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { AlertCircle, FileWarning, Skull, DollarSign, Filter, Search, MapPin, Eye, UserCheck, Calendar, Hash, Award, Download, Map } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import {
+  AlertTriangle,
+  FileWarning,
+  DollarSign,
+  Search,
+  MapPin,
+  Eye,
+  UserCheck,
+  Calendar,
+  Award,
+  Download,
+  ChevronLeft,
+  ChevronRight,
+  Skull,
+  Target,
+  Shield,
+  AlertCircle,
+  Radio,
+  X
+} from 'lucide-react';
 
-// Types for our Most Wanted entries
 interface MostWantedCriminal {
   id: string;
   name: string;
@@ -20,376 +35,117 @@ interface MostWantedCriminal {
   caution: string;
   dateAdded: string;
   caseNumber: string;
-  category: string; // New field for criminal categories
-  coordinates?: { lat: number; lng: number }; // For map visualization
+  category: string;
 }
 
-// Mock data for the Most Wanted criminals - strictly typed to match MostWantedCriminal interface
 const MOST_WANTED_DATA: MostWantedCriminal[] = [
   {
     id: '1',
     name: 'Robert Thompson',
-    image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3',
+    image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=400&h=400&fit=facearea&facepad=2&auto=format',
     status: 'active',
     dangerLevel: 'extreme',
     crimes: ['Armed Robbery', 'Murder', 'Escape from Custody'],
     lastSeen: 'Chicago, Illinois',
     reward: 100000,
-    description: 'Thompson is wanted for a series of armed bank robberies resulting in multiple fatalities. He escaped from federal custody in March 2023 and is considered armed and extremely dangerous.',
+    description: 'Thompson is wanted for a series of armed bank robberies resulting in multiple fatalities. He escaped from federal custody in March 2023.',
     caution: 'Subject has violent tendencies and extensive weapons training. Do not approach.',
     dateAdded: '2023-04-15',
     caseNumber: 'FBI-2023-045789',
     category: 'Violent Crimes',
-    coordinates: { lat: 41.8781, lng: -87.6298 }
   },
   {
     id: '2',
     name: 'Sarah Blackwell',
-    image: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=1976&auto=format&fit=crop&ixlib=rb-4.0.3',
+    image: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=400&h=400&fit=facearea&facepad=2&auto=format',
     status: 'active',
     dangerLevel: 'high',
     crimes: ['Espionage', 'Terrorism', 'Computer Fraud'],
     lastSeen: 'Seattle, Washington',
     reward: 75000,
-    description: 'Blackwell is wanted for involvement in espionage activities against the United States government and major technology companies. She has expertise in cybersecurity and has orchestrated several high-profile data breaches.',
+    description: 'Blackwell is wanted for involvement in espionage activities against the United States government and major technology companies.',
     caution: 'Subject may have altered appearance and is known to use multiple aliases.',
     dateAdded: '2023-06-22',
     caseNumber: 'FBI-2023-068912',
     category: 'Cyber Crimes',
-    coordinates: { lat: 47.6062, lng: -122.3321 }
   },
   {
     id: '3',
     name: 'Miguel Sanchez',
-    image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3',
+    image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400&h=400&fit=facearea&facepad=2&auto=format',
     status: 'active',
     dangerLevel: 'high',
     crimes: ['Drug Trafficking', 'Money Laundering', 'Murder'],
     lastSeen: 'Miami, Florida',
     reward: 50000,
-    description: 'Sanchez is a high-ranking member of an international drug cartel with operations across North and South America. He is responsible for coordinating large-scale trafficking operations and eliminating competition.',
-    caution: 'Subject has extensive connections and resources to evade capture. May be traveling with armed associates.',
+    description: 'Sanchez is a high-ranking member of an international drug cartel with operations across North and South America.',
+    caution: 'Subject has extensive connections and resources to evade capture.',
     dateAdded: '2023-01-30',
     caseNumber: 'FBI-2023-012345',
     category: 'Organized Crime',
-    coordinates: { lat: 25.7617, lng: -80.1918 }
   },
   {
     id: '4',
-    name: 'James Wilson',
-    image: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3',
-    status: 'captured',
-    dangerLevel: 'high',
-    crimes: ['Serial Murder', 'Kidnapping'],
-    lastSeen: 'Portland, Oregon',
-    reward: 30000,
-    description: 'Wilson was wanted in connection with a series of disappearances and murders along the Pacific Northwest. He was apprehended in a remote cabin outside Portland after a citizen tip.',
-    caution: 'Subject was found with extensive collection of weapons and survivalist equipment.',
-    dateAdded: '2022-11-15',
-    caseNumber: 'FBI-2022-115678',
-    category: 'Violent Crimes',
-    coordinates: { lat: 45.5152, lng: -122.6784 }
-  },
-  {
-    id: '5',
     name: 'Elena Vostok',
-    image: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3',
+    image: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?q=80&w=400&h=400&fit=facearea&facepad=2&auto=format',
     status: 'active',
     dangerLevel: 'extreme',
     crimes: ['International Terrorism', 'Assassination', 'Weapons Trafficking'],
     lastSeen: 'Istanbul, Turkey',
     reward: 150000,
-    description: 'Vostok is wanted for orchestrating several terrorist attacks across Europe and Asia. Former intelligence operative with specialized training in explosives and infiltration techniques.',
-    caution: 'Subject is highly trained in counter-surveillance and evasion tactics. Considered extremely dangerous.',
+    description: 'Vostok is wanted for orchestrating several terrorist attacks across Europe and Asia. Former intelligence operative.',
+    caution: 'Subject is highly trained in counter-surveillance and evasion tactics.',
     dateAdded: '2023-03-10',
     caseNumber: 'FBI-2023-034567',
     category: 'Terrorism',
-    coordinates: { lat: 41.0082, lng: 28.9784 }
   },
   {
-    id: '6',
+    id: '5',
     name: 'David Chen',
-    image: 'https://images.unsplash.com/photo-1501196354995-cbb51c65aaea?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3',
+    image: 'https://images.unsplash.com/photo-1501196354995-cbb51c65aaea?q=80&w=400&h=400&fit=facearea&facepad=2&auto=format',
     status: 'active',
     dangerLevel: 'moderate',
     crimes: ['Financial Fraud', 'Identity Theft', 'Money Laundering'],
     lastSeen: 'Vancouver, Canada',
     reward: 25000,
-    description: 'Chen is the mastermind behind a sophisticated financial fraud scheme that has defrauded investors of over $200 million through fake investment opportunities and Ponzi schemes.',
-    caution: 'Subject frequently changes identity and may have undergone cosmetic surgery to alter appearance.',
+    description: 'Chen is the mastermind behind a sophisticated financial fraud scheme that has defrauded investors of over $200 million.',
+    caution: 'Subject frequently changes identity and may have undergone cosmetic surgery.',
     dateAdded: '2023-02-18',
     caseNumber: 'FBI-2023-023456',
     category: 'Financial Crimes',
-    coordinates: { lat: 49.2827, lng: -123.1207 }
-  },
-  // Adding 5 new criminals to increase data set
-  {
-    id: '7',
-    name: 'Derek Mills',
-    image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3',
-    status: 'active',
-    dangerLevel: 'high',
-    crimes: ['Money Laundering', 'Tax Evasion', 'Racketeering'],
-    lastSeen: 'Las Vegas, Nevada',
-    reward: 75000,
-    description: 'Mills is the head of a major money laundering operation that has moved over $500 million through shell companies and casinos. He has connections with multiple organized crime families.',
-    caution: 'Subject is known to be violent when confronted and carries concealed weapons. Do not approach without proper backup.',
-    dateAdded: '2023-08-15',
-    caseNumber: 'FBI-2023-084567',
-    category: 'Organized Crime',
-    coordinates: { lat: 36.1699, lng: -115.1398 }
   },
   {
-    id: '8',
-    name: 'Rachel Hoffman',
-    image: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=1976&auto=format&fit=crop&ixlib=rb-4.0.3',
-    status: 'active',
-    dangerLevel: 'extreme',
-    crimes: ['Cyber Terrorism', 'Data Breach', 'Identity Theft'],
-    lastSeen: 'Berlin, Germany',
-    reward: 150000,
-    description: 'Hoffman is a cyber terrorist who has compromised the networks of several government agencies and critical infrastructure systems. She has expertise in advanced persistent threats and zero-day exploits.',
-    caution: 'Subject is extremely dangerous in digital environments and may attempt to hack into law enforcement systems. Monitor all digital communications.',
-    dateAdded: '2023-08-20',
-    caseNumber: 'FBI-2023-086789',
-    category: 'Cyber Crimes',
-    coordinates: { lat: 52.5200, lng: 13.4050 }
-  },
-  {
-    id: '9',
-    name: 'Marcus Webb',
-    image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3',
-    status: 'active',
-    dangerLevel: 'high',
-    crimes: ['Arms Trafficking', 'Murder', 'Conspiracy'],
-    lastSeen: 'Bogotá, Colombia',
-    reward: 125000,
-    description: 'Webb is a major arms dealer who has supplied weapons to terrorist organizations and criminal cartels across South America. He has been linked to multiple assassinations.',
-    caution: 'Subject has extensive weapons cache and is known to be heavily armed. Approach with extreme caution.',
-    dateAdded: '2023-08-25',
-    caseNumber: 'FBI-2023-088901',
-    category: 'Terrorism',
-    coordinates: { lat: 4.7110, lng: -74.0721 }
-  },
-  {
-    id: '10',
-    name: 'Jennifer Walsh',
-    image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=1976&auto=format&fit=crop&ixlib=rb-4.0.3',
-    status: 'active',
-    dangerLevel: 'moderate',
-    crimes: ['Embezzlement', 'Wire Fraud', 'Bank Fraud'],
-    lastSeen: 'Miami, Florida',
-    reward: 25000,
-    description: 'Walsh embezzled over $20 million from her position as a senior executive at a major financial institution. She used complex offshore accounts to hide the stolen funds.',
-    caution: 'Subject may have fled the country and could be using false documents. Monitor international travel.',
-    dateAdded: '2023-08-30',
-    caseNumber: 'FBI-2023-080123',
-    category: 'Financial Crimes',
-    coordinates: { lat: 25.7617, lng: -80.1918 }
-  },
-  {
-    id: '11',
+    id: '6',
     name: 'Carlos Rivera',
-    image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3',
+    image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=400&h=400&fit=facearea&facepad=2&auto=format',
     status: 'active',
     dangerLevel: 'extreme',
     crimes: ['Kidnapping', 'Ransom', 'Extortion'],
     lastSeen: 'Monterrey, Mexico',
     reward: 200000,
-    description: 'Rivera is the leader of an international kidnapping ring that has targeted wealthy families and business executives. He has been responsible for over 50 kidnappings across multiple countries.',
-    caution: 'Subject is extremely violent and has ordered the deaths of several victims. Do not approach without proper backup and negotiation team.',
+    description: 'Rivera is the leader of an international kidnapping ring that has targeted wealthy families across multiple countries.',
+    caution: 'Subject is extremely violent and has ordered the deaths of several victims.',
     dateAdded: '2023-09-05',
     caseNumber: 'FBI-2023-092345',
     category: 'Violent Crimes',
-    coordinates: { lat: 25.6866, lng: -100.3161 }
-  },
-  // Adding more criminals for pagination demo
-  {
-    id: '12',
-    name: 'Alexei Petrov',
-    image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3',
-    status: 'active',
-    dangerLevel: 'high',
-    crimes: ['Nuclear Smuggling', 'Terrorism'],
-    lastSeen: 'Prague, Czech Republic',
-    reward: 175000,
-    description: 'Petrov is suspected of attempting to sell nuclear materials to terrorist organizations. Former Russian nuclear scientist with access to classified information.',
-    caution: 'Subject is highly intelligent and dangerous. Has connections with multiple terrorist groups.',
-    dateAdded: '2023-10-12',
-    caseNumber: 'FBI-2023-104567',
-    category: 'Terrorism',
-    coordinates: { lat: 50.0755, lng: 14.4378 }
-  },
-  {
-    id: '13',
-    name: 'Maria Santos',
-    image: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=1976&auto=format&fit=crop&ixlib=rb-4.0.3',
-    status: 'active',
-    dangerLevel: 'moderate',
-    crimes: ['Human Trafficking', 'Child Exploitation'],
-    lastSeen: 'São Paulo, Brazil',
-    reward: 85000,
-    description: 'Santos operates an international human trafficking ring specializing in child exploitation. Has connections throughout South America and Europe.',
-    caution: 'Subject is known to be violent when confronted. Has multiple safe houses.',
-    dateAdded: '2023-10-18',
-    caseNumber: 'FBI-2023-107890',
-    category: 'Human Trafficking',
-    coordinates: { lat: -23.5505, lng: -46.6333 }
-  },
-  {
-    id: '14',
-    name: 'Thomas Reed',
-    image: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3',
-    status: 'active',
-    dangerLevel: 'extreme',
-    crimes: ['Biological Weapons', 'Terrorism'],
-    lastSeen: 'Geneva, Switzerland',
-    reward: 250000,
-    description: 'Reed is a biochemist suspected of developing biological weapons for terrorist organizations. Has a PhD in molecular biology and access to laboratory equipment.',
-    caution: 'Subject is extremely dangerous and should not be approached without hazmat protocols.',
-    dateAdded: '2023-10-25',
-    caseNumber: 'FBI-2023-102345',
-    category: 'Terrorism',
-    coordinates: { lat: 46.2044, lng: 6.1432 }
-  },
-  {
-    id: '15',
-    name: 'Yuki Tanaka',
-    image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=1976&auto=format&fit=crop&ixlib=rb-4.0.3',
-    status: 'active',
-    dangerLevel: 'high',
-    crimes: ['Art Theft', 'Forgery', 'Money Laundering'],
-    lastSeen: 'Tokyo, Japan',
-    reward: 60000,
-    description: 'Tanaka is an expert art thief who has stolen over $50 million in artwork from museums and private collections worldwide. Also forges documents and currency.',
-    caution: 'Subject is highly intelligent and has extensive knowledge of security systems.',
-    dateAdded: '2023-11-01',
-    caseNumber: 'FBI-2023-113456',
-    category: 'Financial Crimes',
-    coordinates: { lat: 35.6762, lng: 139.6503 }
   },
 ];
 
-// 1. Add localStorage utility functions for most wanted criminals
-const getMostWantedFromStorage = (): MostWantedCriminal[] => {
-  const stored = localStorage.getItem('mostWantedCriminals');
-  if (stored) {
-    try {
-      return JSON.parse(stored);
-    } catch (e) {
-      console.error('Failed to parse most wanted criminals from localStorage:', e);
-      return [];
-    }
-  }
-  return [];
-};
-
-const saveMostWantedToStorage = (criminals: MostWantedCriminal[]) => {
-  localStorage.setItem('mostWantedCriminals', JSON.stringify(criminals));
-};
-
 const MostWanted: React.FC = () => {
-  const [criminals, setCriminals] = useState<MostWantedCriminal[]>(() => {
-    const stored = getMostWantedFromStorage();
-    return stored.length > 0 ? stored : MOST_WANTED_DATA;
-  });
+  const [criminals, setCriminals] = useState<MostWantedCriminal[]>(MOST_WANTED_DATA);
   const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'captured'>('all');
-  const [dangerFilter, setDangerFilter] = useState<'all' | 'extreme' | 'high' | 'moderate' | 'low'>('all');
-  const [categoryFilter, setCategoryFilter] = useState<'all' | string>('all'); // New category filter
-  const [minReward, setMinReward] = useState<number>(0); // Reward range filter
-  const [maxReward, setMaxReward] = useState<number>(500000); // Reward range filter
-  const [currentPage, setCurrentPage] = useState(1); // Pagination
-  const [itemsPerPage] = useState(6); // Items per page
-  const [currentSortBy, setCurrentSortBy] = useState<'name' | 'bounty' | 'lastSeen' | 'dateAdded' | 'reward'>('dateAdded');
-  const [currentSortDirection, setCurrentSortDirection] = useState<'asc' | 'desc'>('desc');
+  const [dangerFilter, setDangerFilter] = useState<'all' | 'extreme' | 'high' | 'moderate'>('all');
   const [selectedCriminal, setSelectedCriminal] = useState<MostWantedCriminal | null>(null);
-  const [showMap, setShowMap] = useState(false); // Map visualization toggle
-  
-  // Save to localStorage whenever criminals change
-  useEffect(() => {
-    saveMostWantedToStorage(criminals);
-  }, [criminals]);
 
-  // Get unique categories for filter
-  const categories = useMemo(() => {
-    const uniqueCategories = new Set(criminals.map(criminal => criminal.category));
-    return Array.from(uniqueCategories);
-  }, [criminals]);
-
-  // Create a safe getter function for sortBy
-  const getSortByValue = useCallback(() => {
-    return currentSortBy || 'dateAdded';
-  }, [currentSortBy]);
-
-  // Create a safe getter function for sortDirection
-  const getSortDirectionValue = useCallback(() => {
-    return currentSortDirection || 'desc';
-  }, [currentSortDirection]);
-
-  // Filter and sort criminals
-  const filteredAndSortedCriminals = useMemo(() => {
-    return criminals
-      .filter(criminal => {
-        const matchesSearch = criminal.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                             criminal.crimes.some(crime => crime.toLowerCase().includes(searchTerm.toLowerCase())) ||
-                             criminal.lastSeen.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                             criminal.caseNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                             criminal.category.toLowerCase().includes(searchTerm.toLowerCase());
-        
-        const matchesStatus = statusFilter === 'all' || criminal.status === statusFilter;
-        const matchesDanger = dangerFilter === 'all' || criminal.dangerLevel === dangerFilter;
-        const matchesCategory = categoryFilter === 'all' || criminal.category === categoryFilter;
-        const matchesReward = criminal.reward >= minReward && criminal.reward <= maxReward;
-        
-        return matchesSearch && matchesStatus && matchesDanger && matchesCategory && matchesReward;
-      })
-      .sort((a, b) => {
-        let comparison = 0;
-        
-        // Use getter functions to ensure we always have valid values
-        const sortByValue = getSortByValue();
-        const sortDirectionValue = getSortDirectionValue();
-        
-        // Validate sortBy value
-        const sortField = ['name', 'bounty', 'lastSeen', 'dateAdded', 'reward'].includes(sortByValue) ? sortByValue : 'dateAdded';
-        
-        // Validate sortDirection value
-        const direction = sortDirectionValue === 'asc' || sortDirectionValue === 'desc' ? sortDirectionValue : 'desc';
-        
-        switch (sortField) {
-          case 'name':
-            comparison = a.name.localeCompare(b.name);
-            break;
-          case 'bounty':
-          case 'reward':
-            comparison = a.reward - b.reward;
-            break;
-          case 'lastSeen':
-            comparison = a.lastSeen.localeCompare(b.lastSeen);
-            break;
-          case 'dateAdded':
-            comparison = new Date(a.dateAdded).getTime() - new Date(b.dateAdded).getTime();
-            break;
-          default:
-            comparison = 0;
-        }
-        
-        return direction === 'asc' ? comparison : -comparison;
-      });
-  }, [criminals, searchTerm, statusFilter, dangerFilter, categoryFilter, minReward, maxReward, currentSortBy, currentSortDirection, getSortByValue, getSortDirectionValue]);
-
-  // Pagination
-  const totalPages = Math.ceil(filteredAndSortedCriminals.length / itemsPerPage);
-  const currentCriminals = filteredAndSortedCriminals.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
-
-  // Reset to first page when filters change
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [searchTerm, statusFilter, dangerFilter, categoryFilter, minReward, maxReward]);
+  const filteredCriminals = useMemo(() => {
+    return criminals.filter(criminal => {
+      const matchesSearch = criminal.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        criminal.crimes.some(crime => crime.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        criminal.lastSeen.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesDanger = dangerFilter === 'all' || criminal.dangerLevel === dangerFilter;
+      return matchesSearch && matchesDanger && criminal.status === 'active';
+    });
+  }, [criminals, searchTerm, dangerFilter]);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -399,584 +155,283 @@ const MostWanted: React.FC = () => {
     }).format(amount);
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
+  const getDangerBadge = (level: string) => {
+    const styles: Record<string, string> = {
+      extreme: 'bg-red-600 text-white border-red-500 animate-pulse',
+      high: 'bg-orange-500 text-white border-orange-400',
+      moderate: 'bg-amber-500 text-black border-amber-400',
+      low: 'bg-blue-500 text-white border-blue-400',
+    };
+    return styles[level] || styles.moderate;
   };
 
-  const getDangerBadgeClass = (level: string) => {
-    switch(level) {
-      case 'extreme':
-        return 'bg-red-600 text-white hover:bg-red-700';
-      case 'high':
-        return 'bg-orange-500 text-white hover:bg-orange-600';
-      case 'moderate':
-        return 'bg-yellow-500 text-black hover:bg-yellow-600';
-      case 'low':
-        return 'bg-blue-500 text-white hover:bg-blue-600';
-      default:
-        return 'bg-gray-500 text-white hover:bg-gray-600';
-    }
-  };
+  const totalReward = filteredCriminals.reduce((sum, c) => sum + c.reward, 0);
 
-  const getStatusBadgeClass = (status: string) => {
-    switch(status) {
-      case 'active':
-        return 'bg-green-600 text-white hover:bg-green-700';
-      case 'captured':
-        return 'bg-blue-600 text-white hover:bg-blue-700';
-      case 'deceased':
-        return 'bg-gray-600 text-white hover:bg-gray-700';
-      default:
-        return 'bg-gray-500 text-white hover:bg-gray-600';
-    }
-  };
-
-  // Export to CSV function
-  const exportToCSV = () => {
-    const headers = ['Name', 'Status', 'Danger Level', 'Crimes', 'Last Seen', 'Reward', 'Case Number', 'Date Added', 'Category'];
-    const rows = filteredAndSortedCriminals.map(criminal => [
-      criminal.name,
-      criminal.status,
-      criminal.dangerLevel,
-      criminal.crimes.join('; '),
-      criminal.lastSeen,
-      criminal.reward,
-      criminal.caseNumber,
-      criminal.dateAdded,
-      criminal.category
-    ]);
-    
-    let csvContent = headers.join(',') + '\n';
-    rows.forEach(row => {
-      csvContent += row.map(field => `"${field}"`).join(',') + '\n';
-    });
-    
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.setAttribute('href', url);
-    link.setAttribute('download', 'most_wanted_criminals.csv');
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
-  
-
-  const renderDetailedView = () => {
-    if (!selectedCriminal) return null;
-    
-    return (
-      <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 backdrop-blur-sm p-4">
-        <Card className="max-w-4xl w-full max-h-[90vh] overflow-hidden shadow-2xl animate-scale-in">
-          <CardHeader className="border-b border-border/40 p-0">
-            <div className="relative h-48 overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent z-10"></div>
-              <img 
-                src={selectedCriminal.image} 
-                alt={selectedCriminal.name} 
-                className="w-full h-full object-cover object-center"
-              />
-              <div className="absolute top-4 right-4 z-20 flex space-x-2">
-                <Badge className={getDangerBadgeClass(selectedCriminal.dangerLevel)}>
-                  {selectedCriminal.dangerLevel.toUpperCase()} RISK
-                </Badge>
-                <Badge className={getStatusBadgeClass(selectedCriminal.status)}>
-                  {selectedCriminal.status.toUpperCase()}
-                </Badge>
+  return (
+    <div className="space-y-6 animate-fade-in">
+      {/* Header */}
+      <div className="relative">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+          <div className="fbi-header">
+            <div className="flex items-center gap-3">
+              <div className="h-12 w-12 rounded-lg bg-red-500/20 flex items-center justify-center relative">
+                <Target className="h-6 w-6 text-red-500" />
+                <div className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-red-500 animate-ping"></div>
               </div>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="absolute top-4 left-4 z-20 bg-black/50 hover:bg-black/70 text-white"
-                onClick={() => setSelectedCriminal(null)}
+              <div>
+                <div className="flex items-center gap-3">
+                  <h1 className="text-2xl font-bold text-foreground">Most Wanted Fugitives</h1>
+                  <span className="classified-badge">PRIORITY ALERT</span>
+                </div>
+                <p className="text-sm text-muted-foreground">FBI Ten Most Wanted Fugitives Program</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <div className="px-4 py-2 rounded-lg bg-red-500/10 border border-red-500/30">
+              <div className="text-xs text-red-400 uppercase tracking-wider mb-0.5">Combined Rewards</div>
+              <div className="text-xl font-bold text-red-500">{formatCurrency(totalReward)}</div>
+            </div>
+            <Button variant="outline" className="border-red-500/30 text-red-500 hover:bg-red-500/10">
+              <Download className="h-4 w-4 mr-2" />
+              Export List
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Alert Banner */}
+      <div className="relative overflow-hidden rounded-lg bg-gradient-to-r from-red-950/80 via-red-900/60 to-red-950/80 border border-red-500/30 p-4">
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wMyI+PHBhdGggZD0iTTM2IDM0di00aC0ydjRoLTR2Mmg0djRoMnYtNGg0di0yaC00em0wLTMwVjBoLTJ2NGgtNHYyaDR2NGgyVjZoNFY0aC00eiIvPjwvZz48L2c+PC9zdmc+')] opacity-50"></div>
+        <div className="relative flex items-center gap-4">
+          <div className="p-2 rounded-lg bg-red-500/20">
+            <AlertTriangle className="h-6 w-6 text-red-400" />
+          </div>
+          <div className="flex-1">
+            <div className="text-red-300 font-semibold mb-0.5">WARNING: ARMED AND DANGEROUS</div>
+            <p className="text-red-300/70 text-sm">
+              These individuals are considered extremely dangerous. Do not attempt to apprehend. If you have information, contact the FBI immediately at 1-800-CALL-FBI.
+            </p>
+          </div>
+          <div className="hidden md:flex items-center gap-2">
+            <Radio className="h-4 w-4 text-red-400 animate-pulse" />
+            <span className="text-red-400 text-sm font-mono">LIVE UPDATES</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Filters */}
+      <div className="card-modern p-4">
+        <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex-1 relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              type="text"
+              placeholder="Search by name, crime, or location..."
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+              className="pl-9"
+            />
+          </div>
+          <div className="flex gap-2">
+            {['all', 'extreme', 'high', 'moderate'].map((level) => (
+              <Button
+                key={level}
+                variant={dangerFilter === level ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setDangerFilter(level as any)}
+                className={dangerFilter === level && level !== 'all' ? getDangerBadge(level) : ''}
               >
-                ✕
+                {level === 'all' ? 'All Threats' : level.charAt(0).toUpperCase() + level.slice(1)}
               </Button>
-              <div className="absolute bottom-0 left-0 right-0 z-20 p-4">
-                <h2 className="text-2xl font-bold text-white">{selectedCriminal.name}</h2>
-                <div className="flex items-center text-white/80 text-sm">
-                  <MapPin size={14} className="mr-1" />
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Results count */}
+      <div className="flex items-center justify-between">
+        <p className="text-sm text-muted-foreground">
+          Showing <span className="font-semibold text-foreground">{filteredCriminals.length}</span> active fugitives
+        </p>
+      </div>
+
+      {/* Criminal Cards Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {filteredCriminals.map((criminal) => (
+          <div
+            key={criminal.id}
+            onClick={() => setSelectedCriminal(criminal)}
+            className="group relative card-modern overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-2xl hover:shadow-red-500/10 hover:-translate-y-1"
+          >
+            {/* Danger indicator strip */}
+            <div className={`absolute top-0 left-0 right-0 h-1 ${criminal.dangerLevel === 'extreme' ? 'bg-red-500' :
+                criminal.dangerLevel === 'high' ? 'bg-orange-500' :
+                  'bg-amber-500'
+              }`}></div>
+
+            {/* Image section */}
+            <div className="relative h-48 overflow-hidden">
+              <img
+                src={criminal.image}
+                alt={criminal.name}
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+
+              {/* Badges */}
+              <div className="absolute top-3 right-3 flex gap-2">
+                <span className={`px-2 py-1 rounded text-xs font-bold uppercase border ${getDangerBadge(criminal.dangerLevel)}`}>
+                  {criminal.dangerLevel}
+                </span>
+              </div>
+
+              {/* Name overlay */}
+              <div className="absolute bottom-0 left-0 right-0 p-4">
+                <h3 className="text-xl font-bold text-white mb-1">{criminal.name}</h3>
+                <div className="flex items-center gap-1 text-white/80 text-sm">
+                  <MapPin className="h-3.5 w-3.5" />
+                  <span>Last seen: {criminal.lastSeen}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Content */}
+            <div className="p-4 space-y-4">
+              {/* Category & Case Number */}
+              <div className="flex items-center justify-between">
+                <span className="badge badge-primary">{criminal.category}</span>
+                <span className="text-xs font-mono text-muted-foreground">{criminal.caseNumber}</span>
+              </div>
+
+              {/* Crimes */}
+              <div className="flex flex-wrap gap-1.5">
+                {criminal.crimes.slice(0, 3).map((crime, i) => (
+                  <span key={i} className="px-2 py-0.5 rounded text-xs bg-muted text-muted-foreground">
+                    {crime}
+                  </span>
+                ))}
+              </div>
+
+              {/* Reward */}
+              <div className="flex items-center justify-between pt-3 border-t border-border">
+                <div className="flex items-center gap-2">
+                  <Award className="h-4 w-4 text-green-500" />
+                  <span className="text-sm text-muted-foreground">Reward</span>
+                </div>
+                <span className="text-lg font-bold text-green-500">{formatCurrency(criminal.reward)}</span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Detail Modal */}
+      {selectedCriminal && (
+        <div
+          className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+          onClick={() => setSelectedCriminal(null)}
+        >
+          <div
+            className="relative w-full max-w-3xl max-h-[90vh] overflow-auto card-modern"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close button */}
+            <button
+              onClick={() => setSelectedCriminal(null)}
+              className="absolute top-4 right-4 z-10 h-10 w-10 rounded-full bg-black/50 hover:bg-black/70 flex items-center justify-center text-white transition-colors"
+            >
+              <X className="h-5 w-5" />
+            </button>
+
+            {/* Header image */}
+            <div className="relative h-64">
+              <img
+                src={selectedCriminal.image}
+                alt={selectedCriminal.name}
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent"></div>
+
+              <div className="absolute bottom-0 left-0 right-0 p-6">
+                <div className="flex items-center gap-3 mb-2">
+                  <span className={`px-3 py-1 rounded text-sm font-bold uppercase border ${getDangerBadge(selectedCriminal.dangerLevel)}`}>
+                    {selectedCriminal.dangerLevel} RISK
+                  </span>
+                  <span className="classified-badge">WANTED</span>
+                </div>
+                <h2 className="text-3xl font-bold text-foreground">{selectedCriminal.name}</h2>
+                <div className="flex items-center gap-2 text-muted-foreground mt-1">
+                  <MapPin className="h-4 w-4" />
                   <span>Last seen: {selectedCriminal.lastSeen}</span>
                 </div>
               </div>
             </div>
-          </CardHeader>
-          <CardContent className="p-6 max-h-[calc(90vh-200px)] overflow-y-auto">
-            <div className="flex flex-col md:flex-row gap-6">
-              <div className="w-full md:w-2/3 space-y-4">
-                <div>
-                  <h3 className="text-lg font-semibold mb-2">Description</h3>
-                  <p>{selectedCriminal.description}</p>
-                </div>
-                
-                <div className="bg-red-500/10 border border-red-500/30 p-4 rounded-md">
-                  <div className="flex items-start">
-                    <AlertCircle className="text-red-500 mr-2 mt-0.5" size={16} />
-                    <div>
-                      <h4 className="font-semibold text-red-500">CAUTION</h4>
-                      <p className="text-sm">{selectedCriminal.caution}</p>
-                    </div>
-                  </div>
-                </div>
-                
-                <div>
-                  <h3 className="text-lg font-semibold mb-2">Wanted For</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {selectedCriminal.crimes.map((crime, index) => (
-                      <Badge key={index} variant="outline" className="bg-background">
-                        <FileWarning size={12} className="mr-1" />
-                        {crime}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="border border-border rounded-md p-4">
-                    <h4 className="text-sm font-medium text-muted-foreground mb-1 flex items-center">
-                      <Hash size={14} className="mr-1" />
-                      Case ID
-                    </h4>
-                    <p className="font-mono text-lg">{selectedCriminal.caseNumber}</p>
-                  </div>
-                  <div className="border border-border rounded-md p-4 bg-green-500/5">
-                    <h4 className="text-sm font-medium text-muted-foreground mb-1 flex items-center">
-                      <Award size={14} className="mr-1" />
-                      Reward
-                    </h4>
-                    <p className="font-mono text-lg text-green-500">{formatCurrency(selectedCriminal.reward)}</p>
-                  </div>
-                  <div className="border border-border rounded-md p-4 bg-blue-500/5">
-                    <h4 className="text-sm font-medium text-muted-foreground mb-1 flex items-center">
-                      <Calendar size={14} className="mr-1" />
-                      Added
-                    </h4>
-                    <p className="font-mono text-lg text-blue-500">{formatDate(selectedCriminal.dateAdded)}</p>
-                  </div>
-                </div>
-                
-                <div className="border border-border rounded-md p-4">
-                  <h4 className="text-sm font-medium text-muted-foreground mb-1 flex items-center">
-                    <FileWarning size={14} className="mr-1" />
-                    Category
-                  </h4>
-                  <Badge variant="outline" className="bg-background">
-                    {selectedCriminal.category}
-                  </Badge>
-                </div>
-              </div>
-              
-              <div className="w-full md:w-1/3 space-y-4">
-                <div className="border border-border rounded-md overflow-hidden">
-                  <div className="bg-muted p-3 font-medium">Physical Description</div>
-                  <div className="p-4 space-y-3">
-                    <div>
-                      <div className="text-sm text-muted-foreground">Height</div>
-                      <div>5'11" - 6'2"</div>
-                    </div>
-                    <div>
-                      <div className="text-sm text-muted-foreground">Weight</div>
-                      <div>170-190 lbs</div>
-                    </div>
-                    <div>
-                      <div className="text-sm text-muted-foreground">Hair</div>
-                      <div>Brown, may be dyed</div>
-                    </div>
-                    <div>
-                      <div className="text-sm text-muted-foreground">Eyes</div>
-                      <div>Blue</div>
-                    </div>
-                    <div>
-                      <div className="text-sm text-muted-foreground">Distinguishing Marks</div>
-                      <div>Scar on left cheek, tattoo on right forearm</div>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="bg-fbi-navy/80 text-white p-4 rounded-md border border-primary/30">
-                  <h4 className="font-medium mb-2 flex items-center">
-                    <Eye size={14} className="mr-1" />
-                    Sightings
-                  </h4>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span>Chicago, IL</span>
-                      <span>3 days ago</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Detroit, MI</span>
-                      <span>1 week ago</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Cleveland, OH</span>
-                      <span>2 weeks ago</span>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="text-center">
-                  <Button className="w-full">
-                    <UserCheck size={16} className="mr-2" />
-                    Report Sighting
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  };
 
-  return (
-    <div className="space-y-8 animate-fade-in">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Most Wanted</h1>
-          <p className="text-muted-foreground">FBI's most wanted criminals</p>
-        </div>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={exportToCSV}>
-            <Download size={16} className="mr-2" />
-            Export
-          </Button>
-          <Button variant="outline" onClick={() => setShowMap(!showMap)}>
-            <Map size={16} className="mr-2" />
-            {showMap ? 'Hide Map' : 'Show Map'}
-          </Button>
-        </div>
-      </div>
-      
-      {/* Advanced Filters */}
-      <Card className="glass-card">
-        <CardContent className="p-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div>
-              <label className="text-sm font-medium">Search</label>
-              <Input
-                type="text"
-                placeholder="Name, crime, location..."
-                value={searchTerm}
-                onChange={e => setSearchTerm(e.target.value)}
-                className="w-full"
-              />
-            </div>
-            
-            <div>
-              <label className="text-sm font-medium">Status</label>
-              <select
-                value={statusFilter}
-                onChange={e => setStatusFilter(e.target.value as any)}
-                className="border rounded px-2 py-1 text-sm w-full"
-              >
-                <option value="all">All Statuses</option>
-                <option value="active">Active</option>
-                <option value="captured">Captured</option>
-              </select>
-            </div>
-            
-            <div>
-              <label className="text-sm font-medium">Danger Level</label>
-              <select
-                value={dangerFilter}
-                onChange={e => setDangerFilter(e.target.value as any)}
-                className="border rounded px-2 py-1 text-sm w-full"
-              >
-                <option value="all">All Danger Levels</option>
-                <option value="extreme">Extreme</option>
-                <option value="high">High</option>
-                <option value="moderate">Moderate</option>
-                <option value="low">Low</option>
-              </select>
-            </div>
-            
-            <div>
-              <label className="text-sm font-medium">Category</label>
-              <select
-                value={categoryFilter}
-                onChange={e => setCategoryFilter(e.target.value as any)}
-                className="border rounded px-2 py-1 text-sm w-full"
-              >
-                <option value="all">All Categories</option>
-                {categories.map(category => (
-                  <option key={category} value={category}>{category}</option>
-                ))}
-              </select>
-            </div>
-            
-            <div>
-              <label className="text-sm font-medium">Min Reward</label>
-              <Input
-                type="number"
-                value={minReward}
-                onChange={e => setMinReward(Number(e.target.value))}
-                className="w-full"
-              />
-            </div>
-            
-            <div>
-              <label className="text-sm font-medium">Max Reward</label>
-              <Input
-                type="number"
-                value={maxReward}
-                onChange={e => setMaxReward(Number(e.target.value))}
-                className="w-full"
-              />
-            </div>
-            
-            <div>
-              <label className="text-sm font-medium">Sort By</label>
-              <select
-                value={currentSortBy || 'dateAdded'}
-                onChange={e => setCurrentSortBy(e.target.value as any)}
-                className="border rounded px-2 py-1 text-sm w-full"
-              >
-                <option value="dateAdded">Date Added</option>
-                <option value="name">Name</option>
-                <option value="reward">Reward</option>
-                <option value="lastSeen">Last Seen</option>
-              </select>
-            </div>
-            
-            <div>
-              <label className="text-sm font-medium">Order</label>
-              <select
-                value={currentSortDirection || 'desc'}
-                onChange={e => setCurrentSortDirection(e.target.value as 'asc' | 'desc')}
-                className="border rounded px-2 py-1 text-sm w-full"
-              >
-                <option value="desc">Descending</option>
-                <option value="asc">Ascending</option>
-              </select>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-      
-      {/* Map Visualization */}
-      {showMap && (
-        <Card className="glass-card">
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <Map className="mr-2" />
-              Criminal Locations
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="h-64 bg-gray-200 dark:bg-gray-700 rounded-md flex items-center justify-center">
-              <p>Map visualization would be implemented here with a library like Leaflet or Google Maps</p>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-      
-      {/* Results Info */}
-      <div className="flex justify-between items-center">
-        <p className="text-muted-foreground">
-          Showing {currentCriminals.length} of {filteredAndSortedCriminals.length} criminals
-        </p>
-        <div className="flex gap-2">
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-            disabled={currentPage === 1}
-          >
-            Previous
-          </Button>
-          <span className="flex items-center px-3 py-1 text-sm">
-            Page {currentPage} of {totalPages || 1}
-          </span>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-            disabled={currentPage === totalPages || totalPages === 0}
-          >
-            Next
-          </Button>
-        </div>
-      </div>
-      
-      <Tabs defaultValue="grid">
-        <TabsList className="mb-4">
-          <TabsTrigger value="grid">Grid View</TabsTrigger>
-          <TabsTrigger value="list">List View</TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="grid" className="animate-fade-in">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {currentCriminals.map((criminal) => (
-              <Card 
-                key={criminal.id} 
-                className="overflow-hidden glass-card cursor-pointer hover:shadow-glass-hover transition-shadow duration-300"
-                onClick={() => setSelectedCriminal(criminal)}
-              >
-                <div className="relative h-60 overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent z-10"></div>
-                  <img 
-                    src={criminal.image} 
-                    alt={criminal.name} 
-                    className="w-full h-full object-cover object-center"
-                  />
-                  <div className="absolute top-3 right-3 z-20 flex flex-col space-y-2">
-                    <Badge className={getDangerBadgeClass(criminal.dangerLevel)}>
-                      {criminal.dangerLevel.toUpperCase()}
-                    </Badge>
-                    <Badge className={getStatusBadgeClass(criminal.status)}>
-                      {criminal.status.toUpperCase()}
-                    </Badge>
-                  </div>
-                  
-                  <div className="absolute bottom-0 left-0 right-0 z-20 p-4">
-                    <h2 className="text-xl font-bold text-white">{criminal.name}</h2>
-                    <div className="flex items-center text-white/80 text-sm">
-                      <MapPin size={14} className="mr-1" />
-                      <span>Last seen: {criminal.lastSeen}</span>
-                    </div>
+            {/* Content */}
+            <div className="p-6 space-y-6">
+              {/* Caution Box */}
+              <div className="p-4 rounded-lg bg-red-500/10 border border-red-500/30">
+                <div className="flex items-start gap-3">
+                  <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <div className="font-bold text-red-500 mb-1">⚠️ CAUTION</div>
+                    <p className="text-sm text-red-300/80">{selectedCriminal.caution}</p>
                   </div>
                 </div>
-                <CardContent className="p-4">
-                  <div className="flex justify-between items-center mb-2">
-                    <h3 className="font-medium">Wanted For</h3>
-                    <div className="flex items-center text-green-500">
-                      <DollarSign size={14} className="mr-0.5" />
-                      <span>{formatCurrency(criminal.reward)}</span>
-                    </div>
-                  </div>
-                  <div className="flex flex-wrap gap-1 mb-3">
-                    {criminal.crimes.slice(0, 2).map((crime, index) => (
-                      <Badge key={index} variant="outline" className="bg-muted/50">
-                        {crime}
-                      </Badge>
-                    ))}
-                    {criminal.crimes.length > 2 && (
-                      <Badge variant="outline" className="bg-muted/50">
-                        +{criminal.crimes.length - 2} more
-                      </Badge>
-                    )}
-                  </div>
-                  <div className="mb-2">
-                    <Badge variant="outline" className="bg-muted/50 text-xs">
-                      {criminal.category}
-                    </Badge>
-                  </div>
-                  <p className="text-sm text-muted-foreground line-clamp-2">
-                    {criminal.description}
-                  </p>
-                  <div className="mt-2 text-xs text-muted-foreground flex items-center">
-                    <Calendar size={12} className="mr-1" />
-                    Added: {formatDate(criminal.dateAdded)}
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </TabsContent>
-        
-        <TabsContent value="list" className="animate-fade-in">
-          <Card className="glass-card overflow-hidden">
-            <CardContent className="p-0">
-              <div className="divide-y divide-border/30">
-                {currentCriminals.map((criminal) => (
-                  <div 
-                    key={criminal.id} 
-                    className="flex items-center gap-4 p-4 hover:bg-primary/5 cursor-pointer transition-colors"
-                    onClick={() => setSelectedCriminal(criminal)}
-                  >
-                    <div className="h-16 w-16 rounded-full overflow-hidden border-2 border-muted flex-shrink-0">
-                      <img 
-                        src={criminal.image} 
-                        alt={criminal.name} 
-                        className="h-full w-full object-cover"
-                      />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-medium">{criminal.name}</h3>
-                      <div className="flex items-center text-sm text-muted-foreground">
-                        <MapPin size={12} className="mr-1" />
-                        <span>{criminal.lastSeen}</span>
-                      </div>
-                      <div className="flex flex-wrap gap-1 mt-1">
-                        {criminal.crimes.slice(0, 1).map((crime, index) => (
-                          <Badge key={index} variant="outline" className="text-xs bg-muted/50">
-                            {crime}
-                          </Badge>
-                        ))}
-                        {criminal.crimes.length > 1 && (
-                          <Badge variant="outline" className="text-xs bg-muted/50">
-                            +{criminal.crimes.length - 1} more
-                          </Badge>
-                        )}
-                      </div>
-                      <div className="text-xs text-muted-foreground mt-1 flex items-center">
-                        <Calendar size={10} className="mr-1" />
-                        Added: {formatDate(criminal.dateAdded)}
-                      </div>
-                    </div>
-                    <div className="flex flex-col items-end gap-2">
-                      <Badge className={getDangerBadgeClass(criminal.dangerLevel)}>
-                        {criminal.dangerLevel.toUpperCase()}
-                      </Badge>
-                      <div className="flex items-center text-green-500 text-sm">
-                        <DollarSign size={12} className="mr-0.5" />
-                        <span>{formatCurrency(criminal.reward)}</span>
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        {criminal.caseNumber}
-                      </div>
-                      <Badge variant="outline" className="text-xs bg-muted/50">
-                        {criminal.category}
-                      </Badge>
-                    </div>
-                  </div>
-                ))}
               </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
-      
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex justify-center gap-2">
-          <Button 
-            variant="outline" 
-            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-            disabled={currentPage === 1}
-          >
-            Previous
-          </Button>
-          {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-            const startPage = Math.max(1, Math.min(currentPage - 2, totalPages - 4));
-            const page = startPage + i;
-            return (
-              <Button
-                key={page}
-                variant={currentPage === page ? "default" : "outline"}
-                onClick={() => setCurrentPage(page)}
-              >
-                {page}
-              </Button>
-            );
-          })}
-          <Button 
-            variant="outline" 
-            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-            disabled={currentPage === totalPages}
-          >
-            Next
-          </Button>
+
+              {/* Description */}
+              <div>
+                <h4 className="font-semibold text-foreground mb-2">Description</h4>
+                <p className="text-muted-foreground">{selectedCriminal.description}</p>
+              </div>
+
+              {/* Crimes */}
+              <div>
+                <h4 className="font-semibold text-foreground mb-2">Wanted For</h4>
+                <div className="flex flex-wrap gap-2">
+                  {selectedCriminal.crimes.map((crime, i) => (
+                    <span key={i} className="px-3 py-1 rounded-full text-sm bg-muted text-foreground border border-border">
+                      <FileWarning className="h-3 w-3 inline mr-1" />
+                      {crime}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Stats Grid */}
+              <div className="grid grid-cols-3 gap-4">
+                <div className="p-4 rounded-lg bg-muted/50 border border-border text-center">
+                  <div className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Case Number</div>
+                  <div className="font-mono font-semibold text-foreground">{selectedCriminal.caseNumber}</div>
+                </div>
+                <div className="p-4 rounded-lg bg-green-500/10 border border-green-500/30 text-center">
+                  <div className="text-xs text-green-600 dark:text-green-400 uppercase tracking-wider mb-1">Reward</div>
+                  <div className="font-bold text-xl text-green-600 dark:text-green-400">{formatCurrency(selectedCriminal.reward)}</div>
+                </div>
+                <div className="p-4 rounded-lg bg-muted/50 border border-border text-center">
+                  <div className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Date Added</div>
+                  <div className="font-semibold text-foreground">{new Date(selectedCriminal.dateAdded).toLocaleDateString()}</div>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-3 pt-4 border-t border-border">
+                <Button className="flex-1 btn-pro">
+                  <UserCheck className="h-4 w-4 mr-2" />
+                  Report Sighting
+                </Button>
+                <Button variant="outline" className="flex-1">
+                  <Download className="h-4 w-4 mr-2" />
+                  Download Poster
+                </Button>
+              </div>
+            </div>
+          </div>
         </div>
       )}
-      
-      {selectedCriminal && renderDetailedView()}
     </div>
   );
 };

@@ -1,416 +1,400 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Plus, Search, ListFilter as Filter, FileText, ChevronDown, ChevronUp } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import {
+  FileText,
+  Search,
+  Plus,
+  Filter,
+  Clock,
+  CheckCircle2,
+  AlertCircle,
+  Trash2,
+  Pencil,
+  ChevronDown,
+  ChevronUp,
+  MapPin,
+  Calendar,
+  Shield,
+  Eye,
+  Lock,
+  Radio,
+  ArrowUpRight
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Case } from '../types';
-import { toast } from "sonner";
+import { toast } from 'sonner';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
-// Restore mockCases
+interface Case {
+  id: number;
+  title: string;
+  description: string;
+  status: 'open' | 'closed' | 'pending';
+  priority: 'high' | 'medium' | 'low';
+  policeStationId: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 const mockCases: Case[] = [
-  {
-    id: 1,
-    title: 'Armed Robbery - Downtown Bank',
-    status: 'open',
-    description: 'Armed robbery at First National Bank on Main Street',
-    policeStationId: 1,
-    createdAt: new Date('2023-05-15'),
-    updatedAt: new Date('2023-05-18')
-  },
-  {
-    id: 2,
-    title: 'Vehicle Theft - Highland Park',
-    status: 'pending',
-    description: 'Luxury vehicle stolen from Highland Park residential area',
-    policeStationId: 2,
-    createdAt: new Date('2023-06-02'),
-    updatedAt: new Date('2023-06-05')
-  },
-  {
-    id: 3,
-    title: 'Residential Burglary - Westside',
-    status: 'closed',
-    description: 'Break-in and theft at residential property in Westside neighborhood',
-    policeStationId: 1,
-    createdAt: new Date('2023-04-10'),
-    updatedAt: new Date('2023-04-29')
-  },
-  {
-    id: 4,
-    title: 'Assault - Downtown Bar',
-    status: 'open',
-    description: 'Physical assault reported outside The Blue Note Bar',
-    policeStationId: 3,
-    createdAt: new Date('2023-06-10'),
-    updatedAt: new Date('2023-06-10')
-  },
-  {
-    id: 5,
-    title: 'Drug Trafficking - Harbor Area',
-    status: 'pending',
-    description: 'Suspected drug trafficking operation near the harbor warehouses',
-    policeStationId: 2,
-    createdAt: new Date('2023-05-28'),
-    updatedAt: new Date('2023-06-03')
-  },
-  {
-    id: 6,
-    title: 'Corporate Fraud - Meridian Corp',
-    status: 'open',
-    description: 'Investigation into financial irregularities at Meridian Corporation',
-    policeStationId: 4,
-    createdAt: new Date('2023-06-05'),
-    updatedAt: new Date('2023-06-08')
-  },
-  {
-    id: 7,
-    title: 'Missing Person - Emily Chen',
-    status: 'closed',
-    description: '24-year-old female reported missing from university campus',
-    policeStationId: 1,
-    createdAt: new Date('2023-03-14'),
-    updatedAt: new Date('2023-03-28')
-  },
-  {
-    id: 8,
-    title: 'Vandalism - City Park',
-    status: 'closed',
-    description: 'Extensive property damage at City Park central fountain',
-    policeStationId: 3,
-    createdAt: new Date('2023-05-01'),
-    updatedAt: new Date('2023-05-15')
-  }
+  { id: 1, title: 'Armed Robbery - Downtown Bank', status: 'open', priority: 'high', description: 'Armed robbery at First National Bank on Main Street with three armed suspects', policeStationId: 1, createdAt: new Date('2023-05-15'), updatedAt: new Date('2023-12-18') },
+  { id: 2, title: 'Vehicle Theft - Highland Park', status: 'pending', priority: 'medium', description: 'Luxury vehicle stolen from Highland Park residential area', policeStationId: 2, createdAt: new Date('2023-06-02'), updatedAt: new Date('2023-12-17') },
+  { id: 3, title: 'Residential Burglary - Westside', status: 'closed', priority: 'low', description: 'Break-in and theft at residential property in Westside neighborhood', policeStationId: 1, createdAt: new Date('2023-04-10'), updatedAt: new Date('2023-11-29') },
+  { id: 4, title: 'Assault - Downtown Bar District', status: 'open', priority: 'high', description: 'Physical assault reported outside The Blue Note Bar', policeStationId: 3, createdAt: new Date('2023-06-10'), updatedAt: new Date('2023-12-15') },
+  { id: 5, title: 'Corporate Fraud Investigation', status: 'open', priority: 'high', description: 'Financial irregularities detected at major corporation totaling $2.5M', policeStationId: 4, createdAt: new Date('2023-06-12'), updatedAt: new Date('2023-12-20') },
+  { id: 6, title: 'Missing Person - Sarah Mitchell', status: 'pending', priority: 'high', description: '32-year-old female last seen near Central Park on December 10th', policeStationId: 2, createdAt: new Date('2023-12-11'), updatedAt: new Date('2023-12-19') },
+  { id: 7, title: 'Cyber Crime - Data Breach', status: 'open', priority: 'high', description: 'Large-scale data breach affecting government contractor systems', policeStationId: 5, createdAt: new Date('2023-12-01'), updatedAt: new Date('2023-12-18') },
+  { id: 8, title: 'Drug Trafficking - Port District', status: 'open', priority: 'high', description: 'Suspected drug operation at warehouse district near the port', policeStationId: 1, createdAt: new Date('2023-11-20'), updatedAt: new Date('2023-12-16') },
 ];
 
 const Cases: React.FC = () => {
   const [cases, setCases] = useState<Case[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState<Case['status'] | 'all'>('all');
-  const [sortBy, setSortBy] = useState<'title' | 'date'>('date');
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [priorityFilter, setPriorityFilter] = useState<string>('all');
+  const [sortBy, setSortBy] = useState<'date' | 'title' | 'priority'>('date');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
-  const [deletingId, setDeletingId] = useState<number | null>(null);
-  const navigate = useNavigate();
-  const location = useLocation();
-  const [editingCase, setEditingCase] = useState<Case | null>(null);
-  const [editForm, setEditForm] = useState({ title: '', description: '', status: 'open', policeStationId: 1 });
-  const [visibleCount, setVisibleCount] = useState(10);
-  const [isFetchingMore, setIsFetchingMore] = useState(false);
-  const listRef = useRef<HTMLDivElement>(null);
 
-  // Helper to get cases from localStorage or mock
-  const getLocalCases = () => {
+  useEffect(() => {
     const stored = localStorage.getItem('cases');
     if (stored) {
-      try {
-        const parsed = JSON.parse(stored);
-        // Convert date strings back to Date objects
-        return parsed.map((c: any) => ({ ...c, createdAt: new Date(c.createdAt), updatedAt: new Date(c.updatedAt) }));
-      } catch {
-        return mockCases;
-      }
-    }
-    return mockCases;
-  };
-
-  // On mount, load from localStorage or mock
-  useEffect(() => {
-    setLoading(true);
-    let local = getLocalCases();
-    // If nothing in localStorage, seed it
-    if (!localStorage.getItem('cases')) {
+      const parsed = JSON.parse(stored);
+      setCases(parsed.map((c: any) => ({
+        ...c,
+        createdAt: new Date(c.createdAt),
+        updatedAt: new Date(c.updatedAt)
+      })));
+    } else {
+      setCases(mockCases);
       localStorage.setItem('cases', JSON.stringify(mockCases));
     }
-    setCases(local);
     setLoading(false);
   }, []);
 
-  // Delete handler
   const handleDelete = (id: number) => {
-    setDeletingId(id);
-    setTimeout(() => {
-      const updated = cases.filter(c => c.id !== id);
-      setCases(updated);
-      localStorage.setItem('cases', JSON.stringify(updated));
-      setDeletingId(null);
-      toast.success('Case deleted!');
-    }, 500);
-  };
-
-  // Edit handler
-  const handleEditClick = (caseItem: Case) => {
-    setEditingCase(caseItem);
-    setEditForm({
-      title: caseItem.title,
-      description: caseItem.description,
-      status: caseItem.status,
-      policeStationId: caseItem.policeStationId,
-    });
-  };
-  const handleEditChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setEditForm(prev => ({ ...prev, [name]: name === 'policeStationId' ? Number(value) : value }));
-  };
-  const handleEditSave = () => {
-    if (!editingCase) return;
-    const updated = cases.map(c => 
-      c.id === editingCase.id 
-        ? { ...c, ...editForm, updatedAt: new Date() } 
-        : c
-    ) as Case[];
+    const updated = cases.filter(c => c.id !== id);
     setCases(updated);
     localStorage.setItem('cases', JSON.stringify(updated));
-    setEditingCase(null);
-    toast.success('Case updated!');
-  };
-  const handleEditCancel = () => {
-    setEditingCase(null);
+    toast.success('Case deleted successfully');
   };
 
-  const handleSort = (field: 'title' | 'date') => {
-    if (sortBy === field) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortBy(field);
-      setSortDirection('asc');
-    }
-  };
-
-  const filteredAndSortedCases = cases
-    .filter(caseItem => 
-      (statusFilter === 'all' || caseItem.status === statusFilter) &&
-      (caseItem.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
-       caseItem.description.toLowerCase().includes(searchTerm.toLowerCase()))
-    )
+  const filteredCases = cases
+    .filter(c => {
+      const matchesSearch = c.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        c.description.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesStatus = statusFilter === 'all' || c.status === statusFilter;
+      const matchesPriority = priorityFilter === 'all' || c.priority === priorityFilter;
+      return matchesSearch && matchesStatus && matchesPriority;
+    })
     .sort((a, b) => {
-      if (sortBy === 'title') {
-        return sortDirection === 'asc' 
-          ? a.title.localeCompare(b.title)
-          : b.title.localeCompare(a.title);
-      } else {
-        return sortDirection === 'asc'
-          ? new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-          : new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      let comparison = 0;
+      if (sortBy === 'date') {
+        comparison = a.updatedAt.getTime() - b.updatedAt.getTime();
+      } else if (sortBy === 'title') {
+        comparison = a.title.localeCompare(b.title);
+      } else if (sortBy === 'priority') {
+        const priorityOrder = { high: 3, medium: 2, low: 1 };
+        comparison = priorityOrder[a.priority] - priorityOrder[b.priority];
       }
+      return sortDirection === 'desc' ? -comparison : comparison;
     });
 
-  useEffect(() => {
-    const handleScroll = () => {
-      if (!listRef.current) return;
-      const { scrollTop, scrollHeight, clientHeight } = listRef.current;
-      if (scrollTop + clientHeight >= scrollHeight - 50 && !isFetchingMore && visibleCount < filteredAndSortedCases.length) {
-        setIsFetchingMore(true);
-        setTimeout(() => {
-          setVisibleCount((prev) => Math.min(prev + 10, filteredAndSortedCases.length));
-          setIsFetchingMore(false);
-        }, 500);
-      }
-    };
-    const ref = listRef.current;
-    if (ref) ref.addEventListener('scroll', handleScroll);
-    return () => {
-      if (ref) ref.removeEventListener('scroll', handleScroll);
-    };
-  }, [filteredAndSortedCases.length, isFetchingMore, visibleCount]);
+  const stats = {
+    total: cases.length,
+    open: cases.filter(c => c.status === 'open').length,
+    pending: cases.filter(c => c.status === 'pending').length,
+    closed: cases.filter(c => c.status === 'closed').length,
+    highPriority: cases.filter(c => c.priority === 'high' && c.status !== 'closed').length,
+  };
 
   const StatusBadge: React.FC<{ status: Case['status'] }> = ({ status }) => {
-    const statusStyles = {
-      open: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/30',
-      closed: 'bg-green-500/10 text-green-400 border-green-500/30',
-      pending: 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30',
-      archived: 'bg-gray-500/10 text-gray-400 border-gray-500/30'
+    const config = {
+      open: { class: 'badge-primary', icon: AlertCircle, label: 'Open' },
+      closed: { class: 'badge-success', icon: CheckCircle2, label: 'Closed' },
+      pending: { class: 'badge-warning', icon: Clock, label: 'Pending' },
     };
-
+    const { class: className, icon: Icon, label } = config[status];
     return (
-      <span className={`text-xs px-2.5 py-1 rounded-lg uppercase font-medium border ${statusStyles[status]} backdrop-blur-sm`}>
-        {status}
+      <span className={`badge ${className} flex items-center gap-1`}>
+        <Icon className="h-3 w-3" />
+        {label}
+      </span>
+    );
+  };
+
+  const PriorityBadge: React.FC<{ priority: Case['priority'] }> = ({ priority }) => {
+    const config = {
+      high: 'bg-red-500/10 text-red-500 border border-red-500/30',
+      medium: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/30',
+      low: 'bg-slate-500/10 text-slate-600 dark:text-slate-400 border border-slate-500/30',
+    };
+    return (
+      <span className={`px-2 py-0.5 rounded text-xs font-medium uppercase ${config[priority]}`}>
+        {priority}
       </span>
     );
   };
 
   return (
-    <div className="space-y-8 animate-fade-in">
-      <div className="flex justify-between items-start">
-        <div className="relative">
-          <h1 className="text-4xl font-bold tracking-tight neon-text bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Cases</h1>
-          <p className="text-sm text-muted-foreground mt-2">Manage all FBI active investigations</p>
-          <div className="absolute -bottom-2 left-0 w-24 h-1 bg-gradient-to-r from-cyan-400 to-transparent rounded-full"></div>
+    <div className="space-y-6 animate-fade-in">
+      {/* Header */}
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+        <div className="fbi-header">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
+              <FileText className="h-5 w-5 text-primary" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h1 className="text-2xl font-bold text-foreground">Case Files</h1>
+                <span className="classified-badge">CLASSIFIED</span>
+              </div>
+              <p className="text-sm text-muted-foreground">FBI Criminal Investigation Database</p>
+            </div>
+          </div>
         </div>
-        <div className="flex gap-2">
-          <Button asChild className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white shadow-lg shadow-cyan-500/25">
-            <Link to="/cases/add" className="flex items-center gap-2">
-              <Plus className="h-4 w-4" />
+
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-red-500/10 border border-red-500/20">
+            <AlertCircle className="h-3.5 w-3.5 text-red-500" />
+            <span className="text-xs text-red-600 dark:text-red-400 font-medium">{stats.highPriority} HIGH PRIORITY</span>
+          </div>
+          <Button asChild className="btn-pro">
+            <Link to="/cases/add">
+              <Plus className="h-4 w-4 mr-2" />
               New Case
             </Link>
           </Button>
         </div>
       </div>
 
-      <div className="glass-card rounded-xl p-6 scan-line">
-        <div className="flex flex-col space-y-4 md:flex-row md:space-y-0 md:space-x-4 mb-6">
-          <div className="flex-1 relative group">
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 text-cyan-400/70 group-focus-within:text-cyan-400 transition-colors z-10" />
+      {/* Stats */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div className="card-modern stat-card p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-xs text-muted-foreground uppercase tracking-wider">Total Cases</p>
+              <p className="text-2xl font-bold text-foreground mt-1">{stats.total}</p>
+            </div>
+            <FileText className="h-8 w-8 text-primary/30" />
+          </div>
+        </div>
+        <div className="card-modern stat-card p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-xs text-muted-foreground uppercase tracking-wider">Active</p>
+              <p className="text-2xl font-bold text-blue-600 dark:text-blue-400 mt-1">{stats.open}</p>
+            </div>
+            <AlertCircle className="h-8 w-8 text-blue-500/30" />
+          </div>
+        </div>
+        <div className="card-modern stat-card p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-xs text-muted-foreground uppercase tracking-wider">Pending</p>
+              <p className="text-2xl font-bold text-amber-600 dark:text-amber-400 mt-1">{stats.pending}</p>
+            </div>
+            <Clock className="h-8 w-8 text-amber-500/30" />
+          </div>
+        </div>
+        <div className="card-modern stat-card p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-xs text-muted-foreground uppercase tracking-wider">Resolved</p>
+              <p className="text-2xl font-bold text-green-600 dark:text-green-400 mt-1">{stats.closed}</p>
+            </div>
+            <CheckCircle2 className="h-8 w-8 text-green-500/30" />
+          </div>
+        </div>
+      </div>
+
+      {/* Filters */}
+      <div className="card-modern p-4">
+        <div className="flex flex-col lg:flex-row gap-4">
+          <div className="flex-1 relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search cases by title or description..."
-              className="pl-11 h-11 bg-cyan-500/5 border-cyan-500/20 focus:border-cyan-500/50 focus:ring-cyan-500/20"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-9"
             />
-            <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-cyan-400/0 via-cyan-400/5 to-cyan-400/0 opacity-0 group-focus-within:opacity-100 transition-opacity pointer-events-none"></div>
           </div>
-          <div className="flex space-x-2">
-            <div className="flex items-center bg-cyan-500/5 border border-cyan-500/20 rounded-lg px-3 hover:border-cyan-500/40 transition-all">
-              <Filter className="h-4 w-4 text-cyan-400/70 mr-2" />
-              <select
-                className="bg-transparent py-2.5 pr-2 border-0 focus:ring-0 text-sm focus:outline-none cursor-pointer"
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value as Case['status'] | 'all')}
+          <div className="flex flex-wrap gap-2">
+            <select
+              className="input-pro h-10"
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+            >
+              <option value="all">All Status</option>
+              <option value="open">Open</option>
+              <option value="pending">Pending</option>
+              <option value="closed">Closed</option>
+            </select>
+            <select
+              className="input-pro h-10"
+              value={priorityFilter}
+              onChange={(e) => setPriorityFilter(e.target.value)}
+            >
+              <option value="all">All Priority</option>
+              <option value="high">High</option>
+              <option value="medium">Medium</option>
+              <option value="low">Low</option>
+            </select>
+            <select
+              className="input-pro h-10"
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as any)}
+            >
+              <option value="date">Sort by Date</option>
+              <option value="title">Sort by Title</option>
+              <option value="priority">Sort by Priority</option>
+            </select>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => setSortDirection(d => d === 'asc' ? 'desc' : 'asc')}
+              className="h-10 w-10"
+            >
+              {sortDirection === 'asc' ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Cases Table */}
+      <div className="card-modern overflow-hidden">
+        {/* Table Header */}
+        <div className="hidden lg:grid lg:grid-cols-12 gap-4 px-6 py-3 bg-muted/30 border-b border-border text-sm font-medium text-muted-foreground">
+          <div className="col-span-5">Case Details</div>
+          <div className="col-span-2">Status</div>
+          <div className="col-span-2">Priority</div>
+          <div className="col-span-2">Last Updated</div>
+          <div className="col-span-1 text-right">Actions</div>
+        </div>
+
+        {/* Table Body */}
+        <div className="divide-y divide-border">
+          {loading ? (
+            <div className="p-6 space-y-4">
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className="h-20 bg-muted rounded-lg animate-pulse"></div>
+              ))}
+            </div>
+          ) : filteredCases.length === 0 ? (
+            <div className="py-12 text-center">
+              <FileText className="h-12 w-12 mx-auto text-muted-foreground/30 mb-3" />
+              <p className="text-muted-foreground">No cases found</p>
+              <p className="text-sm text-muted-foreground/60 mt-1">Try adjusting your filters</p>
+            </div>
+          ) : (
+            filteredCases.map((caseItem) => (
+              <div
+                key={caseItem.id}
+                className="group px-6 py-4 hover:bg-muted/30 transition-colors"
               >
-                <option value="all">All Status</option>
-                <option value="open">Open</option>
-                <option value="pending">Pending</option>
-                <option value="closed">Closed</option>
-                <option value="archived">Archived</option>
-              </select>
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-center">
+                  {/* Case Details */}
+                  <div className="col-span-5">
+                    <div className="flex items-start gap-3">
+                      <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        <FileText className="h-5 w-5 text-primary" />
+                      </div>
+                      <div className="min-w-0">
+                        <Link
+                          to={`/cases/${caseItem.id}`}
+                          className="font-medium text-foreground hover:text-primary transition-colors flex items-center gap-1"
+                        >
+                          {caseItem.title}
+                          <ArrowUpRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        </Link>
+                        <p className="text-sm text-muted-foreground line-clamp-1 mt-0.5">{caseItem.description}</p>
+                        <p className="text-xs text-muted-foreground mt-1 font-mono">CASE-{caseItem.id.toString().padStart(6, '0')}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Status */}
+                  <div className="col-span-2">
+                    <StatusBadge status={caseItem.status} />
+                  </div>
+
+                  {/* Priority */}
+                  <div className="col-span-2">
+                    <PriorityBadge priority={caseItem.priority} />
+                  </div>
+
+                  {/* Updated */}
+                  <div className="col-span-2 text-sm text-muted-foreground flex items-center gap-1.5">
+                    <Calendar className="h-3.5 w-3.5" />
+                    {caseItem.updatedAt.toLocaleDateString()}
+                  </div>
+
+                  {/* Actions */}
+                  <div className="col-span-1 flex gap-1 justify-end">
+                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0" asChild>
+                      <Link to={`/cases/${caseItem.id}`}>
+                        <Eye className="h-4 w-4" />
+                      </Link>
+                    </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-8 w-8 p-0 text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Delete Case File</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This will permanently remove case CASE-{caseItem.id.toString().padStart(6, '0')} from the system. This action cannot be undone.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            className="bg-red-500 hover:bg-red-600"
+                            onClick={() => handleDelete(caseItem.id)}
+                          >
+                            Delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Footer */}
+        {!loading && filteredCases.length > 0 && (
+          <div className="px-6 py-3 border-t border-border bg-muted/20 flex items-center justify-between">
+            <p className="text-sm text-muted-foreground">
+              Showing {filteredCases.length} of {cases.length} cases
+            </p>
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <Lock className="h-3.5 w-3.5" />
+              Access logged
             </div>
           </div>
-        </div>
-
-        <div ref={listRef} style={{ maxHeight: '60vh', overflowY: 'auto' }}>
-            {loading ? (
-              <div className="space-y-4 py-4">
-                {[...Array(5)].map((_, i) => (
-                  <div key={i} className="h-24 bg-muted rounded-lg animate-pulse"></div>
-                ))}
-              </div>
-            ) : (
-              <>
-                <div className="hidden md:flex py-3 px-4 text-sm font-medium text-muted-foreground">
-                  <div className="flex-1 flex items-center">
-                    <button 
-                      className="flex items-center" 
-                      onClick={() => handleSort('title')}
-                    >
-                      Title
-                      {sortBy === 'title' && (
-                        sortDirection === 'asc' ? 
-                          <ChevronUp className="ml-1 h-4 w-4" /> : 
-                          <ChevronDown className="ml-1 h-4 w-4" />
-                      )}
-                    </button>
-                  </div>
-                  <div className="w-24 text-center">Status</div>
-                  <div className="w-32 flex items-center justify-end">
-                    <button 
-                      className="flex items-center" 
-                      onClick={() => handleSort('date')}
-                    >
-                      Date
-                      {sortBy === 'date' && (
-                        sortDirection === 'asc' ? 
-                          <ChevronUp className="ml-1 h-4 w-4" /> : 
-                          <ChevronDown className="ml-1 h-4 w-4" />
-                      )}
-                    </button>
-                  </div>
-                </div>
-
-                <div className="divide-y divide-border">
-                  {filteredAndSortedCases.length === 0 ? (
-                    <div className="py-8 text-center">
-                      <FileText className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
-                      <p className="text-muted-foreground">No cases found</p>
-                    </div>
-                  ) : (
-                    filteredAndSortedCases.slice(0, visibleCount).map((caseItem) => (
-                      <div key={caseItem.id} className="block hover:bg-muted/50 transition-colors">
-                        <div className="flex flex-col md:flex-row md:items-center py-4 px-4">
-                          <div className="flex items-start flex-1 min-w-0">
-                            <div className="h-10 w-10 flex-shrink-0 rounded bg-primary/10 flex items-center justify-center mr-4">
-                              <FileText className="h-5 w-5 text-primary" />
-                            </div>
-                            <div>
-                              {editingCase && editingCase.id === caseItem.id ? (
-                                <form className="space-y-2" onSubmit={e => { e.preventDefault(); handleEditSave(); }}>
-                                  <input
-                                    className="block w-full border rounded px-2 py-1 mb-1"
-                                    name="title"
-                                    value={editForm.title}
-                                    onChange={handleEditChange}
-                                    required
-                                  />
-                                  <textarea
-                                    className="block w-full border rounded px-2 py-1 mb-1"
-                                    name="description"
-                                    value={editForm.description}
-                                    onChange={handleEditChange}
-                                    required
-                                  />
-                                  <select
-                                    className="block w-full border rounded px-2 py-1 mb-1"
-                                    name="status"
-                                    value={editForm.status}
-                                    onChange={handleEditChange}
-                                  >
-                                    <option value="open">Open</option>
-                                    <option value="pending">Pending</option>
-                                    <option value="closed">Closed</option>
-                                    <option value="archived">Archived</option>
-                                  </select>
-                                  <input
-                                    className="block w-full border rounded px-2 py-1 mb-1"
-                                    name="policeStationId"
-                                    type="number"
-                                    min="1"
-                                    value={editForm.policeStationId}
-                                    onChange={handleEditChange}
-                                    required
-                                  />
-                                  <div className="flex space-x-2 mt-2">
-                                    <Button size="sm" type="submit">Save</Button>
-                                    <Button size="sm" variant="outline" type="button" onClick={handleEditCancel}>Cancel</Button>
-                                  </div>
-                                </form>
-                              ) : (
-                                <>
-                                  <h3 className="font-medium text-foreground leading-tight">{caseItem.title}</h3>
-                                  <p className="text-sm text-muted-foreground mt-1 line-clamp-1">{caseItem.description}</p>
-                                </>
-                              )}
-                            </div>
-                          </div>
-                          <div className="mt-2 md:mt-0 md:w-24 md:text-center">
-                            <StatusBadge status={caseItem.status} />
-                          </div>
-                          <div className="mt-2 md:mt-0 md:w-32 md:text-right text-sm text-muted-foreground">
-                            {new Date(caseItem.createdAt).toLocaleDateString()}
-                          </div>
-                          <div className="mt-2 md:mt-0 md:w-32 md:text-right flex space-x-2 justify-end">
-                            {editingCase && editingCase.id === caseItem.id ? null : (
-                              <>
-                                <Button size="sm" variant="outline" onClick={() => handleEditClick(caseItem)}>
-                                  Edit
-                                </Button>
-                                <Button size="sm" variant="destructive" onClick={() => handleDelete(caseItem.id)} disabled={deletingId === caseItem.id}>
-                                  {deletingId === caseItem.id ? 'Deleting...' : 'Delete'}
-                                </Button>
-                              </>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    ))
-                  )}
-                  {isFetchingMore && (
-                    <div className="flex justify-center py-4">
-                      <div className="h-6 w-6 rounded-full border-4 border-primary border-t-transparent animate-spin"></div>
-                    </div>
-                  )}
-                </div>
-              </>
-            )}
-        </div>
+        )}
       </div>
     </div>
   );

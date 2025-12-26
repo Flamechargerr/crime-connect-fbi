@@ -1,20 +1,39 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { Hop as Home, FileText, Database, Users, Shield, Gavel, FileStack, User, Flag, ChartBar as BarChart2, Globe, ChevronLeft, ChevronRight, Lock, Eye, Radio, Server, Cpu, Target } from 'lucide-react';
+import {
+  LayoutDashboard,
+  FileText,
+  Users,
+  Shield,
+  Scale,
+  Package,
+  User,
+  Target,
+  BarChart3,
+  Globe,
+  ChevronLeft,
+  ChevronRight,
+  UserSearch,
+  Radio,
+  Wifi
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 const navItems = [
-  { name: 'Dashboard', path: '/dashboard', icon: Home },
+  { name: 'Command Center', path: '/dashboard', icon: LayoutDashboard },
   { name: 'Cases', path: '/cases', icon: FileText },
-  { name: 'Criminals', path: '/criminals', icon: Database },
-  { name: 'Evidence', path: '/evidence', icon: FileStack },
+  { name: 'Criminals', path: '/criminals', icon: UserSearch },
+  { name: 'Evidence', path: '/evidence', icon: Package },
   { name: 'Witnesses', path: '/witnesses', icon: Users },
   { name: 'Officers', path: '/officers', icon: Shield },
-  { name: 'Surveillance', path: '/courts', icon: Eye },
-  { name: 'Reports', path: '/reports', icon: BarChart2 },
-  { name: '3D Globe', path: '/globe', icon: Globe },
+  { name: 'Courts', path: '/courts', icon: Scale },
+  { name: 'Reports', path: '/reports', icon: BarChart3 },
+  { name: 'Global View', path: '/globe', icon: Globe },
   { name: 'Most Wanted', path: '/most-wanted', icon: Target },
+];
+
+const bottomNavItems = [
   { name: 'Profile', path: '/profile', icon: User },
 ];
 
@@ -25,95 +44,89 @@ const Sidebar: React.FC = () => {
   return (
     <aside
       className={cn(
-        'h-full relative',
-        'backdrop-blur-xl bg-gradient-to-b from-background/95 via-background/90 to-background/95',
-        'border-r border-cyan-500/20',
-        collapsed ? 'w-20' : 'w-72',
-        'transition-all duration-300 ease-in-out hidden md:flex flex-col',
-        'before:absolute before:inset-0 before:bg-gradient-to-b before:from-cyan-500/5 before:to-transparent before:pointer-events-none',
-        'scan-line'
+        'h-full relative flex flex-col',
+        'bg-card border-r border-border',
+        collapsed ? 'w-[72px]' : 'w-64',
+        'transition-all duration-300 ease-in-out hidden md:flex'
       )}
     >
-      <div className="absolute top-0 right-0 w-px h-full bg-gradient-to-b from-transparent via-cyan-500/50 to-transparent"></div>
+      {/* Accent line */}
+      <div className="absolute top-0 right-0 w-px h-full bg-gradient-to-b from-primary/30 via-transparent to-primary/30"></div>
 
-      <div className="h-16 flex items-center justify-between px-4 border-b border-cyan-500/20 relative">
+      {/* Header */}
+      <div className="h-16 flex items-center justify-between px-4 border-b border-border relative">
         <div className={cn('flex items-center gap-3', collapsed && 'justify-center w-full')}>
-          <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 flex items-center justify-center relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-cyan-400/20 to-transparent animate-pulse"></div>
-            <Shield className="h-5 w-5 text-cyan-400 relative z-10" />
+          <div className="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0 relative">
+            <Shield className="h-5 w-5 text-primary" />
+            <div className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-green-500 border-2 border-card"></div>
           </div>
           {!collapsed && (
-            <div className="flex flex-col">
-              <span className="font-bold text-base bg-gradient-to-r from-cyan-300 to-blue-400 bg-clip-text text-transparent">FBI CRIMECONNECT</span>
-              <span className="text-[10px] text-muted-foreground uppercase tracking-widest">CLASSIFIED FBI SYSTEM</span>
+            <div className="flex flex-col min-w-0">
+              <span className="font-bold text-sm text-foreground truncate">CrimeConnect</span>
+              <span className="text-[10px] text-primary font-medium uppercase tracking-wider">FBI SYSTEM</span>
             </div>
           )}
         </div>
         <button
           className={cn(
-            'h-8 w-8 rounded-lg bg-cyan-500/10 border border-cyan-500/30 hover:bg-cyan-500/20 hover:border-cyan-500/50',
-            'flex items-center justify-center transition-all duration-300',
-            'hover:scale-110 active:scale-95',
-            collapsed && 'absolute -right-3 top-1/2 -translate-y-1/2 z-10'
+            'h-7 w-7 rounded-md flex items-center justify-center',
+            'text-muted-foreground hover:text-foreground hover:bg-muted',
+            'transition-all duration-200',
+            collapsed && 'absolute -right-3.5 top-4 bg-card border border-border shadow-md z-10'
           )}
           onClick={() => setCollapsed(v => !v)}
           aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
-          {collapsed ? <ChevronRight className="h-4 w-4 text-cyan-400" /> : <ChevronLeft className="h-4 w-4 text-cyan-400" />}
+          {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
         </button>
       </div>
 
-      <nav className="flex-1 overflow-y-auto p-3 space-y-1 scrollbar-thin scrollbar-thumb-cyan-500/20 scrollbar-track-transparent">
-        {navItems.map((item, index) => (
+      {/* Navigation */}
+      <nav className="flex-1 overflow-y-auto p-3 space-y-1 scrollbar-thin">
+        {navItems.map((item) => (
           <NavLink
             key={item.path}
             to={item.path}
             className={({ isActive }) =>
               cn(
-                'group relative flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium',
-                'transition-all duration-300',
-                'hover:translate-x-1',
+                'group relative flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium',
+                'transition-all duration-200',
                 collapsed && 'justify-center px-0',
                 isActive
-                  ? 'bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 text-cyan-300 shadow-lg shadow-cyan-500/10'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-cyan-500/5 border border-transparent hover:border-cyan-500/10'
+                  ? 'bg-primary/10 text-primary dark:shadow-[inset_0_0_20px_-10px_rgba(59,130,246,0.3)]'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-muted'
               )
             }
           >
             {({ isActive }) => (
               <>
                 {isActive && (
-                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-gradient-to-b from-cyan-400 to-blue-500 rounded-r-full"></div>
+                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-primary rounded-r-full"></div>
                 )}
                 <div className={cn(
-                  'h-10 w-10 rounded-lg flex items-center justify-center relative transition-all duration-300',
+                  'h-9 w-9 rounded-lg flex items-center justify-center flex-shrink-0',
+                  'transition-all duration-200',
                   isActive
-                    ? 'bg-gradient-to-br from-cyan-500/30 to-blue-500/30 border border-cyan-400/50'
-                    : 'bg-cyan-500/5 border border-cyan-500/10 group-hover:border-cyan-500/30'
+                    ? 'bg-primary/15'
+                    : 'bg-muted/50 group-hover:bg-muted'
                 )}>
-                  {isActive && (
-                    <div className="absolute inset-0 bg-gradient-to-br from-cyan-400/20 to-transparent animate-pulse rounded-lg"></div>
-                  )}
                   <item.icon className={cn(
-                    'h-5 w-5 relative z-10 transition-all duration-300',
-                    isActive ? 'text-cyan-400' : 'text-muted-foreground group-hover:text-cyan-400'
+                    'h-[18px] w-[18px]',
+                    isActive ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground'
                   )} />
                 </div>
                 {!collapsed && (
-                  <span className="flex-1">{item.name}</span>
-                )}
-                {!collapsed && isActive && (
-                  <div className="h-2 w-2 rounded-full bg-cyan-400 animate-pulse shadow-lg shadow-cyan-400/50"></div>
+                  <span className="truncate">{item.name}</span>
                 )}
                 {collapsed && (
                   <div className={cn(
-                    'absolute left-full ml-2 px-3 py-2 rounded-lg',
-                    'bg-background/95 backdrop-blur-xl border border-cyan-500/30',
+                    'absolute left-full ml-2 px-3 py-1.5 rounded-md',
+                    'bg-popover border border-border shadow-xl',
                     'opacity-0 invisible group-hover:opacity-100 group-hover:visible',
-                    'transition-all duration-300 whitespace-nowrap z-50',
-                    'shadow-xl shadow-cyan-500/10'
+                    'transition-all duration-200 whitespace-nowrap z-50',
+                    'text-sm text-popover-foreground'
                   )}>
-                    <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1 w-2 h-2 rotate-45 bg-background/95 border-l border-b border-cyan-500/30"></div>
+                    <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1 w-2 h-2 rotate-45 bg-popover border-l border-b border-border"></div>
                     {item.name}
                   </div>
                 )}
@@ -123,32 +136,62 @@ const Sidebar: React.FC = () => {
         ))}
       </nav>
 
-      <div className={cn(
-        'p-4 border-t border-cyan-500/20 relative',
-        'before:absolute before:top-0 before:left-0 before:right-0 before:h-px',
-        'before:bg-gradient-to-r before:from-transparent before:via-cyan-500/50 before:to-transparent'
-      )}>
-        <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center gap-2">
-            <div className="h-2 w-2 rounded-full bg-green-400 animate-pulse shadow-lg shadow-green-400/50"></div>
-            <span className="text-xs text-muted-foreground uppercase tracking-wider">SYSTEM STATUS</span>
-          </div>
-          <Lock className="h-3 w-3 text-green-400" />
-        </div>
+      {/* Bottom section */}
+      <div className="p-3 border-t border-border space-y-3">
+        {bottomNavItems.map((item) => (
+          <NavLink
+            key={item.path}
+            to={item.path}
+            className={({ isActive }) =>
+              cn(
+                'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium',
+                'transition-all duration-200',
+                collapsed && 'justify-center px-0',
+                isActive
+                  ? 'bg-primary/10 text-primary'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+              )
+            }
+          >
+            {({ isActive }) => (
+              <>
+                <div className={cn(
+                  'h-9 w-9 rounded-lg flex items-center justify-center flex-shrink-0',
+                  isActive ? 'bg-primary/15' : 'bg-muted/50'
+                )}>
+                  <item.icon className={cn(
+                    'h-[18px] w-[18px]',
+                    isActive ? 'text-primary' : 'text-muted-foreground'
+                  )} />
+                </div>
+                {!collapsed && <span>{item.name}</span>}
+              </>
+            )}
+          </NavLink>
+        ))}
+
+        {/* Connection Status */}
         {!collapsed && (
-          <div className="text-[10px] text-muted-foreground space-y-1">
-            <div className="flex items-center gap-1">
-              <Server className="h-2.5 w-2.5 text-green-400" />
-              <span>Database: Operational</span>
+          <div className="px-3 py-2 rounded-lg bg-muted/30 border border-border/50">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium">Connection</span>
+              <div className="flex items-center gap-1">
+                <Wifi className="h-3 w-3 text-green-500" />
+                <span className="text-[10px] text-green-500 font-medium">SECURE</span>
+              </div>
             </div>
-            <div className="flex items-center gap-1">
-              <Radio className="h-2.5 w-2.5 text-green-400" />
-              <span>Communications: Secure</span>
+            <div className="flex items-center gap-2">
+              <div className="flex-1 h-1 rounded-full bg-muted overflow-hidden">
+                <div className="h-full w-full bg-gradient-to-r from-green-500 to-green-400 rounded-full"></div>
+              </div>
+              <span className="text-[10px] text-muted-foreground">256-bit</span>
             </div>
-            <div className="flex items-center gap-1">
-              <Cpu className="h-2.5 w-2.5 text-amber-400" />
-              <span>AI Analysis: Running</span>
-            </div>
+          </div>
+        )}
+
+        {collapsed && (
+          <div className="flex justify-center">
+            <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse"></div>
           </div>
         )}
       </div>

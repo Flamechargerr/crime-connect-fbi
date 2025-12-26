@@ -1,12 +1,24 @@
-
-import React, { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
-import { Plus, Search, Filter, FileStack, ChevronDown, ChevronUp } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import React, { useState, useEffect } from 'react';
+import {
+  Plus,
+  Search,
+  Package,
+  Trash2,
+  MapPin,
+  Calendar,
+  FileText,
+  Camera,
+  Fingerprint,
+  Shield,
+  Lock,
+  Eye,
+  ChevronDown,
+  Filter
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from "sonner";
-import { 
+import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -27,376 +39,412 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
 
 interface Evidence {
   id: string;
   description: string;
   storage_location: string;
+  type: string;
+  status: 'secured' | 'processing' | 'released';
   case_id: string | null;
   created_at: string;
+  image?: string;
 }
 
-// Add mockEvidence array
-const mockEvidence = [
+const mockEvidence: Evidence[] = [
   {
-    id: '1',
-    description: 'Fingerprint on window',
-    storage_location: 'Locker A-101',
-    case_id: null,
-    created_at: new Date().toISOString(),
-    image: 'https://images.unsplash.com/photo-1518717758536-85ae29035b6d?q=80&w=400&h=400&fit=crop&auto=format',
+    id: 'EV-2023-001',
+    description: 'Latent fingerprints recovered from window frame',
+    storage_location: 'Vault A-101',
+    type: 'Biometric',
+    status: 'secured',
+    case_id: 'FBI-2023-045789',
+    created_at: '2023-12-15T10:30:00Z',
+    image: 'https://images.unsplash.com/photo-1585421514284-efb74c2b69ba?q=80&w=400&h=300&fit=crop',
   },
   {
-    id: '2',
-    description: 'CCTV footage',
-    storage_location: 'Digital Archive',
-    case_id: null,
-    created_at: new Date().toISOString(),
-    image: 'https://images.unsplash.com/photo-1464983953574-0892a716854b?q=80&w=400&h=400&fit=crop&auto=format',
+    id: 'EV-2023-002',
+    description: 'CCTV surveillance footage - Bank robbery',
+    storage_location: 'Digital Archive D-05',
+    type: 'Digital',
+    status: 'processing',
+    case_id: 'FBI-2023-045789',
+    created_at: '2023-12-14T14:20:00Z',
+    image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?q=80&w=400&h=300&fit=crop',
   },
   {
-    id: '3',
-    description: 'Recovered weapon',
-    storage_location: 'Locker B-202',
-    case_id: null,
-    created_at: new Date().toISOString(),
-    image: 'https://images.unsplash.com/photo-1510822736943-1b6a1e1b8a48?q=80&w=400&h=400&fit=crop&auto=format',
+    id: 'EV-2023-003',
+    description: 'Recovered firearm - 9mm Glock',
+    storage_location: 'Weapons Locker W-12',
+    type: 'Physical',
+    status: 'secured',
+    case_id: 'FBI-2023-068912',
+    created_at: '2023-12-13T09:15:00Z',
+    image: 'https://images.unsplash.com/photo-1595590424283-b8f17842773f?q=80&w=400&h=300&fit=crop',
   },
   {
-    id: '4',
-    description: 'Signed document',
-    storage_location: 'Evidence Room',
-    case_id: null,
-    created_at: new Date().toISOString(),
-    image: 'https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?q=80&w=400&h=400&fit=crop&auto=format',
+    id: 'EV-2023-004',
+    description: 'DNA samples from crime scene',
+    storage_location: 'Biohazard Lab B-03',
+    type: 'Biological',
+    status: 'processing',
+    case_id: 'FBI-2023-034567',
+    created_at: '2023-12-12T16:45:00Z',
+    image: 'https://images.unsplash.com/photo-1579154204601-01588f351e67?q=80&w=400&h=300&fit=crop',
+  },
+  {
+    id: 'EV-2023-005',
+    description: 'Forged identification documents',
+    storage_location: 'Document Storage C-08',
+    type: 'Document',
+    status: 'secured',
+    case_id: 'FBI-2023-023456',
+    created_at: '2023-12-11T11:00:00Z',
+    image: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?q=80&w=400&h=300&fit=crop',
+  },
+  {
+    id: 'EV-2023-006',
+    description: 'Encrypted hard drive - Financial records',
+    storage_location: 'Cyber Lab CY-02',
+    type: 'Digital',
+    status: 'processing',
+    case_id: 'FBI-2023-023456',
+    created_at: '2023-12-10T08:30:00Z',
+    image: 'https://images.unsplash.com/photo-1531492746076-161ca9bcad58?q=80&w=400&h=300&fit=crop',
   },
 ];
 
-const addEvidenceSchema = z.object({
-  description: z.string().min(3, { message: "Description must be at least 3 characters." }),
-  storage_location: z.string().min(2, { message: "Storage location must be at least 2 characters." }),
-});
-
 const Evidence: React.FC = () => {
-  const [evidenceItems, setEvidenceItems] = useState<any[]>([]);
+  const [evidenceItems, setEvidenceItems] = useState<Evidence[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [sortBy, setSortBy] = useState<'description' | 'date'>('date');
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
-  
-  // New evidence form state (remove old useState)
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const addEvidenceForm = useForm<z.infer<typeof addEvidenceSchema>>({
-    resolver: zodResolver(addEvidenceSchema),
-    defaultValues: {
-      description: '',
-      storage_location: '',
-    },
-  });
+  const [typeFilter, setTypeFilter] = useState<string>('all');
+  const [statusFilter, setStatusFilter] = useState<string>('all');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [editForm, setEditForm] = useState({ description: '', storage_location: '' });
-  const [visibleCount, setVisibleCount] = useState(10);
-  const [isFetchingMore, setIsFetchingMore] = useState(false);
-  const listRef = useRef<HTMLDivElement>(null);
-
-  // Helper to get evidence from localStorage or mock
-  const getLocalEvidence = () => {
-    const stored = localStorage.getItem('evidence');
-    if (stored) {
-      try {
-        return JSON.parse(stored);
-      } catch {
-        return mockEvidence;
-      }
-    }
-    return mockEvidence;
-  };
+  const [newEvidence, setNewEvidence] = useState({ description: '', storage_location: '', type: 'Physical' });
 
   useEffect(() => {
-    setLoading(true);
-    let local = getLocalEvidence();
-    if (!localStorage.getItem('evidence')) {
+    const stored = localStorage.getItem('evidence');
+    if (stored) {
+      setEvidenceItems(JSON.parse(stored));
+    } else {
+      setEvidenceItems(mockEvidence);
       localStorage.setItem('evidence', JSON.stringify(mockEvidence));
     }
-    setEvidenceItems(local);
     setLoading(false);
   }, []);
 
-  // Delete handler
   const handleDelete = (id: string) => {
     const updated = evidenceItems.filter(e => e.id !== id);
     setEvidenceItems(updated);
     localStorage.setItem('evidence', JSON.stringify(updated));
-    toast.success('Evidence record deleted successfully');
+    toast.success('Evidence record deleted');
   };
 
-  // Add handler
-  const handleAddEvidence = async (values: z.infer<typeof addEvidenceSchema>) => {
-    setIsSubmitting(true);
-    try {
-      const newEvidenceObj = {
-        ...values,
-        id: Date.now().toString(),
-        case_id: null,
-        created_at: new Date().toISOString(),
-      };
-      const updated = [...evidenceItems, newEvidenceObj];
-      setEvidenceItems(updated);
-      localStorage.setItem('evidence', JSON.stringify(updated));
-      toast.success('Evidence added successfully');
-      addEvidenceForm.reset();
-      setIsDialogOpen(false);
-    } catch (error) {
-      toast.error('An unexpected error occurred');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  // Edit handlers
-  const handleEditClick = (evidence: any) => {
-    setEditingId(evidence.id);
-    setEditForm({
-      description: evidence.description,
-      storage_location: evidence.storage_location,
-    });
-  };
-  const handleEditChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setEditForm(prev => ({ ...prev, [name]: value }));
-  };
-  const handleEditSave = () => {
-    if (!editingId) return;
-    const updated = evidenceItems.map(e => e.id === editingId ? { ...e, ...editForm } : e);
+  const handleAddEvidence = () => {
+    const newItem: Evidence = {
+      id: `EV-${Date.now()}`,
+      description: newEvidence.description,
+      storage_location: newEvidence.storage_location,
+      type: newEvidence.type,
+      status: 'processing',
+      case_id: null,
+      created_at: new Date().toISOString(),
+    };
+    const updated = [newItem, ...evidenceItems];
     setEvidenceItems(updated);
     localStorage.setItem('evidence', JSON.stringify(updated));
-    setEditingId(null);
-    toast.success('Evidence updated!');
-  };
-  const handleEditCancel = () => {
-    setEditingId(null);
+    toast.success('Evidence logged successfully', { description: `ID: ${newItem.id}` });
+    setIsDialogOpen(false);
+    setNewEvidence({ description: '', storage_location: '', type: 'Physical' });
   };
 
-  const handleSort = (field: 'description' | 'date') => {
-    if (sortBy === field) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortBy(field);
-      setSortDirection('asc');
-    }
+  const filteredEvidence = evidenceItems.filter(item => {
+    const matchesSearch = item.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.storage_location.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.id.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesType = typeFilter === 'all' || item.type === typeFilter;
+    const matchesStatus = statusFilter === 'all' || item.status === statusFilter;
+    return matchesSearch && matchesType && matchesStatus;
+  });
+
+  const stats = {
+    total: evidenceItems.length,
+    secured: evidenceItems.filter(e => e.status === 'secured').length,
+    processing: evidenceItems.filter(e => e.status === 'processing').length,
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    addEvidenceForm.setValue(name as 'description' | 'storage_location', value);
-  };
-
-  const filteredAndSortedEvidence = evidenceItems
-    .filter(evidence => 
-      evidence.description.toLowerCase().includes(searchTerm.toLowerCase()) || 
-      evidence.storage_location.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-    .sort((a, b) => {
-      if (sortBy === 'description') {
-        return sortDirection === 'asc' 
-          ? a.description.localeCompare(b.description)
-          : b.description.localeCompare(a.description);
-      } else {
-        return sortDirection === 'asc'
-          ? new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-          : new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-      }
-    });
-
-  useEffect(() => {
-    const handleScroll = () => {
-      if (!listRef.current) return;
-      const { scrollTop, scrollHeight, clientHeight } = listRef.current;
-      if (scrollTop + clientHeight >= scrollHeight - 50 && !isFetchingMore && visibleCount < filteredAndSortedEvidence.length) {
-        setIsFetchingMore(true);
-        setTimeout(() => {
-          setVisibleCount(prev => Math.min(prev + 10, filteredAndSortedEvidence.length));
-          setIsFetchingMore(false);
-        }, 500);
-      }
+  const getStatusBadge = (status: string) => {
+    const styles: Record<string, string> = {
+      secured: 'badge-success',
+      processing: 'badge-warning',
+      released: 'badge-primary',
     };
-    const ref = listRef.current;
-    if (ref) {
-      ref.addEventListener('scroll', handleScroll);
-    }
-    return () => {
-      if (ref) {
-        ref.removeEventListener('scroll', handleScroll);
-      }
+    return styles[status] || 'badge-primary';
+  };
+
+  const getTypeIcon = (type: string) => {
+    const icons: Record<string, React.ReactNode> = {
+      Biometric: <Fingerprint className="h-4 w-4" />,
+      Digital: <Camera className="h-4 w-4" />,
+      Physical: <Package className="h-4 w-4" />,
+      Document: <FileText className="h-4 w-4" />,
+      Biological: <Shield className="h-4 w-4" />,
     };
-  }, [isFetchingMore, visibleCount, filteredAndSortedEvidence.length]);
+    return icons[type] || <Package className="h-4 w-4" />;
+  };
 
   return (
-    <div className="space-y-8 animate-fade-in">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Evidence</h1>
-          <p className="text-muted-foreground">All FBI evidence in the system</p>
+    <div className="space-y-6 animate-fade-in">
+      {/* Header */}
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+        <div className="fbi-header">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
+              <Package className="h-5 w-5 text-primary" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h1 className="text-2xl font-bold text-foreground">Evidence Vault</h1>
+                <span className="classified-badge">SECURE</span>
+              </div>
+              <p className="text-sm text-muted-foreground">Chain of Custody Management System</p>
+            </div>
+          </div>
         </div>
-        <div className="flex gap-2">
-          <Input
-            type="text"
-            placeholder="Search by description or storage location..."
-            value={searchTerm}
-            onChange={e => setSearchTerm(e.target.value)}
-            className="w-64"
-          />
-          <select
-            value={sortBy}
-            onChange={e => setSortBy(e.target.value as 'description' | 'date')}
-            className="border rounded px-2 py-1 text-sm"
-          >
-            <option value="description">Sort by Description</option>
-            <option value="date">Sort by Date</option>
-          </select>
-          <select
-            value={sortDirection}
-            onChange={e => setSortDirection(e.target.value as 'asc' | 'desc')}
-            className="border rounded px-2 py-1 text-sm"
-          >
-            <option value="asc">Ascending</option>
-            <option value="desc">Descending</option>
-          </select>
-        </div>
-      </div>
-      {/* Add Evidence Dialog */}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogTrigger asChild>
-          <Button className="flex items-center">
-            <Plus className="mr-2 h-4 w-4" /> Add Evidence
-          </Button>
-        </DialogTrigger>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Add Evidence</DialogTitle>
-            <DialogDescription>Enter evidence details below.</DialogDescription>
-          </DialogHeader>
-          <form onSubmit={addEvidenceForm.handleSubmit(handleAddEvidence)} className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogTrigger asChild>
+            <Button className="btn-pro">
+              <Plus className="h-4 w-4 mr-2" />
+              Log Evidence
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Log New Evidence</DialogTitle>
+              <DialogDescription>Enter evidence details for chain of custody.</DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
               <div>
                 <Label>Description</Label>
-                <Input {...addEvidenceForm.register('description')} placeholder="Description" />
-                <p className="text-destructive text-xs mt-1">{addEvidenceForm.formState.errors.description?.message}</p>
+                <Input
+                  value={newEvidence.description}
+                  onChange={(e) => setNewEvidence({ ...newEvidence, description: e.target.value })}
+                  placeholder="Describe the evidence..."
+                />
               </div>
               <div>
                 <Label>Storage Location</Label>
-                <Input {...addEvidenceForm.register('storage_location')} placeholder="Storage location" />
-                <p className="text-destructive text-xs mt-1">{addEvidenceForm.formState.errors.storage_location?.message}</p>
+                <Input
+                  value={newEvidence.storage_location}
+                  onChange={(e) => setNewEvidence({ ...newEvidence, storage_location: e.target.value })}
+                  placeholder="e.g., Vault A-101"
+                />
               </div>
-            </div>
-            <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
-                Cancel
-              </Button>
-              <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? 'Adding...' : 'Add Evidence'}
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
-
-      <Card className="glass-card">
-        <CardHeader className="px-6">
-          <CardTitle>All Evidence</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col space-y-4 md:flex-row md:space-y-0 md:space-x-4 mb-4">
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search evidence..."
-                className="pl-10"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-            <div className="flex space-x-2">
-              <div className="flex items-center bg-muted rounded-md">
-                <div className="px-3">
-                  <Filter className="h-4 w-4 text-muted-foreground" />
-                </div>
-                <select 
-                  className="bg-transparent py-2 pr-3 border-0 focus:ring-0 text-sm focus:outline-none"
-                  defaultValue="all"
+              <div>
+                <Label>Type</Label>
+                <select
+                  className="input-pro w-full"
+                  value={newEvidence.type}
+                  onChange={(e) => setNewEvidence({ ...newEvidence, type: e.target.value })}
                 >
-                  <option value="all">All Evidence</option>
-                  <option value="recent">Recently Added</option>
-                  <option value="oldest">Oldest First</option>
+                  <option value="Physical">Physical</option>
+                  <option value="Digital">Digital</option>
+                  <option value="Biometric">Biometric</option>
+                  <option value="Document">Document</option>
+                  <option value="Biological">Biological</option>
                 </select>
               </div>
             </div>
-          </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Cancel</Button>
+              <Button onClick={handleAddEvidence} className="btn-pro">Log Evidence</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
 
-          <div ref={listRef} style={{ maxHeight: '70vh', overflowY: 'auto' }}>
-            {loading ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {[...Array(6)].map((_, i) => (
-                  <div key={i} className="h-32 bg-muted rounded-lg animate-pulse" />
-                ))}
-              </div>
-            ) : filteredAndSortedEvidence.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-12">
-                <FileStack className="w-12 h-12 text-muted-foreground mb-4" />
-                <p className="text-muted-foreground">No evidence found.</p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredAndSortedEvidence.slice(0, visibleCount).map(evidence => (
-                  <div key={evidence.id} className="flex items-center py-4 px-4 hover:bg-muted/50 transition-colors rounded-lg mb-2">
-                    <div className="h-16 w-16 flex-shrink-0 rounded bg-primary/10 flex items-center justify-center mr-4 overflow-hidden border">
-                      <img src={evidence.image} alt={evidence.description} className="h-full w-full object-cover object-center rounded" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="font-medium text-foreground text-lg truncate">{evidence.description}</div>
-                      <div className="text-sm text-muted-foreground truncate">{evidence.storage_location}</div>
-                      <div className="text-xs text-muted-foreground mt-1">ID: {evidence.id.substring(0, 8)}... | {new Date(evidence.created_at).toLocaleDateString()}</div>
-                    </div>
-                    <div className="ml-4 flex-shrink-0">
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10" onClick={(e) => e.stopPropagation()}>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
-                          </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                            <AlertDialogDescription>
-                              This will permanently delete the evidence record for {evidence.description}. This action cannot be undone.
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction className="bg-destructive hover:bg-destructive/90" onClick={() => handleDelete(evidence.id)}>
-                              Delete
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-            {isFetchingMore && (
-              <div className="flex justify-center py-4">
-                <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-              </div>
-            )}
+      {/* Stats */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="card-modern stat-card p-5">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
+              <Package className="h-5 w-5 text-primary" />
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">Total Evidence</p>
+              <p className="text-2xl font-bold text-foreground">{stats.total}</p>
+            </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+        <div className="card-modern stat-card p-5">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-lg bg-green-500/10 flex items-center justify-center">
+              <Lock className="h-5 w-5 text-green-500" />
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">Secured</p>
+              <p className="text-2xl font-bold text-green-600 dark:text-green-400">{stats.secured}</p>
+            </div>
+          </div>
+        </div>
+        <div className="card-modern stat-card p-5">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-lg bg-amber-500/10 flex items-center justify-center">
+              <Eye className="h-5 w-5 text-amber-500" />
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">Processing</p>
+              <p className="text-2xl font-bold text-amber-600 dark:text-amber-400">{stats.processing}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Filters */}
+      <div className="card-modern p-4">
+        <div className="flex flex-col sm:flex-row gap-3">
+          <div className="flex-1 relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search by description, location, or ID..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-9"
+            />
+          </div>
+          <div className="flex gap-2">
+            <select
+              className="input-pro h-10"
+              value={typeFilter}
+              onChange={(e) => setTypeFilter(e.target.value)}
+            >
+              <option value="all">All Types</option>
+              <option value="Physical">Physical</option>
+              <option value="Digital">Digital</option>
+              <option value="Biometric">Biometric</option>
+              <option value="Document">Document</option>
+              <option value="Biological">Biological</option>
+            </select>
+            <select
+              className="input-pro h-10"
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+            >
+              <option value="all">All Status</option>
+              <option value="secured">Secured</option>
+              <option value="processing">Processing</option>
+              <option value="released">Released</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      {/* Evidence Grid */}
+      {loading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="h-64 bg-muted rounded-xl animate-pulse" />
+          ))}
+        </div>
+      ) : filteredEvidence.length === 0 ? (
+        <div className="card-modern p-12 text-center">
+          <Package className="h-12 w-12 mx-auto text-muted-foreground/30 mb-3" />
+          <p className="text-muted-foreground">No evidence found matching your criteria</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredEvidence.map((item) => (
+            <div key={item.id} className="group card-modern overflow-hidden hover:shadow-xl transition-all duration-300">
+              {/* Image */}
+              {item.image && (
+                <div className="h-36 overflow-hidden relative">
+                  <img
+                    src={item.image}
+                    alt={item.description}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent"></div>
+                  <div className="absolute bottom-2 left-2">
+                    <span className={`badge ${getStatusBadge(item.status)} capitalize`}>
+                      {item.status}
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {/* Content */}
+              <div className="p-4 space-y-3">
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <span className="text-xs font-mono text-primary">{item.id}</span>
+                    <h3 className="font-medium text-foreground line-clamp-2 mt-0.5">{item.description}</h3>
+                  </div>
+                  <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center flex-shrink-0">
+                    {getTypeIcon(item.type)}
+                  </div>
+                </div>
+
+                <div className="space-y-2 text-sm">
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <MapPin className="h-3.5 w-3.5" />
+                    <span>{item.storage_location}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <Calendar className="h-3.5 w-3.5" />
+                    <span>{new Date(item.created_at).toLocaleDateString()}</span>
+                  </div>
+                  {item.case_id && (
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <FileText className="h-3.5 w-3.5" />
+                      <span className="font-mono text-xs">{item.case_id}</span>
+                    </div>
+                  )}
+                </div>
+
+                <div className="pt-3 border-t border-border flex items-center justify-between">
+                  <span className="badge badge-primary">{item.type}</span>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="ghost" size="sm" className="text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10">
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Delete Evidence Record</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This will permanently remove evidence {item.id} from the system. This action cannot be undone.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction className="bg-red-500 hover:bg-red-600" onClick={() => handleDelete(item.id)}>
+                          Delete
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Footer */}
+      <div className="card-modern p-4">
+        <div className="flex items-center justify-between">
+          <p className="text-sm text-muted-foreground">
+            Showing {filteredEvidence.length} of {evidenceItems.length} evidence items
+          </p>
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <Lock className="h-3.5 w-3.5" />
+            All evidence access is logged and monitored
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
