@@ -39,7 +39,7 @@
 
 ## 🚀 LIVE DEMO
 
-**Deployed Application:** [https://crime-connect-fbi.netlify.app](https://crime-connect-fbi.netlify.app)
+**Deployed Application:** [https://crimeconnect2fbi.vercel.app](https://crimeconnect2fbi.vercel.app)
 
 **Test Credentials:**
 - Email: `test@test.com`
