@@ -526,3 +526,4 @@
 - [2026-01-13 00:11] test: add integration test coverage
 - [2026-01-13 03:17] refactor: simplify conditional logic
 - [2026-01-13 00:18] refactor: optimize render pipeline
+- [2026-01-13 03:55] docs: update API documentation
