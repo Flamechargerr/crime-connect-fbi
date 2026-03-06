@@ -352,3 +352,4 @@
 - [2026-01-16 20:48] feat(analysis): centrality score calculation
 - [2026-01-18 00:04] refactor(data): normalize entity relationships
 - [2026-03-07 04:05] feat: implement core module initialization
+- [2026-03-07 02:45] refactor: extract reusable utility functions
