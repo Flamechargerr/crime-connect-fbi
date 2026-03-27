@@ -18,6 +18,15 @@
 
 ---
 
+## 🎯 ABOUT THE BUILDER (RESUME EXTRACT)
+
+**CrimeConnect – Full-Stack Analytics & Case Management Platform 2025 · GitHub**
+*React, Node.js, JavaScript, Python, PostgreSQL, SQL, scikit-learn, REST APIs*
+• Built a responsive full-stack web application with a React frontend and Node.js REST API backend; designed intuitive UI components enabling non-technical users to query and visualise complex operational data at scale.
+• Integrated Python ML classification pipeline (scikit-learn, 82% accuracy) with the web interface via REST API; designed PostgreSQL schemas with optimised analytical queries, reducing manual data processing time by 60%
+
+---
+
 ## 🎯 PROJECT OVERVIEW
 
 **FBI CrimeConnect** is a comprehensive criminal intelligence management system featuring a professional, cinematic FBI aesthetic. The application combines sleek dark themes with refined visual effects to create an immersive yet functional law enforcement dashboard.

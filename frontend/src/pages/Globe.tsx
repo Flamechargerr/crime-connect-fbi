@@ -14,7 +14,9 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 
-const SciFiGlobe = lazy(() => import('@/components/globe/SciFiGlobe'));
+import { GlobeCdn, CdnMarker } from '@/components/ui/cobe-globe-cdn';
+import { Radar, IconContainer } from '@/components/ui/radar-effect';
+import { Server, Database, RadioReceiver, ShieldAlert, Satellite, Lock } from 'lucide-react';
 
 export type Marker = { lat: number; lon: number; color?: string; size?: number; id?: string; label?: string };
 
@@ -76,6 +78,12 @@ const GlobePage: React.FC = () => {
     const match = dataset.find(d => d.id === m.id);
     if (match) setSelected(match);
   };
+
+  const cdnMarkers = useMemo(() => enriched.map(m => ({
+    id: m.id || 'unknown',
+    location: [m.lat, m.lon] as [number, number],
+    region: m.label || 'Unknown Target'
+  })), [enriched]);
 
   const stats = {
     critical: dataset.filter(t => t.threat === 'critical').length,
@@ -156,16 +164,29 @@ const GlobePage: React.FC = () => {
               </div>
             </CardHeader>
             <CardContent className="p-0">
-              <Suspense
-                fallback={
-                  <div className="h-[65vh] w-full flex flex-col items-center justify-center bg-slate-900/50">
-                    <div className="h-12 w-12 rounded-full border-2 border-primary border-t-transparent animate-spin mb-4"></div>
-                    <p className="text-muted-foreground">Loading 3D Globe...</p>
+                {/* Radar Background Effect inside Globe Container */}
+                <div className="absolute inset-0 pointer-events-none flex items-center justify-center opacity-30 mix-blend-screen overflow-hidden">
+                  <Radar className="scale-[3] text-primary" />
+                </div>
+                
+                {/* Embedded GlobeCdn */}
+                <div className="relative h-[65vh] w-full flex items-center justify-center overflow-hidden bg-black/40">
+                  <GlobeCdn 
+                    className="w-full max-w-[800px] h-full"
+                    markers={cdnMarkers} 
+                  />
+                  
+                  {/* Surrounding Radar Icons */}
+                  <div className="absolute top-8 left-8">
+                     <IconContainer icon={<Satellite className="h-6 w-6 text-sky-400" />} text="SATCOM LINK" delay={0.2} />
                   </div>
-                }
-              >
-                <SciFiGlobe markers={enriched} onSelect={onSelect} />
-              </Suspense>
+                  <div className="absolute bottom-8 right-8">
+                     <IconContainer icon={<Database className="h-6 w-6 text-sky-400" />} text="MAINFRAME" delay={0.4} />
+                  </div>
+                  <div className="absolute top-8 right-8">
+                     <IconContainer icon={<RadioReceiver className="h-6 w-6 text-sky-400" />} text="SIGINT" delay={0.3} />
+                  </div>
+                </div>
             </CardContent>
           </Card>
         </div>

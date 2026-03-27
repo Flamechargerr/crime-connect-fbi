@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import {
   FileText,
   Users,
@@ -144,11 +145,17 @@ const Dashboard: React.FC = () => {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <motion.div 
+        variants={{ hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.1 } } }}
+        initial="hidden"
+        animate="show"
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+      >
         {statsCards.map((s, i) => {
           const colors = colorClasses[s.color];
           return (
-            <div
+            <motion.div
+              variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }}
               key={s.title}
               className={`group card-modern stat-card p-5 transition-all duration-300 hover:shadow-xl ${colors.glow}`}
             >
@@ -165,27 +172,39 @@ const Dashboard: React.FC = () => {
                 <p className="text-sm text-muted-foreground mb-1">{s.title}</p>
                 <p className="text-3xl font-bold text-foreground">{s.value.toLocaleString()}</p>
               </div>
-            </div>
+            </motion.div>
           );
         })}
-      </div>
+      </motion.div>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <motion.div 
+        variants={{ hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.05, delayChildren: 0.2 } } }}
+        initial="hidden"
+        animate="show"
+        className="grid grid-cols-2 sm:grid-cols-4 gap-4"
+      >
         {[
           { label: 'New Case', icon: FileText, path: '/cases/add', color: 'text-blue-500' },
           { label: 'Add Criminal', icon: Users, path: '/criminals/add', color: 'text-red-500' },
           { label: 'Evidence Log', icon: Package, path: '/evidence', color: 'text-green-500' },
           { label: 'View Reports', icon: Eye, path: '/reports', color: 'text-purple-500' },
         ].map((action) => (
-          <Link key={action.label} to={action.path} className="quick-action group">
-            <action.icon className={`h-6 w-6 ${action.color} transition-transform group-hover:scale-110`} />
-            <span className="text-sm font-medium text-foreground">{action.label}</span>
-          </Link>
+          <motion.div variants={{ hidden: { opacity: 0, scale: 0.9 }, show: { opacity: 1, scale: 1 } }} key={action.label}>
+            <Link to={action.path} className="quick-action group h-full">
+              <action.icon className={`h-6 w-6 ${action.color} transition-transform group-hover:scale-110`} />
+              <span className="text-sm font-medium text-foreground">{action.label}</span>
+            </Link>
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <motion.div 
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4, duration: 0.5 }}
+        className="grid grid-cols-1 lg:grid-cols-3 gap-6"
+      >
         {/* Recent Cases */}
         <div className="lg:col-span-2 card-modern p-6 scan-effect">
           <div className="flex items-center justify-between mb-6">
@@ -329,7 +348,7 @@ const Dashboard: React.FC = () => {
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };

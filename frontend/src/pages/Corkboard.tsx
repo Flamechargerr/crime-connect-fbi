@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback, lazy, Suspense } from 'react';
+import React, { useState, useRef, useEffect, useCallback, lazy, Suspense, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { CorkboardItem } from '@/components/corkboard/CorkboardItem';
@@ -11,8 +11,8 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { CorkboardItemType, CorkboardItemData } from '@/types';
 import { useAuth } from '@/context/AuthContext';
 import DecryptText from '@/components/effects/DecryptText';
-const SciFiGlobe = lazy(() => import('@/components/globe/SciFiGlobe'));
-export type Marker = { lat: number; lon: number; color?: string; size?: number };
+import { GlobeCdn, CdnMarker } from '@/components/ui/cobe-globe-cdn';
+export type Marker = { lat: number; lon: number; color?: string; size?: number; id?: string; label?: string };
 
 const DEFAULT_CORKBOARDS = [
   { id: '1', name: 'Bank Heist', items: [], connections: [], background: 'grid' },
@@ -107,7 +107,15 @@ const Corkboard: React.FC = () => {
   const containerBg = currentBackground === 'grid' ? 'bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:24px_24px]' : currentBackground === 'paper' ? 'bg-neutral-100 dark:bg-neutral-900' : 'bg-amber-900/40';
 
   // Build markers for globe from location items if coords available
-  const markers: Marker[] = items.filter(i => i.type === 'location' && (i as any)?.metadata?.coords).map(i => ({ lat: (i as any).metadata.coords.lat, lon: (i as any).metadata.coords.lon, color: '#a78bfa' }));
+  const cdnMarkers = useMemo(() => {
+    return items
+      .filter(i => i.type === 'location' && (i as any)?.metadata?.coords)
+      .map((i, idx) => ({ 
+        id: i.id || `loc-${idx}`,
+        location: [(i as any).metadata.coords.lat, (i as any).metadata.coords.lon] as [number, number],
+        region: i.content || 'TRACKED_LOCATION'
+      }));
+  }, [items]);
 
   return (
     <div className="space-y-6">
@@ -213,14 +221,23 @@ const Corkboard: React.FC = () => {
 
       {/* Globe modal */}
       <Dialog open={showGlobe} onOpenChange={setShowGlobe}>
-        <DialogContent className="max-w-5xl">
+        <DialogContent className="max-w-5xl border-sky-500/30 bg-slate-950/90 backdrop-blur-md">
           <DialogHeader>
-            <DialogTitle>3D Tracking Globe</DialogTitle>
-            <DialogDescription>Markers reflect corkboard location items when coordinates are present.</DialogDescription>
+            <DialogTitle className="text-sky-400 font-mono tracking-widest flex items-center gap-2">
+              <Globe className="h-5 w-5" />
+              GLOBAL TRACKING NETWORK
+            </DialogTitle>
+            <DialogDescription className="text-sky-500/50 uppercase text-xs">
+              MARKERS REFLECT CORKBOARD LOCATION ITEMS WHEN COORDINATES ARE PRESENT.
+            </DialogDescription>
           </DialogHeader>
-          <Suspense fallback={<div className="h-[65vh] w-full flex items-center justify-center">Loading 3D...</div>}>
-            <SciFiGlobe markers={markers} />
-          </Suspense>
+          <div className="h-[65vh] w-full flex items-center justify-center overflow-hidden bg-black/60 rounded-md border border-sky-500/20 relative">
+            <GlobeCdn 
+              className="w-full h-full"
+              speed={0.005}
+              markers={cdnMarkers} 
+            />
+          </div>
         </DialogContent>
       </Dialog>
     </div>
