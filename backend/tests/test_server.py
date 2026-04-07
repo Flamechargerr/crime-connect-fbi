@@ -1,8 +1,17 @@
+import sys
+import types
 import unittest
 from datetime import datetime, timezone
 from unittest.mock import ANY, AsyncMock, MagicMock, patch
 
 from fastapi import HTTPException
+
+motor_module = types.ModuleType("motor")
+motor_asyncio_module = types.ModuleType("motor.motor_asyncio")
+motor_asyncio_module.AsyncIOMotorClient = MagicMock
+motor_module.motor_asyncio = motor_asyncio_module
+sys.modules.setdefault("motor", motor_module)
+sys.modules.setdefault("motor.motor_asyncio", motor_asyncio_module)
 
 import server
 
