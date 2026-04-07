@@ -85,7 +85,7 @@ class ServerCoverageTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(items[0].id, "status-1")
         self.assertEqual(items[0].client_name, "alpha")
 
-    async def test_list_cases_filters_by_status(self):
+    async def test_list_cases_filters_by_active_status(self):
         row = {
             "id": "case-1",
             "title": "Operation Blackline",
@@ -210,9 +210,19 @@ class ServerCoverageTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(metrics["active_ops"], 0)
         self.assertEqual(metrics["alerts_today"], 0)
 
-    async def test_create_and_list_intel(self):
+    async def test_create_intel_persists_and_returns_item(self):
         db = MagicMock()
         db.intel_events.insert_one = AsyncMock()
+        server.db = db
+
+        created = await server.create_intel(server.IntelCreate(title="Signal intercept", severity="high", tags=["signal"]))
+
+        db.intel_events.insert_one.assert_awaited_once()
+        self.assertEqual(created.title, "Signal intercept")
+        self.assertEqual(created.severity, "high")
+
+    async def test_list_intel_returns_all_events(self):
+        db = MagicMock()
         intel_row = {
             "id": "intel-1",
             "title": "Signal intercept",
@@ -223,19 +233,26 @@ class ServerCoverageTests(unittest.IsolatedAsyncioTestCase):
         db.intel_events.find.return_value = make_cursor([intel_row])
         server.db = db
 
-        created = await server.create_intel(server.IntelCreate(title="Signal intercept", severity="high", tags=["signal"]))
         with patch.object(server, "ensure_seed_data", AsyncMock()):
             listed = await server.list_intel()
 
-        db.intel_events.insert_one.assert_awaited_once()
         db.intel_events.find.assert_called_once_with()
-        self.assertEqual(created.title, "Signal intercept")
         self.assertEqual(len(listed), 1)
         self.assertEqual(listed[0].id, "intel-1")
 
-    async def test_create_and_list_timeline(self):
+    async def test_create_timeline_persists_and_returns_item(self):
         db = MagicMock()
         db.timelines.insert_one = AsyncMock()
+        server.db = db
+
+        created = await server.create_timeline(server.TimelineCreate(type="update", text="Case updated"))
+
+        db.timelines.insert_one.assert_awaited_once()
+        self.assertEqual(created.type, "update")
+        self.assertEqual(created.text, "Case updated")
+
+    async def test_list_timeline_returns_all_entries(self):
+        db = MagicMock()
         timeline_row = {
             "id": "timeline-1",
             "type": "update",
@@ -245,19 +262,28 @@ class ServerCoverageTests(unittest.IsolatedAsyncioTestCase):
         db.timelines.find.return_value = make_cursor([timeline_row])
         server.db = db
 
-        created = await server.create_timeline(server.TimelineCreate(type="update", text="Case updated"))
         with patch.object(server, "ensure_seed_data", AsyncMock()):
             listed = await server.list_timeline()
 
-        db.timelines.insert_one.assert_awaited_once()
         db.timelines.find.assert_called_once_with()
-        self.assertEqual(created.type, "update")
         self.assertEqual(len(listed), 1)
         self.assertEqual(listed[0].id, "timeline-1")
 
-    async def test_create_and_list_command(self):
+    async def test_create_command_persists_and_returns_item(self):
         db = MagicMock()
         db.transmissions.insert_one = AsyncMock()
+        server.db = db
+
+        created = await server.create_command(
+            server.CommandCreate(codename="EAGLE", agent="Agent Lee", channel="secure", message="Proceed")
+        )
+
+        db.transmissions.insert_one.assert_awaited_once()
+        self.assertEqual(created.codename, "EAGLE")
+        self.assertEqual(created.channel, "secure")
+
+    async def test_list_command_returns_all_transmissions(self):
+        db = MagicMock()
         command_row = {
             "id": "command-1",
             "codename": "EAGLE",
@@ -269,14 +295,9 @@ class ServerCoverageTests(unittest.IsolatedAsyncioTestCase):
         db.transmissions.find.return_value = make_cursor([command_row])
         server.db = db
 
-        created = await server.create_command(
-            server.CommandCreate(codename="EAGLE", agent="Agent Lee", channel="secure", message="Proceed")
-        )
         listed = await server.list_command()
 
-        db.transmissions.insert_one.assert_awaited_once()
         db.transmissions.find.assert_called_once_with()
-        self.assertEqual(created.codename, "EAGLE")
         self.assertEqual(len(listed), 1)
         self.assertEqual(listed[0].id, "command-1")
 
