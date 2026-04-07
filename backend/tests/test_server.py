@@ -46,6 +46,45 @@ class ServerCoverageTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual((bounds["$gte"].hour, bounds["$gte"].minute, bounds["$gte"].second), (0, 0, 0))
         self.assertEqual((bounds["$lte"].hour, bounds["$lte"].minute, bounds["$lte"].second), (23, 59, 59))
 
+    async def test_root_returns_hello_world(self):
+        result = await server.root()
+        self.assertEqual(result, {"message": "Hello World"})
+
+    async def test_health_check_returns_status_and_iso_timestamp(self):
+        result = await server.health_check()
+        self.assertEqual(result["status"], "healthy")
+        parsed = datetime.fromisoformat(result["timestamp"])
+        self.assertIsNotNone(parsed)
+
+    async def test_create_status_check_persists_and_returns_item(self):
+        db = MagicMock()
+        db.status_checks.insert_one = AsyncMock()
+        server.db = db
+
+        item = await server.create_status_check(server.StatusCheckCreate(client_name="unit-test-client"))
+
+        db.status_checks.insert_one.assert_awaited_once()
+        self.assertEqual(item.client_name, "unit-test-client")
+        self.assertIsNotNone(item.id)
+
+    async def test_get_status_checks_maps_documents(self):
+        rows = [
+            {
+                "id": "status-1",
+                "client_name": "alpha",
+                "timestamp": datetime.now(timezone.utc),
+            }
+        ]
+        db = MagicMock()
+        db.status_checks.find.return_value = make_cursor(rows)
+        server.db = db
+
+        items = await server.get_status_checks()
+
+        self.assertEqual(len(items), 1)
+        self.assertEqual(items[0].id, "status-1")
+        self.assertEqual(items[0].client_name, "alpha")
+
     async def test_list_cases_filters_by_status(self):
         row = {
             "id": "case-1",
@@ -67,6 +106,24 @@ class ServerCoverageTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(len(cases), 1)
         self.assertEqual(cases[0].id, "case-1")
         self.assertEqual(cases[0].status, "active")
+
+    async def test_create_case_persists_and_returns_item(self):
+        db = MagicMock()
+        db.cases.insert_one = AsyncMock()
+        server.db = db
+
+        payload = server.CaseCreate(
+            title="Test Case",
+            status="active",
+            priority="P1",
+            owner="Agent Smith",
+            notes=4,
+        )
+        item = await server.create_case(payload)
+
+        db.cases.insert_one.assert_awaited_once()
+        self.assertEqual(item.title, "Test Case")
+        self.assertEqual(item.notes, 4)
 
     async def test_update_case_requires_at_least_one_field(self):
         server.db = MagicMock()
@@ -152,6 +209,76 @@ class ServerCoverageTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(metrics["open_cases"], 0)
         self.assertEqual(metrics["active_ops"], 0)
         self.assertEqual(metrics["alerts_today"], 0)
+
+    async def test_create_and_list_intel(self):
+        db = MagicMock()
+        db.intel_events.insert_one = AsyncMock()
+        intel_row = {
+            "id": "intel-1",
+            "title": "Signal intercept",
+            "severity": "high",
+            "tags": ["signal"],
+            "created_at": datetime.now(timezone.utc),
+        }
+        db.intel_events.find.return_value = make_cursor([intel_row])
+        server.db = db
+
+        created = await server.create_intel(server.IntelCreate(title="Signal intercept", severity="high", tags=["signal"]))
+        with patch.object(server, "ensure_seed_data", AsyncMock()):
+            listed = await server.list_intel()
+
+        db.intel_events.insert_one.assert_awaited_once()
+        db.intel_events.find.assert_called_once_with()
+        self.assertEqual(created.title, "Signal intercept")
+        self.assertEqual(len(listed), 1)
+        self.assertEqual(listed[0].id, "intel-1")
+
+    async def test_create_and_list_timeline(self):
+        db = MagicMock()
+        db.timelines.insert_one = AsyncMock()
+        timeline_row = {
+            "id": "timeline-1",
+            "type": "update",
+            "text": "Case updated",
+            "created_at": datetime.now(timezone.utc),
+        }
+        db.timelines.find.return_value = make_cursor([timeline_row])
+        server.db = db
+
+        created = await server.create_timeline(server.TimelineCreate(type="update", text="Case updated"))
+        with patch.object(server, "ensure_seed_data", AsyncMock()):
+            listed = await server.list_timeline()
+
+        db.timelines.insert_one.assert_awaited_once()
+        db.timelines.find.assert_called_once_with()
+        self.assertEqual(created.type, "update")
+        self.assertEqual(len(listed), 1)
+        self.assertEqual(listed[0].id, "timeline-1")
+
+    async def test_create_and_list_command(self):
+        db = MagicMock()
+        db.transmissions.insert_one = AsyncMock()
+        command_row = {
+            "id": "command-1",
+            "codename": "EAGLE",
+            "agent": "Agent Lee",
+            "channel": "secure",
+            "message": "Proceed",
+            "created_at": datetime.now(timezone.utc),
+        }
+        db.transmissions.find.return_value = make_cursor([command_row])
+        server.db = db
+
+        created = await server.create_command(
+            server.CommandCreate(codename="EAGLE", agent="Agent Lee", channel="secure", message="Proceed")
+        )
+        listed = await server.list_command()
+
+        db.transmissions.insert_one.assert_awaited_once()
+        db.transmissions.find.assert_called_once_with()
+        self.assertEqual(created.codename, "EAGLE")
+        self.assertEqual(len(listed), 1)
+        self.assertEqual(listed[0].id, "command-1")
 
 
 if __name__ == "__main__":
