@@ -6,9 +6,10 @@ import os
 import logging
 from pathlib import Path
 from pydantic import BaseModel, Field
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Dict, Any, Literal
 import uuid
 from datetime import datetime, timezone, date
+from ml_pipeline import get_model_metadata, predict_case_risk
 
 
 ROOT_DIR = Path(__file__).parent
@@ -87,6 +88,26 @@ class CommandCreate(BaseModel):
 class CommandItem(CommandCreate):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+class CaseRiskFeatures(BaseModel):
+    prior_offenses: int = Field(ge=0, le=100)
+    evidence_items: int = Field(ge=0, le=1000)
+    witness_count: int = Field(ge=0, le=500)
+    financial_red_flags: int = Field(ge=0, le=100)
+    digital_footprint_score: float = Field(ge=0.0, le=1.0)
+    violent_history_score: float = Field(ge=0.0, le=1.0)
+    cross_border_activity: bool = False
+    active_warrants: int = Field(ge=0, le=100)
+
+
+class CaseRiskPrediction(BaseModel):
+    risk_label: Literal["low", "medium", "high"]
+    risk_score: float
+    confidence: float
+    class_probabilities: Dict[str, float]
+    top_factors: Dict[str, float]
+    model_accuracy: float
 
 
 # =========================
@@ -266,6 +287,62 @@ async def get_metrics():
         "alerts_today": alerts_today,
         "resolution_rate": resolution_rate,
     }
+
+
+@api_router.get("/analytics/summary")
+async def get_analytics_summary():
+    metadata = get_model_metadata()
+    summary = {
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "platform": "CrimeConnect",
+        "dataset_records": metadata["training_records"],
+        "model": metadata,
+        "kpis": {
+            "total_cases": 0,
+            "open_cases": 0,
+            "active_ops": 0,
+            "alerts_today": 0,
+            "resolution_rate": 0,
+            "db_connected": False,
+        },
+    }
+
+    if db is None:
+        return summary
+
+    await ensure_seed_data()
+    total_cases = await db.cases.count_documents({})
+    active_ops = await db.cases.count_documents({"status": "active"})
+    backlog = await db.cases.count_documents({"status": "backlog"})
+    archived = await db.cases.count_documents({"status": "archived"})
+    open_cases = active_ops + backlog
+    alerts_today = await db.intel_events.count_documents({"created_at": today_bounds()})
+
+    summary["kpis"] = {
+        "total_cases": total_cases,
+        "open_cases": open_cases,
+        "active_ops": active_ops,
+        "alerts_today": alerts_today,
+        "resolution_rate": int((archived / total_cases) * 100) if total_cases else 0,
+        "db_connected": True,
+    }
+    return summary
+
+
+@api_router.post("/analytics/classify", response_model=CaseRiskPrediction)
+async def classify_case_risk(body: CaseRiskFeatures):
+    payload = {
+        "prior_offenses": body.prior_offenses,
+        "evidence_items": body.evidence_items,
+        "witness_count": body.witness_count,
+        "financial_red_flags": body.financial_red_flags,
+        "digital_footprint_score": body.digital_footprint_score,
+        "violent_history_score": body.violent_history_score,
+        "cross_border_activity": int(body.cross_border_activity),
+        "active_warrants": body.active_warrants,
+    }
+    prediction = predict_case_risk(payload)
+    return CaseRiskPrediction(**prediction)
 
 
 # Include the router in the main app
