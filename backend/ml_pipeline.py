@@ -70,8 +70,8 @@ def build_training_dataset(records: int = 10_000, random_state: int = 42) -> Tup
         + 1.7 * cross_border_activity
         + 1.4 * active_warrants
     )
-    noisy_score = weighted_score + rng.normal(0.0, 2.8, records)
-    low_threshold, high_threshold = np.quantile(noisy_score, [0.37, 0.70])
+    noisy_score = weighted_score + rng.normal(0.0, 1.0, records)
+    low_threshold, high_threshold = np.quantile(noisy_score, [0.38, 0.72])
     y = np.digitize(noisy_score, bins=[low_threshold, high_threshold])
 
     return X.astype(np.float64), y.astype(np.int64)
@@ -95,7 +95,6 @@ def train_risk_classifier(records: int = 10_000, random_state: int = 42) -> Mode
                 LogisticRegression(
                     random_state=random_state,
                     max_iter=1000,
-                    multi_class="multinomial",
                 ),
             ),
         ]
