@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from threading import Lock
 from typing import Dict, List, Tuple
 
 import numpy as np
@@ -34,6 +35,7 @@ class ModelBundle:
 
 
 _model_bundle: ModelBundle | None = None
+_model_bundle_lock = Lock()
 
 
 def build_training_dataset(records: int = 10_000, random_state: int = 42) -> Tuple[np.ndarray, np.ndarray]:
@@ -113,8 +115,11 @@ def train_risk_classifier(records: int = 10_000, random_state: int = 42) -> Mode
 
 def get_model_bundle() -> ModelBundle:
     global _model_bundle
-    if _model_bundle is None:
-        _model_bundle = train_risk_classifier(records=10_000, random_state=42)
+    if _model_bundle is not None:
+        return _model_bundle
+    with _model_bundle_lock:
+        if _model_bundle is None:
+            _model_bundle = train_risk_classifier(records=10_000, random_state=42)
     return _model_bundle
 
 
@@ -135,6 +140,8 @@ def predict_case_risk(features: Dict[str, float]) -> Dict[str, object]:
     top_factor_indexes = np.argsort(np.abs(contributions))[::-1][:3]
     top_factors = {FEATURE_NAMES[i]: float(contributions[i]) for i in top_factor_indexes}
 
+    # Weighted expected risk score from class probabilities:
+    # low=0.2, medium=0.55, high=0.95
     risk_score = float(
         probabilities[0] * 0.2
         + probabilities[1] * 0.55

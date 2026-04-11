@@ -81,9 +81,6 @@ const Dashboard: React.FC = () => {
           totalCases: Number(kpis.total_cases ?? mockDashboardData.totalCases),
           openCases: Number(kpis.open_cases ?? mockDashboardData.openCases),
           closedCases: Math.max(Number(kpis.total_cases ?? 0) - Number(kpis.open_cases ?? 0), 0),
-          totalCriminals: Number(summary?.dataset_records ?? mockDashboardData.totalCriminals),
-          totalEvidence: Number(kpis.alerts_today ?? mockDashboardData.totalEvidence),
-          totalWitnesses: Number(summary?.model?.test_rows ?? mockDashboardData.totalWitnesses),
         });
       } catch {
         setStats(mockDashboardData);

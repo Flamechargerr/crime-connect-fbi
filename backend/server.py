@@ -9,7 +9,10 @@ from pydantic import BaseModel, Field
 from typing import List, Optional, Dict, Any, Literal
 import uuid
 from datetime import datetime, timezone, date
-from ml_pipeline import get_model_metadata, predict_case_risk
+try:
+    from .ml_pipeline import get_model_metadata, predict_case_risk
+except ImportError:
+    from ml_pipeline import get_model_metadata, predict_case_risk
 
 
 ROOT_DIR = Path(__file__).parent
