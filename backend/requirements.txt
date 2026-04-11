@@ -4,3 +4,5 @@ watchfiles
 python-dotenv
 httpx
 pydantic
+numpy
+scikit-learn

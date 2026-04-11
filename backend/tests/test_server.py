@@ -210,6 +210,67 @@ class ServerCoverageTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(metrics["active_ops"], 0)
         self.assertEqual(metrics["alerts_today"], 0)
 
+    async def test_get_analytics_summary_returns_model_metadata_without_db(self):
+        server.db = None
+
+        summary = await server.get_analytics_summary()
+
+        self.assertEqual(summary["platform"], "CrimeConnect")
+        self.assertEqual(summary["dataset_records"], 10000)
+        self.assertFalse(summary["kpis"]["db_connected"])
+        self.assertGreaterEqual(summary["model"]["accuracy"], 0.75)
+
+    async def test_get_analytics_summary_includes_db_kpis(self):
+        db = MagicMock()
+        db.cases.count_documents = AsyncMock(side_effect=[10, 4, 3, 2])
+        db.intel_events.count_documents = AsyncMock(return_value=5)
+        server.db = db
+
+        with patch.object(server, "ensure_seed_data", AsyncMock()):
+            summary = await server.get_analytics_summary()
+
+        self.assertTrue(summary["kpis"]["db_connected"])
+        self.assertEqual(summary["kpis"]["total_cases"], 10)
+        self.assertEqual(summary["kpis"]["open_cases"], 7)
+        self.assertEqual(summary["kpis"]["active_ops"], 4)
+        self.assertEqual(summary["kpis"]["alerts_today"], 5)
+        self.assertEqual(summary["kpis"]["resolution_rate"], 20)
+
+    async def test_classify_case_risk_returns_prediction(self):
+        prediction = await server.classify_case_risk(
+            server.CaseRiskFeatures(
+                prior_offenses=4,
+                evidence_items=6,
+                witness_count=3,
+                financial_red_flags=2,
+                digital_footprint_score=0.71,
+                violent_history_score=0.62,
+                cross_border_activity=True,
+                active_warrants=1,
+            )
+        )
+
+        self.assertIn(prediction.risk_label, {"low", "medium", "high"})
+        self.assertGreaterEqual(prediction.risk_score, 0.0)
+        self.assertLessEqual(prediction.risk_score, 1.0)
+        self.assertGreaterEqual(prediction.confidence, 0.0)
+        self.assertLessEqual(prediction.confidence, 1.0)
+        self.assertIn("high", prediction.class_probabilities)
+        self.assertGreaterEqual(prediction.model_accuracy, 0.75)
+
+    def test_case_risk_features_validates_ranges(self):
+        with self.assertRaises(Exception):
+            server.CaseRiskFeatures(
+                prior_offenses=-1,
+                evidence_items=1,
+                witness_count=1,
+                financial_red_flags=0,
+                digital_footprint_score=0.2,
+                violent_history_score=0.2,
+                cross_border_activity=False,
+                active_warrants=0,
+            )
+
     async def test_create_intel_persists_and_returns_item(self):
         db = MagicMock()
         db.intel_events.insert_one = AsyncMock()

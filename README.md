@@ -1,242 +1,197 @@
-# 🛡️ FBI CrimeConnect - Criminal Intelligence System
+# CrimeConnect – Full-Stack Analytics Platform
 
-<p align="center">
-  <img src="https://img.shields.io/badge/React-18+-61DAFB?style=for-the-badge&logo=react" alt="React">
-  <img src="https://img.shields.io/badge/TypeScript-5.0+-3178C6?style=for-the-badge&logo=typescript" alt="TypeScript">
-  <img src="https://img.shields.io/badge/Tailwind_CSS-3.0+-38B2AC?style=for-the-badge&logo=tailwind-css" alt="Tailwind CSS">
-  <img src="https://img.shields.io/badge/Vite-5.0+-646CFF?style=for-the-badge&logo=vite" alt="Vite">
-  <img src="https://img.shields.io/badge/License-MIT-blue?style=for-the-badge" alt="License">
-</p>
+CrimeConnect is a full-stack investigation analytics platform with:
+- **React + TypeScript frontend**
+- **Python FastAPI backend (REST APIs)**
+- **ML risk classification pipeline trained on 10,000+ synthetic records**
+- **Operational dashboard, cases, intel, timeline, and command workflows**
 
-<p align="center">
-  <strong>A professional FBI-inspired criminal intelligence dashboard with cinematic design aesthetics</strong>
-</p>
-
-<p align="center">
-  <em>"Not just connecting clues — connecting dots with data."</em>
-</p>
+> Portfolio note: this repo is designed as a realistic production-style project you can demo and discuss in interviews.
 
 ---
 
-## 🎯 ABOUT THE BUILDER (RESUME EXTRACT)
+## Screenshots
 
-**CrimeConnect – Full-Stack Analytics & Case Management Platform 2025 · GitHub**
-*React, Node.js, JavaScript, Python, PostgreSQL, SQL, scikit-learn, REST APIs*
-• Built a responsive full-stack web application with a React frontend and Node.js REST API backend; designed intuitive UI components enabling non-technical users to query and visualise complex operational data at scale.
-• Integrated Python ML classification pipeline (scikit-learn, 82% accuracy) with the web interface via REST API; designed PostgreSQL schemas with optimised analytical queries, reducing manual data processing time by 60%
+### Login / Secure Access
+![CrimeConnect Login](docs/images/login-screen.png)
 
----
+### Command Center Dashboard
+![CrimeConnect Dashboard](docs/images/dashboard-screen.png)
 
-## 🎯 PROJECT OVERVIEW
-
-**FBI CrimeConnect** is a comprehensive criminal intelligence management system featuring a professional, cinematic FBI aesthetic. The application combines sleek dark themes with refined visual effects to create an immersive yet functional law enforcement dashboard.
-
-### ✨ KEY FEATURES
-
-- **Command Center Dashboard** - Real-time metrics, case status, and quick actions
-- **Case Management** - Comprehensive case files with priority badges and status tracking
-- **Criminal Database (NCIC)** - Threat levels, biometric data, and warrant status
-- **Evidence Vault** - Chain of custody management with evidence categorization
-- **Witness Protection Database** - Protected witness records and statements
-- **Agent Directory** - Personnel records with security clearances
-- **Federal Court System** - Court registries and case scheduling
-- **3D Global Threat Map** - Interactive revolving globe with threat markers
-- **Most Wanted Fugitives** - High-priority targets with reward information
-- **Intelligence Reports** - Classified report generation and viewing
+### Brand / Visual Identity
+![CrimeConnect Branding](docs/images/crimeconnect-logo.png)
 
 ---
 
-## 🚀 LIVE DEMO
+## Resume Alignment (What this project demonstrates)
 
-**Deployed Application:** [https://crime-connect-fbi.vercel.app](https://crime-connect-fbi.vercel.app)
-
-**Test Credentials:**
-- Email: `test@test.com`
-- Password: `password123`
-
----
-
-## 🎨 DESIGN PHILOSOPHY
-
-### Professional Cinematic FBI Aesthetic
-
-The design philosophy centers on creating an authentic FBI command center experience while maintaining professional usability:
-
-#### **Visual Identity**
-- Deep slate and blue color palette with atmospheric glows
-- Subtle scan effects and pulse animations for real-time data
-- CLASSIFIED badges and security level indicators
-- Clean, organized layouts with clear information hierarchy
-
-#### **Key Design Elements**
-- **Command Center Headers** - FBI-style section headers with status indicators
-- **Card-Modern Components** - Glassmorphism cards with subtle glow effects
-- **Status Badges** - Threat levels, clearance levels, and case priorities
-- **Stat Cards** - Animated metrics with color-coded categories
-
-### 🎨 COLOR SYSTEM
-
-| Element | Description |
-|---------|------------|
-| **Background** | Deep slate (`slate-950`) with blue-tinted gradients |
-| **Primary** | FBI Blue (`#3b82f6`) for interactive elements |
-| **Success** | Green for active/resolved status |
-| **Warning** | Amber for pending/medium priority |
-| **Danger** | Red for critical/high threat |
-| **Cards** | Dark `slate-900` with subtle borders |
+- Built full-stack platform with **frontend + backend APIs**
+- Implemented **ML classification model** with target performance around **~82%** on held-out data
+- Designed APIs and data model for structured operational analytics
+- Added production-focused artifacts: schema, tests, docs, and deployment-ready structure
 
 ---
 
-## 🛠️ QUICK START
+## Architecture
 
-### Prerequisites
-- Node.js 18+
-- npm or yarn
+```text
+frontend (React, TS, Vite)  --->  backend (FastAPI, Python)
+                                      |
+                                      +--> ML pipeline (scikit-learn, 10K training rows)
+                                      |
+                                      +--> Data storage layer (Mongo runtime today)
+                                      +--> PostgreSQL/Supabase-ready schema in docs/sql/postgres_schema.sql
+```
 
-### Installation
+---
+
+## Tech Stack
+
+### Frontend
+- React 18
+- TypeScript
+- Vite
+- Tailwind + shadcn/ui
+
+### Backend
+- Python 3.12
+- FastAPI
+- Motor/Mongo-compatible data layer
+- scikit-learn + NumPy for ML
+
+### Data / Infra
+- PostgreSQL/Supabase relational schema included (`docs/sql/postgres_schema.sql`)
+- REST-first contract for integration
+
+---
+
+## Core API Endpoints
+
+### Health + Base
+- `GET /api/health`
+- `GET /api/`
+
+### Operations
+- `GET /api/cases`
+- `POST /api/cases`
+- `PATCH /api/cases/{case_id}`
+- `GET /api/intel`
+- `POST /api/intel`
+- `GET /api/timeline`
+- `POST /api/timeline`
+- `GET /api/command`
+- `POST /api/command`
+- `GET /api/metrics`
+
+### Analytics + ML
+- `GET /api/analytics/summary`
+  - Returns KPI summary + model metadata (training rows, accuracy, features)
+- `POST /api/analytics/classify`
+  - Predicts `low|medium|high` risk label with confidence and top factors
+
+---
+
+## ML Pipeline Details
+
+File: `backend/ml_pipeline.py`
+
+- Generates **10,000 synthetic structured records** for incident risk training
+- Features include:
+  - prior offenses
+  - evidence volume
+  - witness count
+  - financial red flags
+  - digital footprint score
+  - violent history score
+  - cross-border activity
+  - active warrants
+- Uses **multinomial logistic regression** with train/test split
+- Exposes:
+  - model metadata
+  - prediction confidence
+  - class probabilities
+  - top contributing factors
+
+---
+
+## Local Setup
+
+## 1) Backend
 
 ```bash
-# Clone the repository
-git clone https://github.com/Flamechargerr/crime-connect-fbi.git
+cd backend
+pip install -r requirements.txt
+python server.py
+```
 
-# Navigate to frontend
-cd crime-connect-fbi/frontend
+Backend default URL: `http://localhost:8002`
 
-# Install dependencies
-npm install
+## 2) Frontend
 
-# Start development server
+```bash
+cd frontend
+npm ci
 npm run dev
 ```
 
-The application will be available at `http://localhost:3000`
+Frontend default URL: `http://localhost:3000` (or Vite-assigned port)
 
-### Production Build
-
+Optional env in `frontend/.env`:
 ```bash
+VITE_BACKEND_URL=http://localhost:8002
+```
+
+---
+
+## Testing
+
+Backend tests:
+```bash
+cd backend
+python -m unittest discover -s tests -v
+```
+
+Frontend build:
+```bash
+cd frontend
 npm run build
 ```
 
 ---
 
-## 📁 PROJECT STRUCTURE
+## Production Readiness Notes
 
-```
+- Structured REST APIs for operational + analytics workflows
+- Input validation on ML features
+- ML metadata endpoint for transparency/observability
+- Schema design for PostgreSQL/Supabase migration path
+- Screenshots + technical documentation for stakeholder review
+
+---
+
+## How to Explain This to Hiring Managers / Recruiters
+
+Use this short, honest pitch:
+
+1. “CrimeConnect is my full-stack analytics project with a React frontend and Python REST APIs.”
+2. “I built a risk-classification ML pipeline trained on 10K records and exposed it via API.”
+3. “The dashboard consumes analytics endpoints and supports operational workflows like case and intel tracking.”
+4. “I also prepared a PostgreSQL/Supabase schema for relational production deployment.”
+5. “This project showcases end-to-end product thinking: UI, APIs, data model, ML, tests, and deployment readiness.”
+
+---
+
+## Repository Layout
+
+```text
+backend/
+  server.py
+  ml_pipeline.py
+  tests/
 frontend/
-├── src/
-│   ├── components/
-│   │   ├── layout/          # Sidebar, TopBar, Layout
-│   │   ├── ui/              # Shadcn UI components
-│   │   ├── globe/           # 3D Globe component
-│   │   └── effects/         # Visual effects
-│   ├── pages/
-│   │   ├── Dashboard.tsx    # Command Center
-│   │   ├── Cases.tsx        # Case Files
-│   │   ├── Criminals.tsx    # NCIC Database
-│   │   ├── Evidence.tsx     # Evidence Vault
-│   │   ├── Witnesses.tsx    # Witness Database
-│   │   ├── Officers.tsx     # Agent Directory
-│   │   ├── Courts.tsx       # Federal Courts
-│   │   ├── Globe.tsx        # 3D Threat Map
-│   │   ├── MostWanted.tsx   # Fugitive List
-│   │   ├── Reports.tsx      # Intelligence Reports
-│   │   ├── Profile.tsx      # Agent Profile
-│   │   ├── Login.tsx        # Authentication
-│   │   └── Register.tsx     # New Agent Registration
-│   ├── context/             # Auth context
-│   ├── hooks/               # Custom hooks
-│   └── index.css            # Global styles & design tokens
-├── index.html
-└── package.json
+  src/
+docs/
+  images/
+  sql/postgres_schema.sql
 ```
 
----
-
-## 🎯 MODULE BREAKDOWN
-
-### 📊 Command Center (Dashboard)
-- Real-time case statistics
-- Active cases and alerts
-- Quick action buttons
-- System status indicators
-
-### 🗂️ Case Files
-- Priority levels (High/Medium/Low)
-- Case ID formatting
-- Status tracking (Open/Pending/Closed)
-- Last updated timestamps
-
-### 🔍 Criminal Database (NCIC)
-- Threat level indicators (Extreme/High/Medium/Low)
-- Warrant status (Wanted/Incarcerated/Released)
-- Biometric data types
-- Last known locations
-
-### 📦 Evidence Vault
-- Chain of custody tracking
-- Evidence categories (Physical/Digital/Biometric)
-- Storage locations
-- Case linking
-
-### 👥 Witness Database
-- Protection status
-- Witness statements
-- Credibility ratings
-- Case associations
-
-### 🕵️ Agent Directory
-- Security clearance levels (SECRET/TOP SECRET/SCI)
-- Cases solved metrics
-- Years of service
-- Division assignments
-
-### ⚖️ Federal Court System
-- Jurisdiction types
-- Session status
-- Pending case counts
-- Judge assignments
-
-### 🌍 3D Global Threat Map
-- Interactive revolving globe
-- Real-time threat markers
-- Target intelligence panel
-- Coordinate tracking
-
----
-
-## 🔧 TECH STACK
-
-| Technology | Purpose |
-|------------|---------|
-| **React 18** | UI Framework |
-| **TypeScript** | Type Safety |
-| **Tailwind CSS** | Styling |
-| **Vite** | Build Tool |
-| **Shadcn/UI** | Component Library |
-| **React Router** | Navigation |
-| **React Query** | Data Fetching |
-| **Lucide Icons** | Iconography |
-| **Three.js** | 3D Globe Visualization |
-
----
-
-## 📄 LICENSE
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-## 🙏 ACKNOWLEDGEMENTS
-
-- [Shadcn/UI](https://ui.shadcn.com/) - Beautiful UI components
-- [Lucide Icons](https://lucide.dev/) - Clean icon library
-- [Tailwind CSS](https://tailwindcss.com/) - Utility-first CSS
-- [React Globe.gl](https://github.com/vasturiano/react-globe.gl) - 3D Globe
-
----
-
-<div align="center">
-  <h3>🛡️ FBI CrimeConnect</h3>
-  <p><em>Professional Criminal Intelligence System</em></p>
-  <p>Built with precision and style</p>
-</div>

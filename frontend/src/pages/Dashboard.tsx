@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { DashboardStats, Case } from '../types';
 import { Button } from '@/components/ui/button';
+import { api } from '@/lib/api';
 
 const mockDashboardData: DashboardStats = {
   totalCases: 256,
@@ -71,7 +72,17 @@ const Dashboard: React.FC = () => {
     const fetchDashboardData = async () => {
       setLoading(true);
       try {
-        await new Promise(r => setTimeout(r, 300));
+        const summaryResponse = await api.get('/analytics/summary');
+        const summary = summaryResponse.data;
+        const kpis = summary?.kpis ?? {};
+
+        setStats({
+          ...mockDashboardData,
+          totalCases: Number(kpis.total_cases ?? mockDashboardData.totalCases),
+          openCases: Number(kpis.open_cases ?? mockDashboardData.openCases),
+          closedCases: Math.max(Number(kpis.total_cases ?? 0) - Number(kpis.open_cases ?? 0), 0),
+        });
+      } catch {
         setStats(mockDashboardData);
       } finally { setLoading(false); }
     };
