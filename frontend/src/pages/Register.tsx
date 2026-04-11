@@ -37,8 +37,9 @@ const Register: React.FC = () => {
       setIsRegistering(true);
       await register(email, password);
       toast.success('Registration successful!');
-    } catch (error: any) {
-      setError(error.message || 'Registration failed');
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Registration failed';
+      setError(message);
       toast.error('Registration failed');
     } finally {
       setIsRegistering(false);

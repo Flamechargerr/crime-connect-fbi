@@ -1,0 +1,23 @@
+services:
+  backend:
+    build:
+      context: ./backend
+    image: crimeconnect-backend:latest
+    env_file:
+      - ./backend/.env
+    environment:
+      APP_ENV: production
+      CORS_ORIGINS: https://crimeconnect.example.com
+    ports:
+      - "8002:8002"
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+    image: crimeconnect-frontend:latest
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+    depends_on:
+      - backend

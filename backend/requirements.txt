@@ -6,3 +6,4 @@ httpx
 pydantic
 numpy
 scikit-learn
+motor==3.7.1

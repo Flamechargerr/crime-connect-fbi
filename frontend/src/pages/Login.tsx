@@ -12,6 +12,7 @@ const Login: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { login } = useAuth();
+  const [remember, setRemember] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,10 +20,11 @@ const Login: React.FC = () => {
     setError('');
 
     try {
-      await login(email, password);
+      await login(email.trim(), password, remember);
       navigate('/dashboard');
     } catch (err) {
-      setError('Invalid credentials. Access denied.');
+      const message = err instanceof Error ? err.message : 'Invalid credentials. Access denied.';
+      setError(message);
     } finally {
       setLoading(false);
     }
@@ -140,6 +142,8 @@ const Login: React.FC = () => {
                   name="remember-me"
                   type="checkbox"
                   className="h-4 w-4 text-primary focus:ring-primary/20 border-border rounded"
+                  checked={remember}
+                  onChange={(e) => setRemember(e.target.checked)}
                 />
                 <label htmlFor="remember-me" className="ml-2 block text-sm text-foreground">
                   Trust this device

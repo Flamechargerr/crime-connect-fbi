@@ -25,8 +25,9 @@ const ForgotPassword: React.FC = () => {
       await resetPassword(email);
       setSent(true);
       toast.success('Password reset email sent!');
-    } catch (error: any) {
-      setError(error.message || 'Failed to send reset email');
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Failed to send reset email';
+      setError(message);
       toast.error('Failed to send reset email');
     } finally {
       setIsSubmitting(false);

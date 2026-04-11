@@ -1,16 +1,22 @@
+import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
+import { api, clearAuthToken, extractApiError, getAuthToken, setAuthToken } from '@/lib/api';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+type UserRole = 'admin' | 'analyst';
+
+interface AuthUser {
+  email: string;
+  role: UserRole;
+}
 
 interface AuthContextType {
-  user: any | null; // Changed from SupabaseUser to any
+  user: AuthUser | null;
   loading: boolean;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string, remember?: boolean) => Promise<void>;
   logout: () => Promise<void>;
   register: (email: string, password: string) => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
   isAuthenticated: boolean;
-  isDemo?: boolean;
-  role?: string | null;
+  role?: UserRole | null;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -21,142 +27,103 @@ const AuthContext = createContext<AuthContextType>({
   register: async () => {},
   resetPassword: async () => {},
   isAuthenticated: false,
+  role: null,
 });
 
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<any | null>(null); // Changed from SupabaseUser to any
+  const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
-  const [isDemo, setIsDemo] = useState(false);
 
   useEffect(() => {
-    // FBI Load persisted session (demo/local only) - Security Protocol v2
-    try {
-      const stored = localStorage.getItem('auth_user');
-      const isDemoStored = localStorage.getItem('auth_isDemo');
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        setUser(parsed);
-        setIsDemo(isDemoStored === 'true');
+    const bootstrap = async () => {
+      try {
+        if (!getAuthToken()) {
+          return;
+        }
+        const response = await api.get('/auth/me');
+        const resolvedUser = response?.data as AuthUser;
+        if (resolvedUser?.email && resolvedUser?.role) {
+          setUser(resolvedUser);
+        }
+      } catch {
+        clearAuthToken();
+        setUser(null);
+      } finally {
+        setLoading(false);
       }
-    } catch (e) {
-      console.warn('Failed to load auth from storage', e);
+    };
+
+    bootstrap();
+  }, []);
+
+  const login = async (email: string, password: string, remember = false) => {
+    setLoading(true);
+    try {
+      const response = await api.post('/auth/login', { email, password });
+      const accessToken = response?.data?.access_token as string | undefined;
+      const nextUser = response?.data?.user as AuthUser | undefined;
+
+      if (!accessToken || !nextUser?.email || !nextUser?.role) {
+        throw new Error('Invalid authentication response');
+      }
+
+      setAuthToken(accessToken, remember);
+      setUser(nextUser);
+    } catch (error) {
+      clearAuthToken();
+      setUser(null);
+      throw new Error(extractApiError(error, 'Unable to authenticate'));
     } finally {
       setLoading(false);
     }
-  }, []);
-
-  const login = async (email: string, password: string) => {
-    setLoading(true);
-    // DEMO BYPASS
-    if (email === 'admin@gmail.com' && password === 'password') {
-      const demoAdmin = {
-        id: 'demo-admin',
-        email: 'admin@gmail.com',
-        role: 'admin',
-        aud: 'authenticated',
-        app_metadata: { provider: 'demo', providers: ['demo'] },
-        user_metadata: { name: 'Demo Admin', role: 'admin' },
-        created_at: new Date().toISOString(),
-        email_confirmed_at: new Date().toISOString(),
-        identities: [],
-        last_sign_in_at: new Date().toISOString(),
-        phone: '',
-        confirmed_at: new Date().toISOString(),
-        recovery_sent_at: '',
-        banned_until: '',
-        updated_at: new Date().toISOString(),
-      } as any;
-      setUser(demoAdmin);
-      setIsDemo(true);
-      // persist session
-      localStorage.setItem('auth_user', JSON.stringify(demoAdmin));
-      localStorage.setItem('auth_isDemo', 'true');
-      setLoading(false);
-      return;
-    }
-    setIsDemo(false);
-    // No supabase login logic, always return success for demo
-    const demoUser = {
-      id: 'demo-user',
-      email: email,
-      role: 'user',
-      aud: 'authenticated',
-      app_metadata: { provider: 'demo', providers: ['demo'] },
-      user_metadata: { name: 'Demo User', role: 'user' },
-      created_at: new Date().toISOString(),
-      email_confirmed_at: new Date().toISOString(),
-      identities: [],
-      last_sign_in_at: new Date().toISOString(),
-      phone: '',
-      confirmed_at: new Date().toISOString(),
-      recovery_sent_at: '',
-      banned_until: '',
-      updated_at: new Date().toISOString(),
-    } as any;
-    setUser(demoUser);
-    localStorage.setItem('auth_user', JSON.stringify(demoUser));
-    localStorage.setItem('auth_isDemo', 'false');
-    setLoading(false);
   };
 
   const logout = async () => {
-    setLoading(true);
-    setIsDemo(false);
-    // No supabase logout logic, always return success for demo
+    clearAuthToken();
     setUser(null);
-    try {
-      localStorage.removeItem('auth_user');
-      localStorage.removeItem('auth_isDemo');
-    } catch {}
-    setLoading(false);
   };
 
   const register = async (email: string, password: string) => {
     setLoading(true);
-    // No supabase register logic, always return success for demo
-    setUser({
-      id: 'demo-user',
-      email: email,
-      role: 'user',
-      aud: 'authenticated',
-      app_metadata: { provider: 'demo', providers: ['demo'] },
-      user_metadata: { name: 'Demo User', role: 'user' },
-      created_at: new Date().toISOString(),
-      email_confirmed_at: new Date().toISOString(),
-      identities: [],
-      last_sign_in_at: new Date().toISOString(),
-      phone: '',
-      confirmed_at: new Date().toISOString(),
-      recovery_sent_at: '',
-      banned_until: '',
-      updated_at: new Date().toISOString(),
-    } as any);
-    setLoading(false);
+    try {
+      const response = await api.post('/auth/register', { email, password });
+      const accessToken = response?.data?.access_token as string | undefined;
+      const nextUser = response?.data?.user as AuthUser | undefined;
+
+      if (!accessToken || !nextUser?.email || !nextUser?.role) {
+        throw new Error('Invalid registration response');
+      }
+
+      setAuthToken(accessToken, false);
+      setUser(nextUser);
+    } catch (error) {
+      clearAuthToken();
+      setUser(null);
+      throw new Error(extractApiError(error, 'Unable to register'));
+    } finally {
+      setLoading(false);
+    }
   };
 
   const resetPassword = async (email: string) => {
-    setLoading(true);
-    // No supabase reset password logic, always return success for demo
-    setLoading(false);
+    await api.post('/auth/reset-password', { email });
   };
 
-  return (
-    <AuthContext.Provider
-      value={{
-        user,
-        loading,
-        login,
-        logout,
-        register,
-        resetPassword,
-        isAuthenticated: !!user,
-        isDemo,
-        role: user?.user_metadata?.role || (user as any)?.role || null,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
+  const value = useMemo(
+    () => ({
+      user,
+      loading,
+      login,
+      logout,
+      register,
+      resetPassword,
+      isAuthenticated: Boolean(user),
+      role: user?.role ?? null,
+    }),
+    [user, loading]
   );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
