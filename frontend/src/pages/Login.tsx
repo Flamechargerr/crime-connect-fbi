@@ -20,7 +20,7 @@ const Login: React.FC = () => {
     setError('');
 
     try {
-      await login(email, password, remember);
+      await login(email.trim(), password, remember);
       navigate('/dashboard');
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Invalid credentials. Access denied.';
@@ -99,7 +99,7 @@ const Login: React.FC = () => {
                   autoComplete="email"
                   required
                   value={email}
-                  onChange={(e) => setEmail(e.target.value.trim())}
+                  onChange={(e) => setEmail(e.target.value)}
                   className="input-pro w-full pl-10"
                   placeholder="agent@fbi.gov"
                 />

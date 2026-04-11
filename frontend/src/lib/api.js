@@ -3,6 +3,7 @@ import axios from "axios";
 const env = typeof import.meta !== "undefined" ? import.meta.env : {};
 const BACKEND_URL = env.VITE_BACKEND_URL || env.REACT_APP_BACKEND_URL || "http://localhost:8002";
 const AUTH_TOKEN_KEY = "crimeconnect_auth_token";
+let globalRequestCounter = 0;
 
 export const getAuthToken = () => {
   try {
@@ -47,7 +48,8 @@ api.interceptors.request.use((config) => {
   }
 
   config.headers = config.headers || {};
-  const requestId = globalThis?.crypto?.randomUUID?.() || `${Date.now()}-${Math.random()}`;
+  globalRequestCounter += 1;
+  const requestId = globalThis?.crypto?.randomUUID?.() || `${Date.now()}-${globalRequestCounter}`;
   config.headers["X-Request-Id"] = requestId;
   return config;
 });

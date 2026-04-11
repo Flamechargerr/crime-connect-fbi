@@ -48,6 +48,9 @@ class AppConfig(BaseModel):
     admin_password: str = "change-me"
     analyst_email: str = "analyst@crimeconnect.local"
     analyst_password: str = "change-me"
+    admin_password_hash: Optional[str] = None
+    analyst_password_hash: Optional[str] = None
+    trust_proxy_headers: bool = False
 
 
 CONFIG = AppConfig(
@@ -63,6 +66,9 @@ CONFIG = AppConfig(
     admin_password=os.environ.get("APP_ADMIN_PASSWORD", "change-me"),
     analyst_email=os.environ.get("APP_ANALYST_EMAIL", "analyst@crimeconnect.local"),
     analyst_password=os.environ.get("APP_ANALYST_PASSWORD", "change-me"),
+    admin_password_hash=os.environ.get("APP_ADMIN_PASSWORD_HASH"),
+    analyst_password_hash=os.environ.get("APP_ANALYST_PASSWORD_HASH"),
+    trust_proxy_headers=os.environ.get("TRUST_PROXY_HEADERS", "false").lower() == "true",
 )
 
 
@@ -252,10 +258,33 @@ def decode_access_token(token: str) -> Dict[str, Any]:
     return payload
 
 
-def authenticate_user(email: str, password: str) -> Dict[str, str]:
-    if hmac.compare_digest(email, CONFIG.admin_email) and hmac.compare_digest(password, CONFIG.admin_password):
+def _verify_password_hash(provided_password: str, encoded_hash: str) -> bool:
+    """
+    Encoded hash format: pbkdf2$<salt_b64url>$<digest_b64url>
+    """
+    try:
+        algorithm, salt_b64, expected_digest_b64 = encoded_hash.split("$", 2)
+    except ValueError:
+        return False
+
+    if algorithm != "pbkdf2":
+        return False
+    salt = _b64url_decode(salt_b64)
+    expected_digest = _b64url_decode(expected_digest_b64)
+    computed_digest = hashlib.pbkdf2_hmac("sha256", provided_password.encode("utf-8"), salt, 120_000)
+    return hmac.compare_digest(computed_digest, expected_digest)
+
+
+def _password_matches(provided_password: str, plain_password: str, password_hash: Optional[str]) -> bool:
+    if password_hash:
+        return _verify_password_hash(provided_password, password_hash)
+    return hmac.compare_digest(provided_password, plain_password)
+
+
+def authenticate_user(email: str, provided_password: str) -> Dict[str, str]:
+    if hmac.compare_digest(email, CONFIG.admin_email) and _password_matches(provided_password, CONFIG.admin_password, CONFIG.admin_password_hash):
         return {"email": CONFIG.admin_email, "role": "admin"}
-    if hmac.compare_digest(email, CONFIG.analyst_email) and hmac.compare_digest(password, CONFIG.analyst_password):
+    if hmac.compare_digest(email, CONFIG.analyst_email) and _password_matches(provided_password, CONFIG.analyst_password, CONFIG.analyst_password_hash):
         return {"email": CONFIG.analyst_email, "role": "analyst"}
     raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
 
@@ -338,7 +367,12 @@ async def check_rate_limit(request: Request):
     if request.url.path in {"/api/health", "/api/readiness"}:
         return
 
-    client_ip = request.client.host if request.client else "unknown"
+    if CONFIG.trust_proxy_headers:
+        forwarded_for = request.headers.get("x-forwarded-for", "").split(",")[0].strip()
+        real_ip = request.headers.get("x-real-ip", "").strip()
+        client_ip = forwarded_for or real_ip or (request.client.host if request.client else "unknown")
+    else:
+        client_ip = request.client.host if request.client else "unknown"
     key = f"{client_ip}:{request.url.path}"
     now = datetime.now(timezone.utc)
 
@@ -451,6 +485,10 @@ async def auth_login(body: AuthLoginRequest):
 
 @api_router.post("/auth/register")
 async def auth_register(body: AuthRegisterRequest):
+    """
+    Development/staging-only self-registration endpoint.
+    In production this endpoint is intentionally disabled.
+    """
     if CONFIG.environment == "production":
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Self-registration disabled in production")
 

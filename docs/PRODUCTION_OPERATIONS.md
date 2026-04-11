@@ -52,7 +52,7 @@ Recommended target stack:
 ### Local production-style build
 
 ```bash
-cd /home/runner/work/crime-connect-fbi/crime-connect-fbi
+cd <repository_root>
 
 docker compose -f docker-compose.production.yml build
 

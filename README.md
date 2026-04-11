@@ -49,28 +49,28 @@ Frontend:
 
 - `VITE_BACKEND_URL`
 
-See `/home/runner/work/crime-connect-fbi/crime-connect-fbi/docs/PRODUCTION_OPERATIONS.md` for complete deployment/runbook details.
+See `docs/PRODUCTION_OPERATIONS.md` for complete deployment/runbook details.
 
 ## Local validation commands
 
 Backend tests:
 
 ```bash
-cd /home/runner/work/crime-connect-fbi/crime-connect-fbi/backend
+cd backend
 python -m unittest discover -s tests -v
 ```
 
 Frontend production build:
 
 ```bash
-cd /home/runner/work/crime-connect-fbi/crime-connect-fbi/frontend
+cd frontend
 npm run build
 ```
 
 ## Production-style containers
 
 ```bash
-cd /home/runner/work/crime-connect-fbi/crime-connect-fbi
+cd .
 
 docker compose -f docker-compose.production.yml build
 
