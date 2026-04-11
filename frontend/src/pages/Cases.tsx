@@ -1,28 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   FileText,
   Search,
   Plus,
-  Filter,
   Clock,
   CheckCircle2,
   AlertCircle,
   Trash2,
-  Pencil,
   ChevronDown,
   ChevronUp,
-  MapPin,
   Calendar,
-  Shield,
-  Eye,
   Lock,
-  Radio,
-  ArrowUpRight
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
+import { api, extractApiError } from '@/lib/api';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -33,122 +27,103 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+} from '@/components/ui/alert-dialog';
 
-interface Case {
-  id: number;
+type CaseStatus = 'active' | 'backlog' | 'archived';
+type CasePriority = 'P1' | 'P2' | 'P3' | 'P4';
+
+interface CaseRecord {
+  id: string;
   title: string;
-  description: string;
-  status: 'open' | 'closed' | 'pending';
-  priority: 'high' | 'medium' | 'low';
-  policeStationId: number;
-  createdAt: Date;
-  updatedAt: Date;
+  status: CaseStatus;
+  priority: CasePriority;
+  owner: string;
+  notes: number;
+  updated_at: string;
 }
 
-const mockCases: Case[] = [
-  { id: 1, title: 'Armed Robbery - Downtown Bank', status: 'open', priority: 'high', description: 'Armed robbery at First National Bank on Main Street with three armed suspects', policeStationId: 1, createdAt: new Date('2023-05-15'), updatedAt: new Date('2023-12-18') },
-  { id: 2, title: 'Vehicle Theft - Highland Park', status: 'pending', priority: 'medium', description: 'Luxury vehicle stolen from Highland Park residential area', policeStationId: 2, createdAt: new Date('2023-06-02'), updatedAt: new Date('2023-12-17') },
-  { id: 3, title: 'Residential Burglary - Westside', status: 'closed', priority: 'low', description: 'Break-in and theft at residential property in Westside neighborhood', policeStationId: 1, createdAt: new Date('2023-04-10'), updatedAt: new Date('2023-11-29') },
-  { id: 4, title: 'Assault - Downtown Bar District', status: 'open', priority: 'high', description: 'Physical assault reported outside The Blue Note Bar', policeStationId: 3, createdAt: new Date('2023-06-10'), updatedAt: new Date('2023-12-15') },
-  { id: 5, title: 'Corporate Fraud Investigation', status: 'open', priority: 'high', description: 'Financial irregularities detected at major corporation totaling $2.5M', policeStationId: 4, createdAt: new Date('2023-06-12'), updatedAt: new Date('2023-12-20') },
-  { id: 6, title: 'Missing Person - Sarah Mitchell', status: 'pending', priority: 'high', description: '32-year-old female last seen near Central Park on December 10th', policeStationId: 2, createdAt: new Date('2023-12-11'), updatedAt: new Date('2023-12-19') },
-  { id: 7, title: 'Cyber Crime - Data Breach', status: 'open', priority: 'high', description: 'Large-scale data breach affecting government contractor systems', policeStationId: 5, createdAt: new Date('2023-12-01'), updatedAt: new Date('2023-12-18') },
-  { id: 8, title: 'Drug Trafficking - Port District', status: 'open', priority: 'high', description: 'Suspected drug operation at warehouse district near the port', policeStationId: 1, createdAt: new Date('2023-11-20'), updatedAt: new Date('2023-12-16') },
-];
+const statusMeta: Record<CaseStatus, { className: string; icon: React.ComponentType<{ className?: string }>; label: string }> = {
+  active: { className: 'badge-primary', icon: AlertCircle, label: 'Active' },
+  backlog: { className: 'badge-warning', icon: Clock, label: 'Backlog' },
+  archived: { className: 'badge-success', icon: CheckCircle2, label: 'Archived' },
+};
+
+const priorityClass: Record<CasePriority, string> = {
+  P1: 'bg-red-500/10 text-red-500 border border-red-500/30',
+  P2: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/30',
+  P3: 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/30',
+  P4: 'bg-slate-500/10 text-slate-600 dark:text-slate-400 border border-slate-500/30',
+};
 
 const Cases: React.FC = () => {
-  const [cases, setCases] = useState<Case[]>([]);
+  const [cases, setCases] = useState<CaseRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [priorityFilter, setPriorityFilter] = useState<string>('all');
+  const [statusFilter, setStatusFilter] = useState<CaseStatus | 'all'>('all');
+  const [priorityFilter, setPriorityFilter] = useState<CasePriority | 'all'>('all');
   const [sortBy, setSortBy] = useState<'date' | 'title' | 'priority'>('date');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
 
-  useEffect(() => {
-    const stored = localStorage.getItem('cases');
-    if (stored) {
-      const parsed = JSON.parse(stored);
-      setCases(parsed.map((c: any) => ({
-        ...c,
-        createdAt: new Date(c.createdAt),
-        updatedAt: new Date(c.updatedAt)
-      })));
-    } else {
-      setCases(mockCases);
-      localStorage.setItem('cases', JSON.stringify(mockCases));
+  const fetchCases = async () => {
+    setLoading(true);
+    try {
+      const response = await api.get('/cases');
+      setCases((response.data ?? []) as CaseRecord[]);
+    } catch (error: unknown) {
+      setCases([]);
+      toast.error(extractApiError(error, 'Failed to load cases'));
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
-  }, []);
-
-  const handleDelete = (id: number) => {
-    const updated = cases.filter(c => c.id !== id);
-    setCases(updated);
-    localStorage.setItem('cases', JSON.stringify(updated));
-    toast.success('Case deleted successfully');
   };
 
-  const filteredCases = cases
-    .filter(c => {
-      const matchesSearch = c.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        c.description.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesStatus = statusFilter === 'all' || c.status === statusFilter;
-      const matchesPriority = priorityFilter === 'all' || c.priority === priorityFilter;
-      return matchesSearch && matchesStatus && matchesPriority;
-    })
-    .sort((a, b) => {
-      let comparison = 0;
-      if (sortBy === 'date') {
-        comparison = a.updatedAt.getTime() - b.updatedAt.getTime();
-      } else if (sortBy === 'title') {
-        comparison = a.title.localeCompare(b.title);
-      } else if (sortBy === 'priority') {
-        const priorityOrder = { high: 3, medium: 2, low: 1 };
-        comparison = priorityOrder[a.priority] - priorityOrder[b.priority];
-      }
-      return sortDirection === 'desc' ? -comparison : comparison;
-    });
+  useEffect(() => {
+    fetchCases();
+  }, []);
+
+  const handleDelete = async (id: string) => {
+    try {
+      await api.patch(`/cases/${id}`, { status: 'archived' });
+      toast.success('Case archived successfully');
+      await fetchCases();
+    } catch (error: unknown) {
+      toast.error(extractApiError(error, 'Failed to archive case'));
+    }
+  };
+
+  const filteredCases = useMemo(() => {
+    return [...cases]
+      .filter((item) => {
+        const query = searchTerm.toLowerCase();
+        const matchesSearch = !query || item.title.toLowerCase().includes(query) || item.owner.toLowerCase().includes(query);
+        const matchesStatus = statusFilter === 'all' || item.status === statusFilter;
+        const matchesPriority = priorityFilter === 'all' || item.priority === priorityFilter;
+        return matchesSearch && matchesStatus && matchesPriority;
+      })
+      .sort((a, b) => {
+        let comparison = 0;
+        if (sortBy === 'date') {
+          comparison = new Date(a.updated_at).getTime() - new Date(b.updated_at).getTime();
+        } else if (sortBy === 'title') {
+          comparison = a.title.localeCompare(b.title);
+        } else {
+          const order: Record<CasePriority, number> = { P1: 4, P2: 3, P3: 2, P4: 1 };
+          comparison = order[a.priority] - order[b.priority];
+        }
+        return sortDirection === 'desc' ? -comparison : comparison;
+      });
+  }, [cases, searchTerm, statusFilter, priorityFilter, sortBy, sortDirection]);
 
   const stats = {
     total: cases.length,
-    open: cases.filter(c => c.status === 'open').length,
-    pending: cases.filter(c => c.status === 'pending').length,
-    closed: cases.filter(c => c.status === 'closed').length,
-    highPriority: cases.filter(c => c.priority === 'high' && c.status !== 'closed').length,
-  };
-
-  const StatusBadge: React.FC<{ status: Case['status'] }> = ({ status }) => {
-    const config = {
-      open: { class: 'badge-primary', icon: AlertCircle, label: 'Open' },
-      closed: { class: 'badge-success', icon: CheckCircle2, label: 'Closed' },
-      pending: { class: 'badge-warning', icon: Clock, label: 'Pending' },
-    };
-    const { class: className, icon: Icon, label } = config[status];
-    return (
-      <span className={`badge ${className} flex items-center gap-1`}>
-        <Icon className="h-3 w-3" />
-        {label}
-      </span>
-    );
-  };
-
-  const PriorityBadge: React.FC<{ priority: Case['priority'] }> = ({ priority }) => {
-    const config = {
-      high: 'bg-red-500/10 text-red-500 border border-red-500/30',
-      medium: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/30',
-      low: 'bg-slate-500/10 text-slate-600 dark:text-slate-400 border border-slate-500/30',
-    };
-    return (
-      <span className={`px-2 py-0.5 rounded text-xs font-medium uppercase ${config[priority]}`}>
-        {priority}
-      </span>
-    );
+    active: cases.filter((item) => item.status === 'active').length,
+    backlog: cases.filter((item) => item.status === 'backlog').length,
+    archived: cases.filter((item) => item.status === 'archived').length,
+    p1Open: cases.filter((item) => item.priority === 'P1' && item.status !== 'archived').length,
   };
 
   return (
     <div className="space-y-6 animate-fade-in">
-      {/* Header */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div className="fbi-header">
           <div className="flex items-center gap-3">
@@ -160,7 +135,7 @@ const Cases: React.FC = () => {
                 <h1 className="text-2xl font-bold text-foreground">Case Files</h1>
                 <span className="classified-badge">CLASSIFIED</span>
               </div>
-              <p className="text-sm text-muted-foreground">FBI Criminal Investigation Database</p>
+              <p className="text-sm text-muted-foreground">Production-backed FBI Criminal Investigation Database</p>
             </div>
           </div>
         </div>
@@ -168,7 +143,7 @@ const Cases: React.FC = () => {
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-red-500/10 border border-red-500/20">
             <AlertCircle className="h-3.5 w-3.5 text-red-500" />
-            <span className="text-xs text-red-600 dark:text-red-400 font-medium">{stats.highPriority} HIGH PRIORITY</span>
+            <span className="text-xs text-red-600 dark:text-red-400 font-medium">{stats.p1Open} P1 OPEN</span>
           </div>
           <Button asChild className="btn-pro">
             <Link to="/cases/add">
@@ -179,119 +154,58 @@ const Cases: React.FC = () => {
         </div>
       </div>
 
-      {/* Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div className="card-modern stat-card p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-xs text-muted-foreground uppercase tracking-wider">Total Cases</p>
-              <p className="text-2xl font-bold text-foreground mt-1">{stats.total}</p>
-            </div>
-            <FileText className="h-8 w-8 text-primary/30" />
-          </div>
-        </div>
-        <div className="card-modern stat-card p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-xs text-muted-foreground uppercase tracking-wider">Active</p>
-              <p className="text-2xl font-bold text-blue-600 dark:text-blue-400 mt-1">{stats.open}</p>
-            </div>
-            <AlertCircle className="h-8 w-8 text-blue-500/30" />
-          </div>
-        </div>
-        <div className="card-modern stat-card p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-xs text-muted-foreground uppercase tracking-wider">Pending</p>
-              <p className="text-2xl font-bold text-amber-600 dark:text-amber-400 mt-1">{stats.pending}</p>
-            </div>
-            <Clock className="h-8 w-8 text-amber-500/30" />
-          </div>
-        </div>
-        <div className="card-modern stat-card p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-xs text-muted-foreground uppercase tracking-wider">Resolved</p>
-              <p className="text-2xl font-bold text-green-600 dark:text-green-400 mt-1">{stats.closed}</p>
-            </div>
-            <CheckCircle2 className="h-8 w-8 text-green-500/30" />
-          </div>
-        </div>
+        <div className="card-modern stat-card p-4"><p className="text-xs text-muted-foreground uppercase tracking-wider">Total Cases</p><p className="text-2xl font-bold text-foreground mt-1">{stats.total}</p></div>
+        <div className="card-modern stat-card p-4"><p className="text-xs text-muted-foreground uppercase tracking-wider">Active</p><p className="text-2xl font-bold text-blue-600 dark:text-blue-400 mt-1">{stats.active}</p></div>
+        <div className="card-modern stat-card p-4"><p className="text-xs text-muted-foreground uppercase tracking-wider">Backlog</p><p className="text-2xl font-bold text-amber-600 dark:text-amber-400 mt-1">{stats.backlog}</p></div>
+        <div className="card-modern stat-card p-4"><p className="text-xs text-muted-foreground uppercase tracking-wider">Archived</p><p className="text-2xl font-bold text-green-600 dark:text-green-400 mt-1">{stats.archived}</p></div>
       </div>
 
-      {/* Filters */}
       <div className="card-modern p-4">
         <div className="flex flex-col lg:flex-row gap-4">
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search cases by title or description..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-9"
-            />
+            <Input placeholder="Search by title or owner..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-9" />
           </div>
           <div className="flex flex-wrap gap-2">
-            <select
-              className="input-pro h-10"
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-            >
+            <select className="input-pro h-10" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value as CaseStatus | 'all')}>
               <option value="all">All Status</option>
-              <option value="open">Open</option>
-              <option value="pending">Pending</option>
-              <option value="closed">Closed</option>
+              <option value="active">Active</option>
+              <option value="backlog">Backlog</option>
+              <option value="archived">Archived</option>
             </select>
-            <select
-              className="input-pro h-10"
-              value={priorityFilter}
-              onChange={(e) => setPriorityFilter(e.target.value)}
-            >
+            <select className="input-pro h-10" value={priorityFilter} onChange={(e) => setPriorityFilter(e.target.value as CasePriority | 'all')}>
               <option value="all">All Priority</option>
-              <option value="high">High</option>
-              <option value="medium">Medium</option>
-              <option value="low">Low</option>
+              <option value="P1">P1</option>
+              <option value="P2">P2</option>
+              <option value="P3">P3</option>
+              <option value="P4">P4</option>
             </select>
-            <select
-              className="input-pro h-10"
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as any)}
-            >
+            <select className="input-pro h-10" value={sortBy} onChange={(e) => setSortBy(e.target.value as 'date' | 'title' | 'priority')}>
               <option value="date">Sort by Date</option>
               <option value="title">Sort by Title</option>
               <option value="priority">Sort by Priority</option>
             </select>
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() => setSortDirection(d => d === 'asc' ? 'desc' : 'asc')}
-              className="h-10 w-10"
-            >
+            <Button variant="outline" size="icon" onClick={() => setSortDirection((d) => (d === 'asc' ? 'desc' : 'asc'))} className="h-10 w-10">
               {sortDirection === 'asc' ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
             </Button>
           </div>
         </div>
       </div>
 
-      {/* Cases Table */}
       <div className="card-modern overflow-hidden">
-        {/* Table Header */}
         <div className="hidden lg:grid lg:grid-cols-12 gap-4 px-6 py-3 bg-muted/30 border-b border-border text-sm font-medium text-muted-foreground">
-          <div className="col-span-5">Case Details</div>
+          <div className="col-span-4">Case</div>
+          <div className="col-span-2">Owner</div>
           <div className="col-span-2">Status</div>
-          <div className="col-span-2">Priority</div>
+          <div className="col-span-1">Priority</div>
           <div className="col-span-2">Last Updated</div>
           <div className="col-span-1 text-right">Actions</div>
         </div>
 
-        {/* Table Body */}
         <div className="divide-y divide-border">
           {loading ? (
-            <div className="p-6 space-y-4">
-              {[...Array(5)].map((_, i) => (
-                <div key={i} className="h-20 bg-muted rounded-lg animate-pulse"></div>
-              ))}
-            </div>
+            <div className="p-6 space-y-4">{[...Array(5)].map((_, i) => <div key={i} className="h-20 bg-muted rounded-lg animate-pulse"></div>)}</div>
           ) : filteredCases.length === 0 ? (
             <div className="py-12 text-center">
               <FileText className="h-12 w-12 mx-auto text-muted-foreground/30 mb-3" />
@@ -299,100 +213,64 @@ const Cases: React.FC = () => {
               <p className="text-sm text-muted-foreground/60 mt-1">Try adjusting your filters</p>
             </div>
           ) : (
-            filteredCases.map((caseItem) => (
-              <div
-                key={caseItem.id}
-                className="group px-6 py-4 hover:bg-muted/30 transition-colors"
-              >
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-center">
-                  {/* Case Details */}
-                  <div className="col-span-5">
-                    <div className="flex items-start gap-3">
-                      <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                        <FileText className="h-5 w-5 text-primary" />
-                      </div>
-                      <div className="min-w-0">
-                        <Link
-                          to={`/cases/${caseItem.id}`}
-                          className="font-medium text-foreground hover:text-primary transition-colors flex items-center gap-1"
-                        >
-                          {caseItem.title}
-                          <ArrowUpRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                        </Link>
-                        <p className="text-sm text-muted-foreground line-clamp-1 mt-0.5">{caseItem.description}</p>
-                        <p className="text-xs text-muted-foreground mt-1 font-mono">CASE-{caseItem.id.toString().padStart(6, '0')}</p>
-                      </div>
+            filteredCases.map((caseItem) => {
+              const meta = statusMeta[caseItem.status];
+              const StatusIcon = meta.icon;
+              return (
+                <div key={caseItem.id} className="group px-6 py-4 hover:bg-muted/30 transition-colors">
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-center">
+                    <div className="col-span-4">
+                      <p className="font-medium text-foreground">{caseItem.title}</p>
+                      <p className="text-xs text-muted-foreground mt-1 font-mono">{caseItem.id}</p>
+                    </div>
+                    <div className="col-span-2 text-sm text-muted-foreground">{caseItem.owner}</div>
+                    <div className="col-span-2">
+                      <span className={`badge ${meta.className} flex items-center gap-1 w-fit`}>
+                        <StatusIcon className="h-3 w-3" />
+                        {meta.label}
+                      </span>
+                    </div>
+                    <div className="col-span-1">
+                      <span className={`px-2 py-0.5 rounded text-xs font-medium uppercase ${priorityClass[caseItem.priority]}`}>{caseItem.priority}</span>
+                    </div>
+                    <div className="col-span-2 text-sm text-muted-foreground flex items-center gap-1.5">
+                      <Calendar className="h-3.5 w-3.5" />
+                      {new Date(caseItem.updated_at).toLocaleDateString()}
+                    </div>
+                    <div className="col-span-1 flex gap-1 justify-end">
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10">
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Archive Case File</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              This marks case {caseItem.id} as archived and removes it from active operations.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction className="bg-red-500 hover:bg-red-600" onClick={() => handleDelete(caseItem.id)}>
+                              Archive
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                     </div>
                   </div>
-
-                  {/* Status */}
-                  <div className="col-span-2">
-                    <StatusBadge status={caseItem.status} />
-                  </div>
-
-                  {/* Priority */}
-                  <div className="col-span-2">
-                    <PriorityBadge priority={caseItem.priority} />
-                  </div>
-
-                  {/* Updated */}
-                  <div className="col-span-2 text-sm text-muted-foreground flex items-center gap-1.5">
-                    <Calendar className="h-3.5 w-3.5" />
-                    {caseItem.updatedAt.toLocaleDateString()}
-                  </div>
-
-                  {/* Actions */}
-                  <div className="col-span-1 flex gap-1 justify-end">
-                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0" asChild>
-                      <Link to={`/cases/${caseItem.id}`}>
-                        <Eye className="h-4 w-4" />
-                      </Link>
-                    </Button>
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-8 w-8 p-0 text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Delete Case File</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            This will permanently remove case CASE-{caseItem.id.toString().padStart(6, '0')} from the system. This action cannot be undone.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction
-                            className="bg-red-500 hover:bg-red-600"
-                            onClick={() => handleDelete(caseItem.id)}
-                          >
-                            Delete
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  </div>
                 </div>
-              </div>
-            ))
+              );
+            })
           )}
         </div>
 
-        {/* Footer */}
         {!loading && filteredCases.length > 0 && (
           <div className="px-6 py-3 border-t border-border bg-muted/20 flex items-center justify-between">
-            <p className="text-sm text-muted-foreground">
-              Showing {filteredCases.length} of {cases.length} cases
-            </p>
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <Lock className="h-3.5 w-3.5" />
-              Access logged
-            </div>
+            <p className="text-sm text-muted-foreground">Showing {filteredCases.length} of {cases.length} cases</p>
+            <div className="flex items-center gap-2 text-xs text-muted-foreground"><Lock className="h-3.5 w-3.5" /> Access logged</div>
           </div>
         )}
       </div>
