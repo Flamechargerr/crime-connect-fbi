@@ -46,9 +46,12 @@ class ServerCoverageTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual((bounds["$gte"].hour, bounds["$gte"].minute, bounds["$gte"].second), (0, 0, 0))
         self.assertEqual((bounds["$lte"].hour, bounds["$lte"].minute, bounds["$lte"].second), (23, 59, 59))
 
-    async def test_root_returns_hello_world(self):
+    async def test_root_returns_service_metadata(self):
         result = await server.root()
-        self.assertEqual(result, {"message": "Hello World"})
+        self.assertEqual(result["service"], "CrimeConnect API")
+        self.assertEqual(result["status"], "ok")
+        self.assertIn("environment", result)
+        self.assertIn("timestamp", result)
 
     async def test_health_check_returns_status_and_iso_timestamp(self):
         result = await server.health_check()
