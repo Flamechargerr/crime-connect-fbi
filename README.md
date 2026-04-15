@@ -80,14 +80,6 @@ docs/
 | Backend tests | `cd backend && python -m unittest discover -s tests -v` |
 | Frontend production build | `cd frontend && npm run build` |
 
-```bash
-cd backend
-python -m unittest discover -s tests -v
-
-cd frontend
-npm run build
-```
-
 </details>
 
 ## 🐳 Production-style containers
