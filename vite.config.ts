@@ -6,8 +6,8 @@ import { componentTagger } from "lovable-tagger";
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   server: {
-    host: true,
-    port: 3000,
+    host: "::",
+    port: 8080,
     // Allow preview domains routed by the platform
     allowedHosts: [
       "pro-redesign-6.preview.emergentagent.com",
