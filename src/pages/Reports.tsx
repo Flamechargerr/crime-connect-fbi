@@ -243,7 +243,7 @@ const Reports: React.FC = () => {
                     value="distribution"
                     className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-4 py-3"
                   >
-                    <Globe className="h-4 w-4 mr-2" position={1} />
+                    <Globe className="h-4 w-4 mr-2" />
                     Global View
                   </TabsTrigger>
                 </TabsList>
