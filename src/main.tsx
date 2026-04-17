@@ -9,7 +9,7 @@ import { ThemeProvider } from 'next-themes';
 createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <ErrorBoundary>
-      <ThemeProvider attribute="class" defaultTheme="system" enableSystem={true} storageKey="theme">
+      <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} storageKey="cc-theme">
         <App />
       </ThemeProvider>
     </ErrorBoundary>

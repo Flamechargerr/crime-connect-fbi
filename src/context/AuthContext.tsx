@@ -1,128 +1,109 @@
-import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
-import { api, clearAuthToken, extractApiError, getAuthToken, setAuthToken } from '@/lib/api';
+import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import type { Session, User } from '@supabase/supabase-js';
+import { supabase } from '@/integrations/supabase/client';
 
-type UserRole = 'admin' | 'analyst';
-
-interface AuthUser {
-  email: string;
-  role: UserRole;
-}
+export type AppRole = 'admin' | 'analyst' | 'officer';
 
 interface AuthContextType {
-  user: AuthUser | null;
+  user: User | null;
+  session: Session | null;
   loading: boolean;
-  login: (email: string, password: string, remember?: boolean) => Promise<void>;
-  logout: () => Promise<void>;
-  register: (email: string, password: string) => Promise<void>;
-  resetPassword: (email: string) => Promise<void>;
+  roles: AppRole[];
   isAuthenticated: boolean;
-  role?: UserRole | null;
+  signIn: (email: string, password: string) => Promise<void>;
+  signUp: (email: string, password: string, displayName?: string) => Promise<void>;
+  signOut: () => Promise<void>;
+  resetPassword: (email: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
+  session: null,
   loading: true,
-  login: async () => {},
-  logout: async () => {},
-  register: async () => {},
-  resetPassword: async () => {},
+  roles: [],
   isAuthenticated: false,
-  role: null,
+  signIn: async () => {},
+  signUp: async () => {},
+  signOut: async () => {},
+  resetPassword: async () => {},
 });
 
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<AuthUser | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
+  const [roles, setRoles] = useState<AppRole[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const bootstrap = async () => {
-      try {
-        if (!getAuthToken()) {
-          return;
-        }
-        const response = await api.get('/auth/me');
-        const resolvedUser = response?.data as AuthUser;
-        if (resolvedUser?.email && resolvedUser?.role) {
-          setUser(resolvedUser);
-        }
-      } catch {
-        clearAuthToken();
-        setUser(null);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchRoles = async (uid: string) => {
+    const { data } = await supabase.from('user_roles').select('role').eq('user_id', uid);
+    setRoles((data ?? []).map((r: any) => r.role as AppRole));
+  };
 
-    bootstrap();
+  useEffect(() => {
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+      setSession(nextSession);
+      setUser(nextSession?.user ?? null);
+      if (nextSession?.user) {
+        setTimeout(() => fetchRoles(nextSession.user.id), 0);
+      } else {
+        setRoles([]);
+      }
+    });
+
+    supabase.auth.getSession().then(({ data: { session: existing } }) => {
+      setSession(existing);
+      setUser(existing?.user ?? null);
+      if (existing?.user) fetchRoles(existing.user.id);
+      setLoading(false);
+    });
+
+    return () => sub.subscription.unsubscribe();
   }, []);
 
-  const login = async (email: string, password: string, remember = false) => {
-    setLoading(true);
-    try {
-      const response = await api.post('/auth/login', { email, password });
-      const accessToken = response?.data?.access_token as string | undefined;
-      const nextUser = response?.data?.user as AuthUser | undefined;
-
-      if (!accessToken || !nextUser?.email || !nextUser?.role) {
-        throw new Error('Invalid authentication response');
-      }
-
-      setAuthToken(accessToken, remember);
-      setUser(nextUser);
-    } catch (error) {
-      clearAuthToken();
-      setUser(null);
-      throw new Error(extractApiError(error, 'Unable to authenticate'));
-    } finally {
-      setLoading(false);
-    }
+  const signIn = async (email: string, password: string) => {
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) throw error;
   };
 
-  const logout = async () => {
-    clearAuthToken();
-    setUser(null);
+  const signUp = async (email: string, password: string, displayName?: string) => {
+    const redirectUrl = `${window.location.origin}/`;
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: redirectUrl,
+        data: displayName ? { display_name: displayName } : undefined,
+      },
+    });
+    if (error) throw error;
   };
 
-  const register = async (email: string, password: string) => {
-    setLoading(true);
-    try {
-      const response = await api.post('/auth/register', { email, password });
-      const accessToken = response?.data?.access_token as string | undefined;
-      const nextUser = response?.data?.user as AuthUser | undefined;
-
-      if (!accessToken || !nextUser?.email || !nextUser?.role) {
-        throw new Error('Invalid registration response');
-      }
-
-      setAuthToken(accessToken, false);
-      setUser(nextUser);
-    } catch (error) {
-      clearAuthToken();
-      setUser(null);
-      throw new Error(extractApiError(error, 'Unable to register'));
-    } finally {
-      setLoading(false);
-    }
+  const signOut = async () => {
+    await supabase.auth.signOut();
   };
 
   const resetPassword = async (email: string) => {
-    await api.post('/auth/reset-password', { email });
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+    if (error) throw error;
   };
 
   const value = useMemo(
     () => ({
       user,
+      session,
       loading,
-      login,
-      logout,
-      register,
+      roles,
+      isAuthenticated: !!user,
+      signIn,
+      signUp,
+      signOut,
       resetPassword,
-      isAuthenticated: Boolean(user),
-      role: user?.role ?? null,
     }),
-    [user, loading]
+    [user, session, loading, roles]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

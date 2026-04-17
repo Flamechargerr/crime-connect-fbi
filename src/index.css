@@ -1,52 +1,111 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/*
+ * CrimeConnect — Intel/Investigation Theme
+ * All colors are HSL semantic tokens. Dark is the canonical theme.
+ */
 @layer base {
   :root {
-    --background: 220 23% 97%;
-    --foreground: 220 20% 10%;
-    --card: 0 0% 100%;
-    --card-foreground: 220 20% 10%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 220 20% 10%;
-    --primary: 217 91% 60%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 220 14% 96%;
-    --secondary-foreground: 220 20% 10%;
-    --muted: 220 14% 96%;
-    --muted-foreground: 220 8% 46%;
-    --accent: 217 91% 60%;
-    --accent-foreground: 0 0% 100%;
-    --destructive: 0 84% 60%;
+    --background: 222 32% 5%;
+    --foreground: 210 30% 96%;
+
+    --card: 222 30% 8%;
+    --card-foreground: 210 30% 96%;
+    --card-elevated: 222 28% 11%;
+
+    --popover: 222 30% 8%;
+    --popover-foreground: 210 30% 96%;
+
+    --primary: 199 95% 56%;
+    --primary-foreground: 222 47% 6%;
+    --primary-glow: 199 95% 70%;
+
+    --secondary: 222 25% 13%;
+    --secondary-foreground: 210 30% 96%;
+
+    --muted: 222 22% 12%;
+    --muted-foreground: 215 16% 65%;
+
+    --accent: 199 95% 56%;
+    --accent-foreground: 222 47% 6%;
+
+    --destructive: 0 75% 58%;
     --destructive-foreground: 0 0% 100%;
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 217 91% 60%;
-    --radius: 0.5rem;
+
+    --warning: 38 95% 58%;
+    --warning-foreground: 222 47% 6%;
+
+    --success: 142 70% 45%;
+    --success-foreground: 0 0% 100%;
+
+    --border: 222 22% 16%;
+    --input: 222 22% 14%;
+    --ring: 199 95% 56%;
+
+    --radius: 0.625rem;
+
+    /* Sidebar tokens */
+    --sidebar-background: 222 35% 6%;
+    --sidebar-foreground: 210 25% 88%;
+    --sidebar-primary: 199 95% 56%;
+    --sidebar-primary-foreground: 222 47% 6%;
+    --sidebar-accent: 222 28% 12%;
+    --sidebar-accent-foreground: 210 30% 96%;
+    --sidebar-border: 222 22% 14%;
+    --sidebar-ring: 199 95% 56%;
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(199 95% 56%), hsl(217 91% 60%));
+    --gradient-glow: radial-gradient(circle at 50% 0%, hsl(199 95% 56% / 0.2), transparent 60%);
+    --gradient-card: linear-gradient(145deg, hsl(222 30% 9%), hsl(222 28% 6%));
+
+    /* Shadows */
+    --shadow-elegant: 0 10px 40px -10px hsl(199 95% 56% / 0.25);
+    --shadow-card: 0 4px 20px -4px hsl(222 47% 2% / 0.6);
+    --shadow-glow: 0 0 40px -10px hsl(199 95% 56% / 0.4);
+
+    /* Motion */
+    --transition-smooth: cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  .dark {
-    --background: 222 47% 5%;
-    --foreground: 210 40% 98%;
-    --card: 222 47% 7%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222 47% 7%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 210 100% 52%;
+  .light {
+    --background: 220 25% 98%;
+    --foreground: 222 47% 8%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 8%;
+    --card-elevated: 220 20% 96%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 8%;
+    --primary: 199 95% 42%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 222 47% 11%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 222 47% 11%;
-    --muted-foreground: 215 20% 65%;
-    --accent: 210 100% 52%;
+    --primary-glow: 199 95% 60%;
+    --secondary: 220 14% 94%;
+    --secondary-foreground: 222 47% 8%;
+    --muted: 220 14% 94%;
+    --muted-foreground: 220 10% 40%;
+    --accent: 199 95% 42%;
     --accent-foreground: 0 0% 100%;
-    --destructive: 0 84% 60%;
+    --destructive: 0 75% 50%;
     --destructive-foreground: 0 0% 100%;
-    --border: 222 47% 14%;
-    --input: 222 47% 14%;
-    --ring: 210 100% 52%;
+    --warning: 38 95% 48%;
+    --warning-foreground: 0 0% 100%;
+    --success: 142 70% 38%;
+    --success-foreground: 0 0% 100%;
+    --border: 220 13% 88%;
+    --input: 220 13% 88%;
+    --ring: 199 95% 42%;
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 222 47% 8%;
+    --sidebar-primary: 199 95% 42%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 14% 94%;
+    --sidebar-accent-foreground: 222 47% 8%;
+    --sidebar-border: 220 13% 88%;
+    --sidebar-ring: 199 95% 42%;
   }
 }
 
@@ -55,418 +114,87 @@
     @apply border-border;
   }
 
-  html {
-    font-size: 14px;
+  html, body, #root {
+    height: 100%;
   }
 
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
     background-image:
-      linear-gradient(to right, rgba(14, 165, 233, 0.03) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(14, 165, 233, 0.03) 1px, transparent 1px);
-    background-size: 40px 40px;
+      linear-gradient(to right, hsl(var(--primary) / 0.04) 1px, transparent 1px),
+      linear-gradient(to bottom, hsl(var(--primary) / 0.04) 1px, transparent 1px),
+      radial-gradient(ellipse at top, hsl(var(--primary) / 0.08), transparent 60%);
+    background-size: 48px 48px, 48px 48px, 100% 100%;
     background-attachment: fixed;
   }
 
-  /* Premium grid background pattern for dark mode */
-  .dark body {
-    background-color: hsl(222, 47%, 4%);
-    background-image:
-      linear-gradient(to right, rgba(14, 165, 233, 0.05) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(14, 165, 233, 0.05) 1px, transparent 1px),
-      radial-gradient(circle at 50% 0%, rgba(14, 165, 233, 0.15) 0%, transparent 70%);
-    background-size: 40px 40px, 40px 40px, 100% 100%;
-    background-attachment: fixed;
+  .font-mono {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
   }
 }
 
 @layer components {
-  .container-pro {
-    @apply max-w-7xl mx-auto px-4 sm:px-6;
+  /* Refined card with subtle gradient + glow on hover */
+  .card-intel {
+    @apply relative rounded-xl border border-border bg-card text-card-foreground;
+    background: var(--gradient-card);
+    box-shadow: var(--shadow-card);
+    transition: border-color 0.3s var(--transition-smooth), box-shadow 0.3s var(--transition-smooth), transform 0.3s var(--transition-smooth);
+  }
+  .card-intel:hover {
+    border-color: hsl(var(--primary) / 0.4);
+    box-shadow: var(--shadow-elegant);
   }
 
-  /* FBI-style Card with subtle glow */
-  .card-modern {
-    @apply relative bg-card rounded-xl border border-border/50;
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
-  }
-
-  .dark .card-modern {
-    background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(15, 23, 42, 0.7) 100%);
-    backdrop-filter: blur(12px);
-    border-color: rgba(14, 165, 233, 0.15);
-    box-shadow:
-      0 4px 20px -2px rgba(0, 0, 0, 0.5),
-      inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
-  }
-
-  .dark .card-modern:hover {
-    border-color: rgba(14, 165, 233, 0.4);
-    box-shadow:
-      0 8px 30px -4px rgba(0, 0, 0, 0.6),
-      0 0 25px -5px rgba(14, 165, 233, 0.25),
-      inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
-  }
-
-  /* Glass card with refined blur */
-  .glass-card {
-    @apply relative rounded-xl border;
-    background: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(12px);
-    border-color: rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
-  }
-
-  .dark .glass-card {
-    background: rgba(15, 23, 42, 0.8);
-    border-color: rgba(59, 130, 246, 0.15);
-    box-shadow:
-      0 4px 24px -4px rgba(0, 0, 0, 0.3),
-      inset 0 1px 0 0 rgba(255, 255, 255, 0.03);
-  }
-
-  .dark .glass-card:hover {
-    border-color: rgba(59, 130, 246, 0.25);
-    box-shadow:
-      0 8px 32px -4px rgba(0, 0, 0, 0.4),
-      0 0 30px -10px rgba(59, 130, 246, 0.2),
-      inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
-  }
-
-  /* FBI Header style */
-  .fbi-header {
-    @apply relative;
-  }
-
-  .fbi-header::after {
-    content: '';
-    position: absolute;
-    bottom: -8px;
-    left: 0;
-    width: 60px;
-    height: 3px;
-    background: linear-gradient(90deg, hsl(var(--primary)), transparent);
-    border-radius: 2px;
-  }
-
-  /* Gradient text for headers */
   .gradient-text {
     @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(135deg, hsl(210 100% 70%) 0%, hsl(210 100% 50%) 50%, hsl(220 100% 60%) 100%);
+    background-image: var(--gradient-primary);
   }
 
-  /* Stat card with top accent */
-  .stat-card {
-    @apply relative overflow-hidden;
-  }
-
-  .stat-card::before {
+  .stat-accent::before {
     content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 2px;
+    @apply absolute inset-x-0 top-0 h-px;
     background: linear-gradient(90deg, transparent, hsl(var(--primary)), transparent);
-    opacity: 0;
-    transition: opacity 0.3s ease;
   }
 
-  .stat-card:hover::before {
-    opacity: 1;
+  /* Classified watermark text */
+  .classified-tag {
+    @apply inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-[0.18em];
+    background: hsl(var(--destructive) / 0.15);
+    color: hsl(var(--destructive));
+    border: 1px solid hsl(var(--destructive) / 0.3);
   }
 
-  /* Classified badge */
-  .classified-badge {
-    @apply inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider;
-    background: linear-gradient(135deg, #dc2626, #991b1b);
-    color: white;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-  }
-
-  /* FBI Primary button */
-  .btn-pro {
-    @apply inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-medium;
-    @apply transition-all duration-300;
-    @apply bg-primary text-primary-foreground;
-    @apply hover:bg-primary/90;
-    @apply active:scale-[0.98];
-  }
-
-  .dark .btn-pro {
-    box-shadow: 0 0 20px -5px rgba(59, 130, 246, 0.4);
-  }
-
-  .dark .btn-pro:hover {
-    box-shadow: 0 0 30px -5px rgba(59, 130, 246, 0.6);
-  }
-
-  /* Input styling */
-  .input-pro {
-    @apply block w-full rounded-lg border border-input bg-background px-4 py-2.5 text-sm;
-    @apply focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary;
-    @apply transition-all duration-200;
-    @apply placeholder:text-muted-foreground/60;
-  }
-
-  .dark .input-pro {
-    @apply bg-secondary/50;
-  }
-
-  .dark .input-pro:focus {
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1), 0 0 20px -5px rgba(59, 130, 246, 0.2);
-  }
-
-  /* Badge styling */
-  .badge {
-    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
-  }
-
-  .badge-primary {
-    @apply bg-primary/10 text-primary;
-  }
-
-  .dark .badge-primary {
-    @apply bg-primary/20;
-    text-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
-  }
-
-  .badge-success {
-    @apply bg-green-500/10 text-green-600;
-  }
-
-  .dark .badge-success {
-    @apply bg-green-500/20 text-green-400;
-  }
-
-  .badge-warning {
-    @apply bg-amber-500/10 text-amber-600;
-  }
-
-  .dark .badge-warning {
-    @apply bg-amber-500/20 text-amber-400;
-  }
-
-  .badge-danger {
-    @apply bg-red-500/10 text-red-600;
-  }
-
-  .dark .badge-danger {
-    @apply bg-red-500/20 text-red-400;
-  }
-
-  /* Status indicator with pulse */
-  .status-indicator {
-    @apply relative;
-  }
-
-  .status-indicator::before {
-    content: '';
-    @apply absolute inset-0 rounded-full;
-    animation: pulse-ring 2s ease-out infinite;
-  }
-
-  @keyframes pulse-ring {
-    0% {
-      transform: scale(1);
-      opacity: 0.5;
-    }
-
-    100% {
-      transform: scale(2);
-      opacity: 0;
-    }
-  }
-
-  /* Fade in animation */
-  .animate-fade-in {
-    animation: fadeIn 0.5s ease-out;
-  }
-
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(8px);
-    }
-
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  /* Subtle scan line effect - refined */
-  .scan-effect {
-    @apply relative overflow-hidden;
-  }
-
-  .scan-effect::after {
+  .scan-line::after {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
+    inset-inline: 0;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.5), transparent);
+    background: linear-gradient(90deg, transparent, hsl(var(--primary) / 0.6), transparent);
     animation: scanDown 4s linear infinite;
-    opacity: 0.3;
+    opacity: 0.4;
+    pointer-events: none;
   }
 
   @keyframes scanDown {
-    0% {
-      top: 0;
-    }
-
-    100% {
-      top: 100%;
-    }
+    0% { top: 0; }
+    100% { top: 100%; }
   }
 
-  /* Terminal/mono text */
-  .font-mono {
-    font-family: 'JetBrains Mono', monospace;
+  .animate-fade-in { animation: fadeIn 0.4s var(--transition-smooth); }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
   }
 
-  /* Table styling */
-  .table-modern {
-    @apply w-full text-sm;
-  }
+  .scrollbar-thin { scrollbar-width: thin; scrollbar-color: hsl(var(--border)) transparent; }
+  .scrollbar-thin::-webkit-scrollbar { width: 6px; height: 6px; }
+  .scrollbar-thin::-webkit-scrollbar-thumb { background: hsl(var(--border)); border-radius: 3px; }
 
-  .table-modern th {
-    @apply text-left text-xs font-medium text-muted-foreground uppercase tracking-wider py-3 px-4;
-    @apply border-b border-border;
-  }
-
-  .table-modern td {
-    @apply py-3 px-4 border-b border-border/50;
-  }
-
-  .table-modern tr:hover td {
-    @apply bg-primary/5;
-  }
-
-  /* Navigation item */
-  .nav-item {
-    @apply flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium;
-    @apply text-muted-foreground transition-all duration-200;
-    @apply hover:bg-primary/5 hover:text-foreground;
-  }
-
-  .nav-item.active {
-    @apply bg-primary/10 text-primary;
-  }
-
-  .dark .nav-item.active {
-    box-shadow: inset 0 0 20px -10px rgba(59, 130, 246, 0.3);
-  }
-
-  /* Scrollbar styling */
-  .scrollbar-thin {
-    scrollbar-width: thin;
-    scrollbar-color: hsl(var(--border)) transparent;
-  }
-
-  .scrollbar-thin::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  .scrollbar-thin::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  .scrollbar-thin::-webkit-scrollbar-thumb {
-    background-color: hsl(var(--border));
-    border-radius: 3px;
-  }
-
-  /* Data visualization bar */
-  .data-bar {
-    @apply h-2 rounded-full overflow-hidden;
-    background: hsl(var(--muted));
-  }
-
-  .data-bar-fill {
-    @apply h-full rounded-full transition-all duration-500;
-    background: linear-gradient(90deg, hsl(var(--primary)), hsl(210 100% 60%));
-  }
-
-  .dark .data-bar-fill {
-    box-shadow: 0 0 10px rgba(59, 130, 246, 0.4);
-  }
-
-  /* Section header with accent */
-  .section-header {
-    @apply text-lg font-semibold text-foreground flex items-center gap-2;
-  }
-
-  .section-header-icon {
-    @apply h-5 w-5 text-primary;
-  }
-
-  /* Corkboard styles */
-  .corkboard-item {
-    position: absolute;
-    box-sizing: border-box;
-  }
-
-  .corkboard-container {
-    position: relative;
-    width: 100%;
-    height: 100%;
-  }
-
-  .connection-line {
-    pointer-events: auto;
-    cursor: pointer;
-  }
-
-  .connection-line:hover {
-    opacity: 1;
-    filter: brightness(1.2);
-  }
-
-  /* Refined glow effect for important elements */
-  .glow-blue {
-    box-shadow: 0 0 20px -5px rgba(59, 130, 246, 0.4);
-  }
-
-  .glow-blue-subtle {
-    box-shadow: 0 0 30px -10px rgba(59, 130, 246, 0.2);
-  }
-
-  /* Alert/notification styling */
-  .alert-banner {
-    @apply relative p-4 rounded-lg border;
-    @apply flex items-start gap-3;
-  }
-
-  .alert-banner-warning {
-    @apply bg-amber-500/10 border-amber-500/30 text-amber-700;
-  }
-
-  .dark .alert-banner-warning {
-    @apply text-amber-400;
-  }
-
-  .alert-banner-info {
-    @apply bg-blue-500/10 border-blue-500/30 text-blue-700;
-  }
-
-  .dark .alert-banner-info {
-    @apply text-blue-400;
-  }
-
-  /* Quick access button */
-  .quick-action {
-    @apply flex flex-col items-center gap-2 p-4 rounded-xl;
-    @apply border border-border/50 bg-card;
-    @apply transition-all duration-300;
-    @apply hover:border-primary/30 hover:bg-primary/5;
-  }
-
-  .dark .quick-action:hover {
-    box-shadow: 0 0 30px -10px rgba(59, 130, 246, 0.3);
-  }
+  /* Corkboard helpers (kept for that page) */
+  .corkboard-item { position: absolute; box-sizing: border-box; }
+  .corkboard-container { position: relative; width: 100%; height: 100%; }
+  .connection-line { pointer-events: auto; cursor: pointer; }
+  .connection-line:hover { opacity: 1; filter: brightness(1.2); }
 }

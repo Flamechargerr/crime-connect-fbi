@@ -1,191 +1,112 @@
-
-import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
-import { toast } from "sonner";
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { useState } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { toast } from 'sonner';
+import { ArrowLeft, Loader2 } from 'lucide-react';
 
-const formSchema = z.object({
-  firstName: z.string().min(2, {
-    message: "First name must be at least 2 characters.",
-  }),
-  lastName: z.string().min(2, {
-    message: "Last name must be at least 2 characters.",
-  }),
-  middleName: z.string().optional(),
-  dateOfBirth: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, {
-    message: "Date must be in YYYY-MM-DD format.",
-  }),
-  biometricData: z.string().optional(),
-});
-
-const AddCriminal = () => {
+export default function AddCriminal() {
   const navigate = useNavigate();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  
-  // Define form
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      firstName: "",
-      lastName: "",
-      middleName: "",
-      dateOfBirth: "",
-      biometricData: "",
-    },
+  const [form, setForm] = useState({
+    full_name: '',
+    alias: '',
+    nationality: '',
+    threat_level: 'medium',
+    status: 'at_large',
+    description: '',
+    last_known_location: '',
+    most_wanted: false,
   });
+  const [submitting, setSubmitting] = useState(false);
 
-  // Submit handler
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    setIsSubmitting(true);
-    
-    try {
-      // Get current criminals from localStorage
-      const stored = localStorage.getItem('criminals');
-      let criminals = [];
-      if (stored) {
-        try {
-          criminals = JSON.parse(stored);
-        } catch {
-          criminals = [];
-        }
-      }
-      // Create new criminal object
-      const newCriminal = {
-        id: Date.now().toString(),
-        first_name: values.firstName,
-        last_name: values.lastName,
-        middle_name: values.middleName || '',
-        date_of_birth: values.dateOfBirth,
-        biometric_data: values.biometricData || '',
-        image: `https://source.unsplash.com/400x400/?portrait,person&sig=${Date.now()}`,
-      };
-      // Add to criminals and save
-      const updated = [...criminals, newCriminal];
-      localStorage.setItem('criminals', JSON.stringify(updated));
-      toast.success('Criminal record added successfully!');
-      navigate('/criminals');
-    } catch (error) {
-      console.error('Error submitting form:', error);
-      toast.error('An unexpected error occurred');
-    } finally {
-      setIsSubmitting(false);
-    }
-  }
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitting(true);
+    const { error } = await supabase.from('criminals').insert({
+      ...form,
+      threat_level: form.threat_level as any,
+      status: form.status as any,
+    });
+    setSubmitting(false);
+    if (error) toast.error(error.message);
+    else { toast.success('Suspect added'); navigate('/criminals'); }
+  };
 
   return (
-    <div className="space-y-8 animate-fade-in">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Add Criminal Record</h1>
-        <p className="text-muted-foreground">Create a new FBI criminal record in the system.</p>
-      </div>
-
-      <Card>
+    <div className="max-w-2xl mx-auto space-y-6">
+      <Button variant="ghost" size="sm" onClick={() => navigate(-1)}>
+        <ArrowLeft className="h-4 w-4 mr-2" /> Back
+      </Button>
+      <Card className="card-intel">
         <CardHeader>
-          <CardTitle>Personal Details</CardTitle>
+          <CardTitle>Add suspect</CardTitle>
+          <CardDescription>Create a new entry in the criminal database.</CardDescription>
         </CardHeader>
         <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <FormField
-                  control={form.control}
-                  name="firstName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>First Name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="First name" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={form.control}
-                  name="middleName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Middle Name (Optional)</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Middle name" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={form.control}
-                  name="lastName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Last Name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Last name" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+          <form onSubmit={submit} className="space-y-4">
+            <div className="grid sm:grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <Label>Full name *</Label>
+                <Input required value={form.full_name} onChange={(e) => setForm({ ...form, full_name: e.target.value })} />
               </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <FormField
-                  control={form.control}
-                  name="dateOfBirth"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Date of Birth</FormLabel>
-                      <FormControl>
-                        <Input type="date" {...field} />
-                      </FormControl>
-                      <FormDescription>
-                        Format: YYYY-MM-DD
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={form.control}
-                  name="biometricData"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Biometric Data (Optional)</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Biometric reference" {...field} />
-                      </FormControl>
-                      <FormDescription>
-                        Reference to biometric data if available.
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+              <div className="space-y-1.5">
+                <Label>Alias</Label>
+                <Input value={form.alias} onChange={(e) => setForm({ ...form, alias: e.target.value })} />
               </div>
-              
-              <div className="flex justify-end space-x-4">
-                <Button variant="outline" type="button" onClick={() => navigate("/criminals")}>
-                  Cancel
-                </Button>
-                <Button type="submit" disabled={isSubmitting}>
-                  {isSubmitting ? "Adding..." : "Add Criminal Record"}
-                </Button>
+              <div className="space-y-1.5">
+                <Label>Nationality</Label>
+                <Input value={form.nationality} onChange={(e) => setForm({ ...form, nationality: e.target.value })} />
               </div>
-            </form>
-          </Form>
+              <div className="space-y-1.5">
+                <Label>Last known location</Label>
+                <Input value={form.last_known_location} onChange={(e) => setForm({ ...form, last_known_location: e.target.value })} />
+              </div>
+              <div className="space-y-1.5">
+                <Label>Threat level</Label>
+                <Select value={form.threat_level} onValueChange={(v) => setForm({ ...form, threat_level: v })}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="low">Low</SelectItem>
+                    <SelectItem value="medium">Medium</SelectItem>
+                    <SelectItem value="high">High</SelectItem>
+                    <SelectItem value="extreme">Extreme</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1.5">
+                <Label>Status</Label>
+                <Select value={form.status} onValueChange={(v) => setForm({ ...form, status: v })}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="at_large">At large</SelectItem>
+                    <SelectItem value="in_custody">In custody</SelectItem>
+                    <SelectItem value="incarcerated">Incarcerated</SelectItem>
+                    <SelectItem value="deceased">Deceased</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="space-y-1.5">
+              <Label>Description</Label>
+              <Textarea rows={4} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
+            </div>
+            <div className="flex items-center gap-2">
+              <Switch checked={form.most_wanted} onCheckedChange={(v) => setForm({ ...form, most_wanted: v })} />
+              <Label>Add to Most Wanted list</Label>
+            </div>
+            <Button type="submit" disabled={submitting}>
+              {submitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+              Add suspect
+            </Button>
+          </form>
         </CardContent>
       </Card>
     </div>
   );
-};
-
-export default AddCriminal;
+}

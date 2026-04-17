@@ -1,182 +1,131 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import * as z from 'zod';
-import { toast } from 'sonner';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/context/AuthContext';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { api, extractApiError } from '@/lib/api';
+import { toast } from 'sonner';
+import { ArrowLeft, Loader2 } from 'lucide-react';
 
-const formSchema = z.object({
-  title: z.string().min(5, {
-    message: 'Title must be at least 5 characters.',
-  }),
-  status: z.enum(['active', 'backlog', 'archived'], {
-    required_error: 'Please select a case status.',
-  }),
-  priority: z.enum(['P1', 'P2', 'P3', 'P4'], {
-    required_error: 'Please select a case priority.',
-  }),
-  owner: z.string().min(3, {
-    message: 'Owner must be at least 3 characters.',
-  }),
-  notes: z.coerce.number().min(0, {
-    message: 'Notes count cannot be negative.',
-  }),
-});
-
-const AddCase = () => {
+export default function AddCase() {
   const navigate = useNavigate();
-
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      title: '',
-      status: 'active',
-      priority: 'P2',
-      owner: '',
-      notes: 0,
-    },
+  const { user } = useAuth();
+  const [officers, setOfficers] = useState<any[]>([]);
+  const [form, setForm] = useState({
+    title: '',
+    description: '',
+    priority: 'medium',
+    status: 'open',
+    category: '',
+    location: '',
+    assigned_officer_id: '',
   });
+  const [submitting, setSubmitting] = useState(false);
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    try {
-      await api.post('/cases', values);
-      toast.success('Case added successfully');
+  useEffect(() => {
+    supabase.from('officers').select('id, full_name, badge_number').then(({ data }) => setOfficers(data ?? []));
+  }, []);
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitting(true);
+    const case_number = `FBI-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
+    const { error } = await supabase.from('cases').insert({
+      case_number,
+      title: form.title,
+      description: form.description,
+      priority: form.priority as any,
+      status: form.status as any,
+      category: form.category,
+      location: form.location,
+      assigned_officer_id: form.assigned_officer_id || null,
+      created_by: user?.id,
+    });
+    setSubmitting(false);
+    if (error) {
+      toast.error(error.message);
+    } else {
+      toast.success('Case created', { description: case_number });
       navigate('/cases');
-    } catch (error: unknown) {
-      toast.error(extractApiError(error, 'Failed to add case'));
     }
-  }
+  };
 
   return (
-    <div className="space-y-8 animate-fade-in">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Add New Case</h1>
-        <p className="text-muted-foreground">Create a new FBI case file in the Production system.</p>
-      </div>
-
-      <Card>
+    <div className="max-w-2xl mx-auto space-y-6">
+      <Button variant="ghost" size="sm" onClick={() => navigate(-1)}>
+        <ArrowLeft className="h-4 w-4 mr-2" /> Back
+      </Button>
+      <Card className="card-intel">
         <CardHeader>
-          <CardTitle>Case Details</CardTitle>
+          <CardTitle>Open new case</CardTitle>
+          <CardDescription>Create a record for a new investigation.</CardDescription>
         </CardHeader>
         <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <FormField
-                control={form.control}
-                name="title"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Case Title</FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g. Operation Blackline" {...field} />
-                    </FormControl>
-                    <FormDescription>Provide a clear and concise title for the case.</FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <FormField
-                  control={form.control}
-                  name="status"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Status</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select a status" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="active">Active</SelectItem>
-                          <SelectItem value="backlog">Backlog</SelectItem>
-                          <SelectItem value="archived">Archived</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormDescription>The current status of the case.</FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="priority"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Priority</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select a priority" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="P1">P1</SelectItem>
-                          <SelectItem value="P2">P2</SelectItem>
-                          <SelectItem value="P3">P3</SelectItem>
-                          <SelectItem value="P4">P4</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormDescription>Priority determines incident response urgency.</FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+          <form onSubmit={submit} className="space-y-4">
+            <div className="space-y-1.5">
+              <Label>Title *</Label>
+              <Input required value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
+            </div>
+            <div className="space-y-1.5">
+              <Label>Description</Label>
+              <Textarea rows={4} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
+            </div>
+            <div className="grid sm:grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <Label>Priority</Label>
+                <Select value={form.priority} onValueChange={(v) => setForm({ ...form, priority: v })}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="low">Low</SelectItem>
+                    <SelectItem value="medium">Medium</SelectItem>
+                    <SelectItem value="high">High</SelectItem>
+                    <SelectItem value="critical">Critical</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <FormField
-                  control={form.control}
-                  name="owner"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Assigned Owner</FormLabel>
-                      <FormControl>
-                        <Input placeholder="e.g. A. Shaw" {...field} />
-                      </FormControl>
-                      <FormDescription>Primary owner assigned to this case.</FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="notes"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Initial Notes Count</FormLabel>
-                      <FormControl>
-                        <Input type="number" min="0" {...field} />
-                      </FormControl>
-                      <FormDescription>Optional count of pre-existing notes.</FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+              <div className="space-y-1.5">
+                <Label>Status</Label>
+                <Select value={form.status} onValueChange={(v) => setForm({ ...form, status: v })}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="open">Open</SelectItem>
+                    <SelectItem value="investigating">Investigating</SelectItem>
+                    <SelectItem value="closed">Closed</SelectItem>
+                    <SelectItem value="cold">Cold</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
-
-              <div className="flex justify-end space-x-4">
-                <Button variant="outline" type="button" onClick={() => navigate('/cases')}>
-                  Cancel
-                </Button>
-                <Button type="submit">Add Case</Button>
+              <div className="space-y-1.5">
+                <Label>Category</Label>
+                <Input value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} placeholder="Cybercrime, Homicide…" />
               </div>
-            </form>
-          </Form>
+              <div className="space-y-1.5">
+                <Label>Location</Label>
+                <Input value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} />
+              </div>
+            </div>
+            <div className="space-y-1.5">
+              <Label>Assigned officer</Label>
+              <Select value={form.assigned_officer_id} onValueChange={(v) => setForm({ ...form, assigned_officer_id: v })}>
+                <SelectTrigger><SelectValue placeholder="Unassigned" /></SelectTrigger>
+                <SelectContent>
+                  {officers.map((o) => (
+                    <SelectItem key={o.id} value={o.id}>{o.full_name} ({o.badge_number})</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <Button type="submit" disabled={submitting}>
+              {submitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+              Create case
+            </Button>
+          </form>
         </CardContent>
       </Card>
     </div>
   );
-};
-
-export default AddCase;
+}
