@@ -53,3 +53,20 @@ Source repository:
 - Source app uses TanStack Router/Start + React 19 + Vite 7.
 - Current app uses React Router + React 18 + Vite 5.
 - Integration should remain feature-level migration into current canonical shell.
+
+## Staged source snapshot files (first wave)
+Imported verbatim from snapshot ref `1e72d02bff159468a3f9e7b1300acdf517e344c2` into this folder:
+
+- `src/routes/agents.tsx`
+- `src/routes/hideouts.tsx`
+- `src/routes/intel.tsx`
+- `src/routes/login.tsx`
+- `src/routes/signup.tsx`
+- `src/components/AuthGuard.tsx`
+- `src/components/PortalLayout.tsx`
+- `src/components/TacticalMap.tsx`
+- `src/components/TacticalMap.client.tsx`
+- `src/components/TacticalGlobe.tsx`
+- `src/components/TacticalGlobe.client.tsx`
+- `src/components/ThreatLevel.tsx`
+- `src/components/LiveClock.tsx`
