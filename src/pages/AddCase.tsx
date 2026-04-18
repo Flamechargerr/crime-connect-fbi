@@ -21,11 +21,14 @@ const caseFormSchema = z.object({
   location: z.string().trim().max(120, 'Location is too long').optional(),
   assigned_officer_id: z.string().trim().optional(),
 });
+type CasePriority = z.infer<typeof caseFormSchema>['priority'];
+type CaseStatus = z.infer<typeof caseFormSchema>['status'];
+type OfficerOption = { id: string; full_name: string; badge_number: string };
 
 export default function AddCase() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [officers, setOfficers] = useState<any[]>([]);
+  const [officers, setOfficers] = useState<OfficerOption[]>([]);
   const [form, setForm] = useState({
     title: '',
     description: '',
@@ -56,8 +59,8 @@ export default function AddCase() {
       case_number,
       title: payload.title,
       description: payload.description || null,
-      priority: payload.priority as any,
-      status: payload.status as any,
+      priority: payload.priority as CasePriority,
+      status: payload.status as CaseStatus,
       category: payload.category || null,
       location: payload.location || null,
       assigned_officer_id: payload.assigned_officer_id || null,

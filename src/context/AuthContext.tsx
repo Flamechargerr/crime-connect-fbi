@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { logEvent } from '@/lib/telemetry';
 
 export type AppRole = 'admin' | 'analyst' | 'officer';
+type UserRoleRow = { role: AppRole };
 
 interface AuthContextType {
   user: User | null;
@@ -41,7 +42,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const { data, error } = await supabase.from('user_roles').select('role').eq('user_id', uid);
       if (error) throw error;
-      setRoles((data ?? []).map((r: any) => r.role as AppRole));
+      setRoles(((data ?? []) as UserRoleRow[]).map((r) => r.role));
     } catch (error) {
       setRoles([]);
       logEvent('warn', 'Failed to fetch user roles', { userId: uid, error: String(error) });
