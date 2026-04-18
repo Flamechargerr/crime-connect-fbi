@@ -1,12 +1,13 @@
 import React from 'react';
+import { logEvent } from '@/lib/telemetry';
 
 interface ErrorBoundaryState {
   hasError: boolean;
   error: Error | null;
 }
 
-class ErrorBoundary extends React.Component<React.PropsWithChildren<{}>, ErrorBoundaryState> {
-  constructor(props: React.PropsWithChildren<{}>) {
+class ErrorBoundary extends React.Component<React.PropsWithChildren<Record<string, never>>, ErrorBoundaryState> {
+  constructor(props: React.PropsWithChildren<Record<string, never>>) {
     super(props);
     this.state = { hasError: false, error: null };
   }
@@ -16,8 +17,10 @@ class ErrorBoundary extends React.Component<React.PropsWithChildren<{}>, ErrorBo
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    // You can log error info to an error reporting service here
-    // console.error('ErrorBoundary caught:', error, errorInfo);
+    logEvent('error', 'Unhandled UI error', {
+      message: error.message,
+      componentStack: errorInfo.componentStack,
+    });
   }
 
   handleReset = () => {

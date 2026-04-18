@@ -1,8 +1,10 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import type { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
+import { logEvent } from '@/lib/telemetry';
 
 export type AppRole = 'admin' | 'analyst' | 'officer';
+type UserRoleRow = { role: AppRole };
 
 interface AuthContextType {
   user: User | null;
@@ -37,8 +39,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
 
   const fetchRoles = async (uid: string) => {
-    const { data } = await supabase.from('user_roles').select('role').eq('user_id', uid);
-    setRoles((data ?? []).map((r: any) => r.role as AppRole));
+    try {
+      const { data, error } = await supabase.from('user_roles').select('role').eq('user_id', uid);
+      if (error) throw error;
+      setRoles(((data ?? []) as UserRoleRow[]).map((r) => r.role));
+    } catch (error) {
+      setRoles([]);
+      logEvent('warn', 'Failed to fetch user roles', { error: String(error) });
+    }
   };
 
   useEffect(() => {
@@ -81,7 +89,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signOut = async () => {
-    await supabase.auth.signOut();
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      logEvent('error', 'Sign-out failed', { error: error.message });
+      throw new Error(`Sign-out failed: ${error.message}`);
+    }
   };
 
   const resetPassword = async (email: string) => {

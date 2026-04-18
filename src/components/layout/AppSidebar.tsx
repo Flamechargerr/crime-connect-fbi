@@ -10,6 +10,7 @@ import {
   Globe,
   BarChart3,
   Lock,
+  House,
 } from 'lucide-react';
 import {
   Sidebar,
@@ -37,6 +38,7 @@ const intel = [
   { title: 'Most Wanted', url: '/most-wanted', icon: Star },
   { title: 'Corkboard', url: '/corkboard', icon: Pin },
   { title: 'Global Map', url: '/globe', icon: Globe },
+  { title: 'Hideouts', url: '/hideouts', icon: House },
   { title: 'Reports', url: '/reports', icon: BarChart3 },
 ];
 

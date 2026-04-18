@@ -206,6 +206,15 @@ yarn start
 
 ---
 
+## 🔀 Merge Program Status
+
+- Integration staging path: `legacy/ai-hideout-helper/`
+- Feature mapping: `docs/merge/FEATURE_MATRIX.md`
+- Deployment and rollback runbook: `docs/DEPLOYMENT_RUNBOOK.md`
+- Current blocker for cross-repo merge: `legacy/ai-hideout-helper/IMPORT_STATUS.md`
+
+---
+
 ## 🔐 **SECURITY PROTOCOLS**
 
 ### 🛡️ **Access Control**
