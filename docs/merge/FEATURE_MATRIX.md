@@ -23,4 +23,10 @@ Status legend:
 1. Frontend routing + app shell: `src/App.tsx` and layout components.
 2. Auth/session + role model: Supabase auth + `public.user_roles`.
 3. Data model and authorization: `supabase/migrations/*.sql` with RLS policies.
-4. Integration staging: `legacy/ai-hideout-helper/source/` (pending source access).
+4. Integration staging: `legacy/ai-hideout-helper/source/` (source access verified).
+
+## First-wave migration targets from accessible source
+1. **Hideouts domain** (`src/routes/hideouts.tsx`, tactical map/globe components) → add as new feature area in current React Router shell.
+2. **Intel domain** (`src/routes/intel.tsx`) → merge into current dashboard/reporting pathways.
+3. **Agents domain** (`src/routes/agents.tsx`) → map into current officers/personnel model.
+4. **Auth screen variants** (`login.tsx`, `signup.tsx`, `AuthGuard.tsx`) → evaluate only for UX parity; keep current Supabase session contract.
