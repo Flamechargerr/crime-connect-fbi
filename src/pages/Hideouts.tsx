@@ -75,13 +75,13 @@ function determineRegionFromLocation(location: string | null): string {
  * Creates deterministic coordinate jitter for synthetic map points.
  * Uses a lightweight string hash and scales the normalized offset by `scale`.
  */
-function stableOffset(seed: string, scale: number): number {
+function deterministicJitter(seed: string, scale: number): number {
   let hash = 0;
   for (let i = 0; i < seed.length; i += 1) hash = (hash * 31 + seed.charCodeAt(i)) >>> 0;
   return (((hash % 1000) / 1000) - 0.5) * scale;
 }
 
-function synthesizeSafehouseData(cases: CaseRow[], criminals: CriminalRow[]): Safehouse[] {
+function deriveSafehousesFromTelemetry(cases: CaseRow[], criminals: CriminalRow[]): Safehouse[] {
   const hotspots = cases
     .filter((item) => item.location && (item.status === 'open' || item.status === 'investigating'))
     .slice(0, 8);
@@ -94,8 +94,8 @@ function synthesizeSafehouseData(cases: CaseRow[], criminals: CriminalRow[]): Sa
     const region = determineRegionFromLocation(location);
     const city = location.split(',')[0]?.trim() || location;
     const centroid = REGION_CENTROIDS[region] ?? REGION_CENTROIDS.Unknown;
-    const lat = centroid.lat + stableOffset(`${location}-lat-${index}`, 2.8);
-    const lon = centroid.lon + stableOffset(`${location}-lon-${index}`, 3.2);
+    const lat = centroid.lat + deterministicJitter(`${location}-lat-${index}`, 2.8);
+    const lon = centroid.lon + deterministicJitter(`${location}-lon-${index}`, 3.2);
 
     const regionThreat = criminals
       .filter((c) => determineRegionFromLocation(c.last_known_location) === region && c.status === 'at_large')
@@ -149,7 +149,7 @@ export default function Hideouts() {
   });
 
   const safehouses = useMemo(
-    () => synthesizeSafehouseData(data?.cases ?? [], data?.criminals ?? []),
+    () => deriveSafehousesFromTelemetry(data?.cases ?? [], data?.criminals ?? []),
     [data?.cases, data?.criminals],
   );
 
@@ -172,8 +172,8 @@ export default function Hideouts() {
         return {
           id: `criminal-${criminal.id}`,
           label: criminal.full_name,
-          lat: centroid.lat + stableOffset(`c-lat-${criminal.id}`, 4),
-          lon: centroid.lon + stableOffset(`c-lon-${criminal.id}`, 4),
+          lat: centroid.lat + deterministicJitter(`c-lat-${criminal.id}`, 4),
+          lon: centroid.lon + deterministicJitter(`c-lon-${criminal.id}`, 4),
           color: criminal.threat_level === 'extreme' ? '#f43f5e' : '#f59e0b',
           size: criminal.threat_level === 'extreme' ? 1.1 : 0.9,
         };
