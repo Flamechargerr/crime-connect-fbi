@@ -8,6 +8,7 @@ Import and merge `ai-hideout-helper` features into this repository in a controll
 - Root content and `package.json` are readable via GitHub API.
 - Repository cloning is still disallowed in this environment, so source staging must use GitHub API file reads or a user-provided export.
 - First-wave route/component snapshots are staged under `legacy/ai-hideout-helper/source/src/` for audited porting.
+- Initial hideouts feature parity is now integrated into canonical shell as `/hideouts` using existing `cases` + `criminals` telemetry (no new tables).
 
 ## Import readiness notes
 1. Source stack differs from current app shell:
@@ -20,7 +21,7 @@ Import and merge `ai-hideout-helper` features into this repository in a controll
 1. Map staged incoming routes/pages/components to existing React Router structure using `docs/merge/FEATURE_MATRIX.md`.
 2. Exclude `.env` and any secret-bearing configuration from import.
 3. Incrementally port feature modules into canonical current shell and Supabase data model.
-4. Start with hideouts/intel/agents UI and adapt data contracts to existing schema + RLS policies.
+4. Continue with intel/agents UI and adapt data contracts to existing schema + RLS policies.
 
 ## Integration target location
 When source is available, imported files should be staged under:

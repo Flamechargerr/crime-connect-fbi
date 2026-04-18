@@ -13,7 +13,7 @@ Status legend:
 | Criminal intelligence | `criminals` + Most Wanted + globe/corkboard views | Pending source | Unified | Keep threat/status enums and enrich from incoming features. |
 | Evidence | `evidence` table + listing + case detail linkage | Pending source | Unified | Keep chain-of-custody JSON shape stable. |
 | Officers | `officers` table + assignment in case creation | Pending source | Unified | Preserve assigned officer foreign-key model. |
-| Dashboard/reporting | KPI cards + chart pages | Pending source | Unified | Prefer existing route shell and expand widgets from import. |
+| Dashboard/reporting | KPI cards + chart pages + hideouts view | Pending source | Unified | Hideouts route added in current shell with schema-adapted telemetry and recommendation scoring. |
 | Routing/layout | React Router + protected layout shell | Pending source | Canonical current | Keep single app shell to avoid duplicate navigation systems. |
 | API/persistence | Supabase/Postgres + RLS policies | Pending source | Canonical current | Migrate external API features into this data model where feasible. |
 | CI quality gates | None in repo yet | Pending source | Unified | Add lint/build workflow now; extend with tests when available. |
@@ -26,7 +26,7 @@ Status legend:
 4. Integration staging: `legacy/ai-hideout-helper/source/` (source access verified).
 
 ## First-wave migration targets from accessible source
-1. **Hideouts domain** (`src/routes/hideouts.tsx`, tactical map/globe components) → add as new feature area in current React Router shell.
+1. ✅ **Hideouts domain** (`src/routes/hideouts.tsx`, tactical map/globe components) → initial route integrated as `/hideouts` in current React Router shell using existing `cases/criminals` telemetry.
 2. **Intel domain** (`src/routes/intel.tsx`) → merge into current dashboard/reporting pathways.
 3. **Agents domain** (`src/routes/agents.tsx`) → map into current officers/personnel model.
 4. **Auth screen variants** (`login.tsx`, `signup.tsx`, `AuthGuard.tsx`) → evaluate only for UX parity; keep current Supabase session contract.
