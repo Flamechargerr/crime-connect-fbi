@@ -2,7 +2,7 @@
 
 Status legend:
 - `Current`: implemented in this repo now.
-- `Import`: should come from `ai-hideout-helper`.
+- `Import`: should come from `ai-hideout-helper` (source repo accessible; staged import pending).
 - `Unified`: final canonical implementation after merge.
 
 | Domain | Current (crime-connect-fbi) | ai-hideout-helper | Decision | Notes |
@@ -24,4 +24,3 @@ Status legend:
 2. Auth/session + role model: Supabase auth + `public.user_roles`.
 3. Data model and authorization: `supabase/migrations/*.sql` with RLS policies.
 4. Integration staging: `legacy/ai-hideout-helper/source/` (pending source access).
-
