@@ -26,6 +26,7 @@ import Corkboard from '@/pages/Corkboard';
 import GlobePage from '@/pages/Globe';
 import MostWanted from '@/pages/MostWanted';
 import Profile from '@/pages/Profile';
+import Health from '@/pages/Health';
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { refetchOnWindowFocus: false, retry: 1, staleTime: 30_000 } },
@@ -44,6 +45,7 @@ const App = () => (
             <Route path="/register" element={<Register />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/health" element={<Health />} />
 
             <Route element={<Layout />}>
               <Route path="/dashboard" element={<Dashboard />} />

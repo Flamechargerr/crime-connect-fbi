@@ -10,6 +10,18 @@ import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { ArrowLeft, Loader2 } from 'lucide-react';
+import { z } from 'zod';
+
+const criminalFormSchema = z.object({
+  full_name: z.string().trim().min(3, 'Full name must be at least 3 characters'),
+  alias: z.string().trim().max(120, 'Alias is too long').optional(),
+  nationality: z.string().trim().max(80, 'Nationality is too long').optional(),
+  threat_level: z.enum(['low', 'medium', 'high', 'extreme']),
+  status: z.enum(['at_large', 'in_custody', 'incarcerated', 'deceased']),
+  description: z.string().trim().max(5000, 'Description is too long').optional(),
+  last_known_location: z.string().trim().max(120, 'Location is too long').optional(),
+  most_wanted: z.boolean(),
+});
 
 export default function AddCriminal() {
   const navigate = useNavigate();
@@ -27,11 +39,22 @@ export default function AddCriminal() {
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const parsed = criminalFormSchema.safeParse(form);
+    if (!parsed.success) {
+      toast.error(parsed.error.issues[0]?.message ?? 'Invalid suspect form input');
+      return;
+    }
+
     setSubmitting(true);
+    const payload = parsed.data;
     const { error } = await supabase.from('criminals').insert({
-      ...form,
-      threat_level: form.threat_level as any,
-      status: form.status as any,
+      ...payload,
+      alias: payload.alias || null,
+      nationality: payload.nationality || null,
+      description: payload.description || null,
+      last_known_location: payload.last_known_location || null,
+      threat_level: payload.threat_level as any,
+      status: payload.status as any,
     });
     setSubmitting(false);
     if (error) toast.error(error.message);

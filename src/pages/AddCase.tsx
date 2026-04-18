@@ -10,6 +10,17 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { ArrowLeft, Loader2 } from 'lucide-react';
+import { z } from 'zod';
+
+const caseFormSchema = z.object({
+  title: z.string().trim().min(3, 'Title must be at least 3 characters'),
+  description: z.string().trim().max(5000, 'Description is too long').optional(),
+  priority: z.enum(['low', 'medium', 'high', 'critical']),
+  status: z.enum(['open', 'investigating', 'closed', 'cold']),
+  category: z.string().trim().max(120, 'Category is too long').optional(),
+  location: z.string().trim().max(120, 'Location is too long').optional(),
+  assigned_officer_id: z.string().trim().optional(),
+});
 
 export default function AddCase() {
   const navigate = useNavigate();
@@ -32,17 +43,24 @@ export default function AddCase() {
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const parsed = caseFormSchema.safeParse(form);
+    if (!parsed.success) {
+      toast.error(parsed.error.issues[0]?.message ?? 'Invalid case form input');
+      return;
+    }
+
     setSubmitting(true);
     const case_number = `FBI-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
+    const payload = parsed.data;
     const { error } = await supabase.from('cases').insert({
       case_number,
-      title: form.title,
-      description: form.description,
-      priority: form.priority as any,
-      status: form.status as any,
-      category: form.category,
-      location: form.location,
-      assigned_officer_id: form.assigned_officer_id || null,
+      title: payload.title,
+      description: payload.description || null,
+      priority: payload.priority as any,
+      status: payload.status as any,
+      category: payload.category || null,
+      location: payload.location || null,
+      assigned_officer_id: payload.assigned_officer_id || null,
       created_by: user?.id,
     });
     setSubmitting(false);

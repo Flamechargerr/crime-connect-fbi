@@ -1,4 +1,5 @@
 import React from 'react';
+import { logEvent } from '@/lib/telemetry';
 
 interface ErrorBoundaryState {
   hasError: boolean;
@@ -16,8 +17,10 @@ class ErrorBoundary extends React.Component<React.PropsWithChildren<{}>, ErrorBo
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    // You can log error info to an error reporting service here
-    // console.error('ErrorBoundary caught:', error, errorInfo);
+    logEvent('error', 'Unhandled UI error', {
+      message: error.message,
+      componentStack: errorInfo.componentStack,
+    });
   }
 
   handleReset = () => {
