@@ -59,7 +59,7 @@ const THREAT_WEIGHT: Record<ThreatLevel, number> = {
   extreme: 4,
 };
 
-function classifyRegion(location: string | null): string {
+function determineRegionFromLocation(location: string | null): string {
   if (!location) return 'Unknown';
   const value = location.toLowerCase();
   if (value.includes('ny') || value.includes('new york') || value.includes('boston') || value.includes('dc') || value.includes('washington')) return 'Northeast';
@@ -71,13 +71,17 @@ function classifyRegion(location: string | null): string {
   return 'Unknown';
 }
 
+/**
+ * Creates deterministic coordinate jitter for synthetic map points.
+ * Uses a lightweight string hash and scales the normalized offset by `scale`.
+ */
 function stableOffset(seed: string, scale: number): number {
   let hash = 0;
   for (let i = 0; i < seed.length; i += 1) hash = (hash * 31 + seed.charCodeAt(i)) >>> 0;
   return (((hash % 1000) / 1000) - 0.5) * scale;
 }
 
-function deriveSafehouses(cases: CaseRow[], criminals: CriminalRow[]): Safehouse[] {
+function synthesizeSafehouseData(cases: CaseRow[], criminals: CriminalRow[]): Safehouse[] {
   const hotspots = cases
     .filter((item) => item.location && (item.status === 'open' || item.status === 'investigating'))
     .slice(0, 8);
@@ -87,14 +91,14 @@ function deriveSafehouses(cases: CaseRow[], criminals: CriminalRow[]): Safehouse
     : ['Boston, MA', 'Atlanta, GA', 'Chicago, IL', 'Phoenix, AZ', 'Los Angeles, CA'];
 
   return baseCities.map((location, index) => {
-    const region = classifyRegion(location);
+    const region = determineRegionFromLocation(location);
     const city = location.split(',')[0]?.trim() || location;
     const centroid = REGION_CENTROIDS[region] ?? REGION_CENTROIDS.Unknown;
     const lat = centroid.lat + stableOffset(`${location}-lat-${index}`, 2.8);
     const lon = centroid.lon + stableOffset(`${location}-lon-${index}`, 3.2);
 
     const regionThreat = criminals
-      .filter((c) => classifyRegion(c.last_known_location) === region && c.status === 'at_large')
+      .filter((c) => determineRegionFromLocation(c.last_known_location) === region && c.status === 'at_large')
       .reduce((sum, c) => sum + THREAT_WEIGHT[c.threat_level], 0);
 
     const capacity = 4 + (index % 4) * 2;
@@ -145,7 +149,7 @@ export default function Hideouts() {
   });
 
   const safehouses = useMemo(
-    () => deriveSafehouses(data?.cases ?? [], data?.criminals ?? []),
+    () => synthesizeSafehouseData(data?.cases ?? [], data?.criminals ?? []),
     [data?.cases, data?.criminals],
   );
 
@@ -163,7 +167,7 @@ export default function Hideouts() {
       .filter((c) => c.status === 'at_large')
       .slice(0, 8)
       .map((criminal) => {
-        const region = classifyRegion(criminal.last_known_location);
+        const region = determineRegionFromLocation(criminal.last_known_location);
         const centroid = REGION_CENTROIDS[region] ?? REGION_CENTROIDS.Unknown;
         return {
           id: `criminal-${criminal.id}`,
