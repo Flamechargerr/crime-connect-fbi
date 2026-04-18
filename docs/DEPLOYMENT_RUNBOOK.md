@@ -1,7 +1,7 @@
 # Deployment runbook
 
 ## 1) Prerequisites
-- Node.js 18+
+- Node.js 20+
 - npm 9+
 - Supabase project with schema migration access
 
@@ -43,4 +43,3 @@ Validate:
 - Monitor client error logs for auth/session issues.
 - Track failed Supabase requests from browser console logging.
 - Verify `/health` endpoint remains reachable from uptime checks.
-

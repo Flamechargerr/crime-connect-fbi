@@ -21,8 +21,6 @@ const caseFormSchema = z.object({
   location: z.string().trim().max(120, 'Location is too long').optional(),
   assigned_officer_id: z.string().trim().optional(),
 });
-type CasePriority = z.infer<typeof caseFormSchema>['priority'];
-type CaseStatus = z.infer<typeof caseFormSchema>['status'];
 type OfficerOption = { id: string; full_name: string; badge_number: string };
 
 export default function AddCase() {
@@ -59,8 +57,8 @@ export default function AddCase() {
       case_number,
       title: payload.title,
       description: payload.description || null,
-      priority: payload.priority as CasePriority,
-      status: payload.status as CaseStatus,
+      priority: payload.priority,
+      status: payload.status,
       category: payload.category || null,
       location: payload.location || null,
       assigned_officer_id: payload.assigned_officer_id || null,

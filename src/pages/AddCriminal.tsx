@@ -22,9 +22,6 @@ const criminalFormSchema = z.object({
   last_known_location: z.string().trim().max(120, 'Location is too long').optional(),
   most_wanted: z.boolean(),
 });
-type CriminalThreatLevel = z.infer<typeof criminalFormSchema>['threat_level'];
-type CriminalStatus = z.infer<typeof criminalFormSchema>['status'];
-
 export default function AddCriminal() {
   const navigate = useNavigate();
   const [form, setForm] = useState({
@@ -55,8 +52,8 @@ export default function AddCriminal() {
       nationality: payload.nationality || null,
       description: payload.description || null,
       last_known_location: payload.last_known_location || null,
-      threat_level: payload.threat_level as CriminalThreatLevel,
-      status: payload.status as CriminalStatus,
+      threat_level: payload.threat_level,
+      status: payload.status,
     });
     setSubmitting(false);
     if (error) toast.error(error.message);

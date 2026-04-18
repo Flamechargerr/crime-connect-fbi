@@ -45,7 +45,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setRoles(((data ?? []) as UserRoleRow[]).map((r) => r.role));
     } catch (error) {
       setRoles([]);
-      logEvent('warn', 'Failed to fetch user roles', { userId: uid, error: String(error) });
+      logEvent('warn', 'Failed to fetch user roles', { error: String(error) });
     }
   };
 
@@ -90,7 +90,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signOut = async () => {
     const { error } = await supabase.auth.signOut();
-    if (error) throw error;
+    if (error) {
+      logEvent('error', 'Sign-out failed', { error: error.message });
+      throw new Error(`Sign-out failed: ${error.message}`);
+    }
   };
 
   const resetPassword = async (email: string) => {
