@@ -1,4 +1,4 @@
-# Crimestat — Design System
+# Crime Connect FBI — Design System
 
 ## Product Concept
 A production-grade crime analytics and intelligence platform. Think **Palantir Gotham** meets **Bloomberg Terminal** — dense, purposeful, and authoritative. No gimmicks. No fake "FBI classified" badges. Real data, real insights, real utility.
@@ -6,6 +6,8 @@ A production-grade crime analytics and intelligence platform. Think **Palantir G
 **Target user:** Law enforcement analysts, data journalists, public safety researchers, and citizens interested in crime trends.
 
 **Data source:** Chicago Crime Data API (Socrata/Open Data) — 8M+ real records, no API key required, fully public.
+
+**Name:** Crime Connect FBI — clean, serious, no gimmicks.
 
 ---
 
