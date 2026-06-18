@@ -18,6 +18,7 @@ import NewCase from '@/pages/NewCase';
 import Predictions from '@/pages/Predictions';
 import Reports from '@/pages/Reports';
 import Profile from '@/pages/Profile';
+import DatabaseConsole from '@/pages/DatabaseConsole';
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { refetchOnWindowFocus: false, retry: 1, staleTime: 30_000 } },
@@ -45,6 +46,7 @@ export default function App() {
               <Route path="/predictions" element={<Predictions />} />
               <Route path="/reports" element={<Reports />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/database" element={<DatabaseConsole />} />
             </Route>
 
             <Route path="*" element={<NotFound />} />

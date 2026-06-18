@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { useAuth } from '@/context/AuthContext';
 import {
   LayoutDashboard, Database, Map, FolderOpen, Brain, FileBarChart, User, LogOut,
-  ChevronLeft, ChevronRight, Menu, Shield
+  ChevronLeft, ChevronRight, Menu, Shield, Terminal
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -15,6 +15,7 @@ const navItems = [
   { label: 'Cases', icon: FolderOpen, path: '/cases' },
   { label: 'Predictions', icon: Brain, path: '/predictions' },
   { label: 'Reports', icon: FileBarChart, path: '/reports' },
+  { label: 'Database Console', icon: Terminal, path: '/database' },
 ];
 
 export function AppSidebar() {
