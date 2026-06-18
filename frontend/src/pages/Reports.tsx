@@ -4,7 +4,24 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { getReportSummary } from '@/lib/api';
-import { FileBarChart, BarChart3 } from 'lucide-react';
+import { FileBarChart, Folder, Target, Shield, Clock } from 'lucide-react';
+import { motion } from 'framer-motion';
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 16 },
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: { delay: i * 0.08, duration: 0.45, ease: [0.25, 0.46, 0.45, 0.94] } as any,
+  }),
+};
+
+const statIcons = [
+  { icon: Folder, label: 'Crimes analyzed' },
+  { icon: Target, label: 'Model accuracy' },
+  { icon: Shield, label: 'Top crime types' },
+  { icon: Clock, label: 'Generated' },
+];
 
 export default function Reports() {
   const { data: report, isLoading, refetch } = useQuery({
@@ -12,16 +29,40 @@ export default function Reports() {
     queryFn: getReportSummary,
   });
 
+  const statValues = report
+    ? [
+        report.total_crimes_analyzed?.toLocaleString(),
+        report.model_accuracy ? `${(report.model_accuracy * 100).toFixed(1)}%` : 'N/A',
+        report.top_crime_types?.length,
+        new Date().toLocaleDateString(),
+      ]
+    : [];
+
   return (
-    <div className="space-y-6">
+    <motion.div
+      className="space-y-6"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.4 }}
+    >
+      {/* HUD Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Reports</h1>
-          <p className="text-muted-foreground text-sm mt-1">Generated intelligence summaries.</p>
+          <h1 className="font-mono font-bold uppercase tracking-wider text-glow text-white text-2xl">
+            INTELLIGENCE_REPORTS // SUMMARY_GENERATOR
+          </h1>
+          <p className="text-[10px] font-mono uppercase tracking-widest text-primary/60 mt-1">
+            Generated intelligence summaries and tactical analysis
+          </p>
         </div>
-        <Button onClick={() => refetch()} className="gap-2">
-          <FileBarChart className="h-4 w-4" /> Generate Report
-        </Button>
+        <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+          <Button
+            onClick={() => refetch()}
+            className="gap-2 shadow-[0_0_15px_rgba(0,255,255,0.15)] hover:shadow-[0_0_25px_rgba(0,255,255,0.3)] transition-shadow duration-300"
+          >
+            <FileBarChart className="h-4 w-4" /> Generate Report
+          </Button>
+        </motion.div>
       </div>
 
       {isLoading ? (
@@ -31,87 +72,126 @@ export default function Reports() {
         </div>
       ) : report ? (
         <div className="space-y-6">
+          {/* Stat Cards */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <Card className="card-intel">
-              <CardContent className="pt-6">
-                <BarChart3 className="h-5 w-5 text-primary mb-2" />
-                <div className="text-2xl font-bold">{report.total_crimes_analyzed?.toLocaleString()}</div>
-                <div className="text-xs text-muted-foreground">Crimes analyzed</div>
-              </CardContent>
-            </Card>
-            <Card className="card-intel">
-              <CardContent className="pt-6">
-                <BarChart3 className="h-5 w-5 text-primary mb-2" />
-                <div className="text-2xl font-bold">
-                  {report.model_accuracy ? `${(report.model_accuracy * 100).toFixed(1)}%` : 'N/A'}
-                </div>
-                <div className="text-xs text-muted-foreground">Model accuracy</div>
-              </CardContent>
-            </Card>
-            <Card className="card-intel">
-              <CardContent className="pt-6">
-                <BarChart3 className="h-5 w-5 text-primary mb-2" />
-                <div className="text-2xl font-bold">{report.top_crime_types?.length}</div>
-                <div className="text-xs text-muted-foreground">Top crime types</div>
-              </CardContent>
-            </Card>
-            <Card className="card-intel">
-              <CardContent className="pt-6">
-                <BarChart3 className="h-5 w-5 text-primary mb-2" />
-                <div className="text-2xl font-bold">{new Date().toLocaleDateString()}</div>
-                <div className="text-xs text-muted-foreground">Generated</div>
-              </CardContent>
-            </Card>
+            {statIcons.map((stat, i) => {
+              const IconComponent = stat.icon;
+              return (
+                <motion.div
+                  key={stat.label}
+                  custom={i}
+                  variants={cardVariants}
+                  initial="hidden"
+                  animate="visible"
+                  whileHover={{ y: -2, transition: { type: 'spring', stiffness: 300 } }}
+                >
+                  <Card className="card-intel relative overflow-hidden">
+                    <CardContent className="pt-6">
+                      <IconComponent className="h-5 w-5 text-primary mb-2" />
+                      <div className="text-2xl font-bold font-mono text-glow text-white">
+                        {statValues[i]}
+                      </div>
+                      <div className="text-[10px] font-mono uppercase tracking-widest text-primary/50 mt-1">
+                        {stat.label}
+                      </div>
+                      {/* Pulsing status dot */}
+                      <span className="absolute top-3 right-3 h-2 w-2 rounded-full bg-success animate-pulse" />
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              );
+            })}
           </div>
 
-          <Card className="card-intel">
-            <CardHeader>
-              <CardTitle>Top Crime Types</CardTitle>
-              <CardDescription>Most frequent crime categories in the analyzed dataset.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {report.top_crime_types?.map((t: any, i: number) => (
-                  <div key={t.type} className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <span className="text-xs font-mono text-muted-foreground w-6">{String(i + 1).padStart(2, '0')}</span>
-                      <span className="font-medium">{t.type}</span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <div className="h-2 w-32 rounded-full bg-muted overflow-hidden">
-                        <div className="h-full bg-primary" style={{ width: `${Math.min(100, (t.count / (report.total_crimes_analyzed || 1)) * 500)}%` }} />
+          {/* Top Crime Types Card */}
+          <motion.div
+            custom={4}
+            variants={cardVariants}
+            initial="hidden"
+            animate="visible"
+          >
+            <Card className="card-intel relative overflow-hidden">
+              {/* Scan line overlay */}
+              <div className="absolute left-0 right-0 h-[1px] bg-primary/10 animate-scan top-0 pointer-events-none" />
+              <CardHeader>
+                <CardTitle className="text-xs font-mono uppercase tracking-wider text-white flex items-center gap-2">
+                  <Target className="h-4 w-4 text-primary" /> Top_Crime_Types
+                </CardTitle>
+                <CardDescription className="text-[10px] font-mono uppercase tracking-widest text-primary/40">
+                  Most frequent crime categories in the analyzed dataset
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {report.top_crime_types?.map((t: any, i: number) => (
+                    <motion.div
+                      key={t.type}
+                      className="flex items-center justify-between"
+                      initial={{ opacity: 0, x: -12 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.4 + i * 0.06, duration: 0.4 }}
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className="text-xs font-mono text-primary/50 w-6">{String(i + 1).padStart(2, '0')}</span>
+                        <span className="text-sm font-mono uppercase tracking-wider text-white/90">{t.type}</span>
                       </div>
-                      <Badge variant="secondary" className="text-xs">{t.count}</Badge>
+                      <div className="flex items-center gap-3">
+                        <div className="h-2 w-32 rounded-full bg-muted/30 overflow-hidden">
+                          <motion.div
+                            className="h-full rounded-full bg-gradient-to-r from-primary/60 to-primary animate-fill-bar"
+                            initial={{ width: 0 }}
+                            animate={{ width: `${Math.min(100, (t.count / (report.total_crimes_analyzed || 1)) * 500)}%` }}
+                            transition={{ delay: 0.6 + i * 0.1, duration: 0.8, ease: 'easeOut' }}
+                          />
+                        </div>
+                        <Badge variant="secondary" className="text-xs font-mono bg-primary/10 text-primary border border-primary/20">
+                          {t.count}
+                        </Badge>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* Report Metadata Card */}
+          <motion.div
+            custom={5}
+            variants={cardVariants}
+            initial="hidden"
+            animate="visible"
+          >
+            <Card className="card-intel relative overflow-hidden">
+              <div className="absolute left-0 right-0 h-[1px] bg-primary/10 animate-scan top-0 pointer-events-none" />
+              <CardHeader>
+                <CardTitle className="text-xs font-mono uppercase tracking-wider text-white flex items-center gap-2">
+                  <Shield className="h-4 w-4 text-primary" /> Report_Metadata
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
+                  <div>
+                    <div className="text-xs font-mono uppercase tracking-wider text-muted-foreground mb-1">Generated_At</div>
+                    <div className="font-mono text-white/80">{report.generated_at?.slice(0, 10)}</div>
+                  </div>
+                  <div>
+                    <div className="text-xs font-mono uppercase tracking-wider text-muted-foreground mb-1">Data_Source</div>
+                    <div className="font-mono text-white/80">Chicago Open Data</div>
+                  </div>
+                  <div>
+                    <div className="text-xs font-mono uppercase tracking-wider text-muted-foreground mb-1">Model_Engine</div>
+                    <div className="font-mono text-white/80 flex items-center gap-2">
+                      Random Forest
+                      <span className="h-2 w-2 rounded-full bg-success animate-pulse" />
                     </div>
                   </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="card-intel">
-            <CardHeader>
-              <CardTitle>Report Metadata</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
-                <div>
-                  <div className="text-xs font-mono uppercase text-muted-foreground mb-1">Generated At</div>
-                  <div className="font-mono">{report.generated_at?.slice(0, 10)}</div>
                 </div>
-                <div>
-                  <div className="text-xs font-mono uppercase text-muted-foreground mb-1">Data Source</div>
-                  <div>Chicago Open Data</div>
-                </div>
-                <div>
-                  <div className="text-xs font-mono uppercase text-muted-foreground mb-1">Model</div>
-                  <div>Random Forest</div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </motion.div>
         </div>
       ) : null}
-    </div>
+    </motion.div>
   );
 }
