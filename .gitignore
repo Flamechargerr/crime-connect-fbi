@@ -73,4 +73,7 @@ htmlcov/
 *.pkl
 *.h5
 *.onnx
+
+# Allow frontend/src/lib to be tracked
+!frontend/src/lib/
 .vercel
