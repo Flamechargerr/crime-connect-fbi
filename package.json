@@ -1,0 +1,11 @@
+{
+  "name": "crime-connect-fbi-root",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "frontend"
+  ],
+  "scripts": {
+    "build": "npm run build --workspace=frontend"
+  }
+}
