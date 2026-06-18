@@ -8,6 +8,7 @@ import { Select } from '@/components/ui/select';
 import { createCase } from '@/lib/api';
 import { ArrowLeft, FilePlus, Send } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { toast } from 'sonner';
 
 export default function NewCase() {
   const navigate = useNavigate();
@@ -22,8 +23,12 @@ export default function NewCase() {
     mutationFn: createCase,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cases'] });
+      toast.success('Case record initialized successfully.');
       navigate('/cases');
     },
+    onError: (err: any) => {
+      toast.error(`Failed to initialize case: ${err.message}`);
+    }
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -53,12 +58,12 @@ export default function NewCase() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
       >
-        <h1 className="text-2xl font-mono font-bold uppercase tracking-wider text-glow text-white flex items-center gap-3">
+        <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-3">
           <FilePlus className="h-6 w-6 text-primary" />
-          CASE_FILE_CREATION <span className="text-primary/50">//</span> SECURE_INPUT
+          Initialize Case File
         </h1>
-        <p className="text-[10px] font-mono uppercase tracking-widest text-primary/60 mt-1">
-          Create a new investigation case • Encrypted channel active
+        <p className="text-xs text-muted-foreground mt-1">
+          Create a new investigation ledger to track incidents and assigned agents.
         </p>
       </motion.div>
 
@@ -70,13 +75,7 @@ export default function NewCase() {
       >
         <Card className="card-intel relative overflow-hidden">
           {/* Scan line */}
-          <div className="absolute left-0 right-0 h-[1px] bg-primary/10 animate-scan top-0 pointer-events-none" />
-
-          {/* Corner telemetry markers */}
-          <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-primary/40" />
-          <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-primary/40" />
-          <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-primary/40" />
-          <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-primary/40" />
+          <div className="absolute left-0 right-0 h-[1px] bg-primary/5 animate-scan top-0 pointer-events-none" />
 
           <CardContent className="pt-6">
             <form onSubmit={handleSubmit} className="space-y-5 max-w-xl">

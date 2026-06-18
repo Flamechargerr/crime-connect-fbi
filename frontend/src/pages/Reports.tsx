@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { getReportSummary } from '@/lib/api';
 import { FileBarChart, Folder, Target, Shield, Clock } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { toast } from 'sonner';
 
 const cardVariants = {
   hidden: { opacity: 0, y: 16 },
@@ -29,6 +30,16 @@ export default function Reports() {
     queryFn: getReportSummary,
   });
 
+  const handleGenerateReport = async () => {
+    const toastId = toast.loading("Compiling intelligence records...");
+    try {
+      await refetch();
+      toast.success("Intelligence summary report compiled.", { id: toastId });
+    } catch (err: any) {
+      toast.error(`Report generation failed: ${err.message}`, { id: toastId });
+    }
+  };
+
   const statValues = report
     ? [
         report.total_crimes_analyzed?.toLocaleString(),
@@ -48,16 +59,17 @@ export default function Reports() {
       {/* HUD Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-mono font-bold uppercase tracking-wider text-glow text-white text-2xl">
-            INTELLIGENCE_REPORTS // SUMMARY_GENERATOR
+          <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-3">
+            <FileBarChart className="h-6 w-6 text-primary animate-pulse" />
+            Intelligence Reports
           </h1>
-          <p className="text-[10px] font-mono uppercase tracking-widest text-primary/60 mt-1">
-            Generated intelligence summaries and tactical analysis
+          <p className="text-xs text-muted-foreground mt-1">
+            Aggregated intelligence summaries and structural data analysis generated from Chicago open records.
           </p>
         </div>
         <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
           <Button
-            onClick={() => refetch()}
+            onClick={handleGenerateReport}
             className="gap-2 shadow-[0_0_15px_rgba(0,255,255,0.15)] hover:shadow-[0_0_25px_rgba(0,255,255,0.3)] transition-shadow duration-300"
           >
             <FileBarChart className="h-4 w-4" /> Generate Report

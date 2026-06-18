@@ -72,22 +72,21 @@ export default function MapPage() {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.4 }}
     >
-      {/* ── HUD HEADER ── */}
-      <motion.div
-        className="flex items-center justify-between flex-wrap gap-4"
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.05 }}
-      >
-        <div>
+      {/* ── TITLE & TELEMETRY HEADER ── */}
+      <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.05 }}
+        >
           <div className="flex items-center gap-3">
             <Radar className="h-5 w-5 text-primary animate-pulse" />
-            <h1 className="text-2xl font-mono font-bold uppercase tracking-wider text-glow text-white">
-              THREAT_MAP <span className="text-primary/50">//</span> HOTSPOT_VISUALIZATION
+            <h1 className="text-2xl font-bold tracking-tight text-white">
+              Geospatial Threat Map
             </h1>
           </div>
-          <p className="text-[10px] font-mono uppercase tracking-widest text-primary/60 mt-1 ml-8">
-            ◆ Interactive hotspot visualization — Threat Zone Analysis
+          <p className="text-xs text-muted-foreground mt-1 ml-8">
+            Interactive metropolitan hotspot visualizer and security parameter telemetry logs.
           </p>
 
           {/* Threat status indicator */}
@@ -113,7 +112,7 @@ export default function MapPage() {
               </span>
             </div>
           </motion.div>
-        </div>
+        </motion.div>
 
         {/* HUD-styled Select */}
         <motion.div
@@ -133,7 +132,7 @@ export default function MapPage() {
             className="w-56 font-mono text-sm bg-background/50 border-primary/20"
           />
         </motion.div>
-      </motion.div>
+      </div>
 
       {/* ── MAP CARD WITH NEON BORDER ── */}
       <motion.div

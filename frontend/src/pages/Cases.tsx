@@ -8,6 +8,7 @@ import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@
 import { getCases, deleteCase } from '@/lib/api';
 import { Plus, Trash2, ArrowRight, Shield } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { toast } from 'sonner';
 
 export default function Cases() {
   const navigate = useNavigate();
@@ -16,7 +17,13 @@ export default function Cases() {
 
   const deleteMutation = useMutation({
     mutationFn: deleteCase,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['cases'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['cases'] });
+      toast.success('Case investigation file deleted successfully.');
+    },
+    onError: (err: any) => {
+      toast.error(`Failed to delete case: ${err.message}`);
+    }
   });
 
   const priorityColors: Record<string, string> = {
@@ -36,12 +43,12 @@ export default function Cases() {
       {/* ═══ HUD HEADER ═══ */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-mono font-bold uppercase tracking-wider text-glow text-white flex items-center gap-3">
+          <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-3">
             <Shield className="h-6 w-6 text-primary" />
-            CASE_MANAGEMENT <span className="text-primary/50">//</span> TACTICAL_DATABASE
+            Case Investigations
           </h1>
-          <p className="text-[10px] font-mono uppercase tracking-widest text-primary/60 mt-1">
-            Internal investigations and case tracking • Clearance Level: Authorized
+          <p className="text-xs text-muted-foreground mt-1">
+            Internal investigations and case tracking database • Clearance Level: Authorized
           </p>
         </div>
         <div className="flex items-center gap-4">

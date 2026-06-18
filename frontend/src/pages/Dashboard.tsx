@@ -45,16 +45,16 @@ export default function Dashboard() {
       {/* Dashboard Header */}
       <div className="flex items-center justify-between flex-wrap gap-4 border-b border-border/40 pb-4">
         <div>
-          <h1 className="text-2xl font-bold font-mono tracking-wider text-white uppercase text-glow">
-            OPERATIONS_CENTER
+          <h1 className="text-2xl font-bold tracking-tight text-glow text-white">
+            Operations Control Center
           </h1>
-          <p className="text-muted-foreground text-xs font-mono uppercase mt-1">
-            Real-time telemetry and analytical overview // Chicago Metropolitan area.
+          <p className="text-xs text-muted-foreground mt-1">
+            Real-time telemetry and analytical overview of the Chicago Metropolitan Area
           </p>
         </div>
         <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-[0.2em] text-primary/70 bg-primary/5 px-3 py-1.5 rounded-lg border border-primary/20 shadow-[0_0_10px_rgba(0,255,255,0.05)]">
-          <span className="h-2 w-2 rounded-full bg-success animate-pulse border-glow" />
-          Live telemetry feed
+          <span className="h-1.5 w-1.5 rounded-full bg-success animate-pulse" />
+          Live Ingestion Feed
         </div>
       </div>
 
@@ -96,10 +96,10 @@ export default function Dashboard() {
         {/* Bar Chart Panel */}
         <Card className="card-intel lg:col-span-2">
           <CardHeader className="border-b border-border/40 pb-3">
-            <CardTitle className="text-xs font-mono uppercase tracking-wider text-white flex items-center gap-2">
-              <Activity className="h-4 w-4 text-primary text-glow" /> INCIDENTS_BY_CATEGORY
+            <CardTitle className="text-xs font-semibold uppercase tracking-wider text-white flex items-center gap-2">
+              <Activity className="h-4 w-4 text-primary" /> Incidents by Category
             </CardTitle>
-            <CardDescription className="text-[10px] font-mono uppercase">Top 6 crime types registered by frequency.</CardDescription>
+            <CardDescription className="text-[10px] font-mono uppercase">Top 6 crime types registered by frequency</CardDescription>
           </CardHeader>
           <CardContent className="h-[280px] pt-6">
             {statsLoading ? (
@@ -139,10 +139,10 @@ export default function Dashboard() {
         {/* Pie Chart Panel */}
         <Card className="card-intel">
           <CardHeader className="border-b border-border/40 pb-3">
-            <CardTitle className="text-xs font-mono uppercase tracking-wider text-white flex items-center gap-2">
-              <AlertTriangle className="h-4 w-4 text-warning text-glow animate-pulse" /> ARREST_RATIO_STATUS
+            <CardTitle className="text-xs font-semibold uppercase tracking-wider text-white flex items-center gap-2">
+              <AlertTriangle className="h-4 w-4 text-warning animate-pulse" /> Arrest Ratio Status
             </CardTitle>
-            <CardDescription className="text-[10px] font-mono uppercase">Decryption of closed vs open incidents.</CardDescription>
+            <CardDescription className="text-[10px] font-mono uppercase">Decryption of closed vs open incidents</CardDescription>
           </CardHeader>
           <CardContent className="h-[280px] pt-6 flex flex-col justify-between">
             {statsLoading ? (
@@ -193,10 +193,10 @@ export default function Dashboard() {
 
         <CardHeader className="flex flex-row items-center justify-between border-b border-border/40 pb-3">
           <div>
-            <CardTitle className="text-xs font-mono uppercase tracking-wider text-white flex items-center gap-2">
-              <Terminal className="h-4 w-4 text-primary" /> REALTIME_FEED_STREAM
+            <CardTitle className="text-xs font-semibold uppercase tracking-wider text-white flex items-center gap-2">
+              <Terminal className="h-4 w-4 text-primary" /> Real-time Feed Stream
             </CardTitle>
-            <CardDescription className="text-[10px] font-mono uppercase">Most recent incident files retrieved from live API.</CardDescription>
+            <CardDescription className="text-[10px] font-mono uppercase">Most recent incident files retrieved from live API</CardDescription>
           </div>
           <Link to="/data" className="cursor-pointer">
             <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
@@ -235,7 +235,7 @@ export default function Dashboard() {
                     : 'text-[9px] font-mono bg-warning/10 hover:bg-warning/15 text-warning border border-warning/20 uppercase tracking-widest px-2.5'
                   }
                 >
-                  {c.arrest ? 'CUSTODY_RESOLVED' : 'INVESTIGATION_OPEN'}
+                  {c.arrest ? 'Arrested' : 'No Arrest'}
                 </Badge>
               </div>
             </motion.div>

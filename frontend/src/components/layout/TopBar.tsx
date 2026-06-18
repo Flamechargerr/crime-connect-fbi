@@ -25,7 +25,8 @@ export function TopBar() {
     path === '/cases' ? 'CASES_DB' :
     path === '/predictions' ? 'ML_PREDICTIONS' :
     path === '/reports' ? 'ANALYTICS_REPORTS' :
-    path === '/profile' ? 'AGENT_PROFILE' : 'SYSTEM';
+    path === '/profile' ? 'AGENT_PROFILE' :
+    path === '/database' ? 'DATABASE_CONSOLE' : 'SYSTEM';
 
   return (
     <header className="h-14 border-b border-border bg-card/45 backdrop-blur-md flex items-center justify-between px-6 shrink-0 relative z-30">

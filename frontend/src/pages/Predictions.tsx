@@ -10,6 +10,7 @@ import { predict, getPredictStats } from '@/lib/api';
 import { Brain, Activity, AlertTriangle, Shield, Zap } from 'lucide-react';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 import { motion } from 'framer-motion';
+import { toast } from 'sonner';
 
 const cardVariants = {
   hidden: { opacity: 0, y: 16 },
@@ -43,7 +44,13 @@ export default function Predictions() {
 
   const predictMutation = useMutation({
     mutationFn: predict,
-    onSuccess: (data) => setResult(data),
+    onSuccess: (data) => {
+      setResult(data);
+      toast.success("Threat classification prediction completed successfully.");
+    },
+    onError: (err: any) => {
+      toast.error(`Prediction failed: ${err.message}`);
+    }
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -86,11 +93,12 @@ export default function Predictions() {
     >
       {/* HUD Header */}
       <div>
-        <h1 className="font-mono font-bold uppercase tracking-wider text-glow text-white text-2xl">
-          ML_THREAT_ASSESSMENT // NEURAL_ANALYZER
+        <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-3">
+          <Brain className="h-6 w-6 text-primary" />
+          Threat Assessment Engine
         </h1>
-        <p className="text-[10px] font-mono uppercase tracking-widest text-primary/60 mt-1">
-          ML-powered threat assessment and priority prediction engine
+        <p className="text-xs text-muted-foreground mt-1">
+          Machine Learning prediction console for incident priority classification and parameter simulation.
         </p>
       </div>
 

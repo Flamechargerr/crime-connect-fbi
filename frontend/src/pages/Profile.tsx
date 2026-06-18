@@ -31,11 +31,12 @@ export default function Profile() {
 
       {/* HUD Header */}
       <div>
-        <h1 className="text-2xl font-mono font-bold uppercase tracking-wider text-glow text-white">
-          AGENT_IDENTITY // CLEARANCE_MODULE
+        <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-3">
+          <User className="h-6 w-6 text-primary" />
+          Agent Identity File
         </h1>
-        <p className="text-[10px] font-mono uppercase tracking-widest text-primary/60 mt-1">
-          Secure personnel file — authenticated access only
+        <p className="text-xs text-muted-foreground mt-1">
+          Authenticated personnel details and encryption clearance records.
         </p>
       </div>
 

@@ -42,20 +42,20 @@ export default function DataBrowser() {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.4 }}
     >
-      {/* ── HUD HEADER ── */}
+      {/* ── BREADCRUMB & TITLE HEADER ── */}
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.05 }}
       >
         <div className="flex items-center gap-3">
-          <Database className="h-5 w-5 text-primary" />
-          <h1 className="text-2xl font-mono font-bold uppercase tracking-wider text-glow text-white">
-            DATA_INTELLIGENCE <span className="text-primary/50">//</span> CRIME_RECORDS_DB
+          <Database className="h-5 w-5 text-primary animate-pulse" />
+          <h1 className="text-2xl font-bold tracking-tight text-white">
+            Data Intelligence Records
           </h1>
         </div>
-        <p className="text-[10px] font-mono uppercase tracking-widest text-primary/60 mt-1 ml-8">
-          ◆ Search, filter, and explore Chicago crime records — Intelligence Database Console
+        <p className="text-xs text-muted-foreground mt-1 ml-8">
+          Search, filter, and explore active Chicago incident reports from the intelligence database logs.
         </p>
       </motion.div>
 

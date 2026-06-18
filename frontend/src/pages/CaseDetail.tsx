@@ -9,6 +9,7 @@ import { Select } from '@/components/ui/select';
 import { getCase, updateCase, deleteCase } from '@/lib/api';
 import { ArrowLeft, Save, Trash2, FileText, User, Calendar, Hash } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { toast } from 'sonner';
 
 export default function CaseDetail() {
   const { id } = useParams<{ id: string }>();
@@ -28,15 +29,23 @@ export default function CaseDetail() {
       queryClient.invalidateQueries({ queryKey: ['case', id] });
       queryClient.invalidateQueries({ queryKey: ['cases'] });
       setEditing(false);
+      toast.success('Dossier changes saved successfully.');
     },
+    onError: (err: any) => {
+      toast.error(`Failed to update case: ${err.message}`);
+    }
   });
 
   const deleteMutation = useMutation({
     mutationFn: () => deleteCase(id!),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cases'] });
+      toast.success('Case record successfully deleted.');
       navigate('/cases');
     },
+    onError: (err: any) => {
+      toast.error(`Failed to delete case: ${err.message}`);
+    }
   });
 
   if (isLoading) return <div className="p-6"><div className="h-8 w-48 bg-muted animate-pulse rounded" /></div>;
@@ -91,12 +100,12 @@ export default function CaseDetail() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
       >
-        <h1 className="text-2xl font-mono font-bold uppercase tracking-wider text-glow text-white flex items-center gap-3">
+        <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-3">
           <FileText className="h-6 w-6 text-primary" />
-          DOSSIER: {caseData.title}
+          Dossier: {caseData.title}
         </h1>
-        <p className="text-[10px] font-mono uppercase tracking-widest text-primary/60 mt-1">
-          Intelligence Dossier • Case File #{caseData.id?.slice(0, 8)}
+        <p className="text-xs text-muted-foreground mt-1">
+          Secure Intelligence Dossier • Case File: <span className="font-mono text-primary font-bold">#{caseData.id?.slice(0, 8)}</span>
         </p>
         <div className="flex gap-2 mt-3">
           <Badge variant={caseData.status === 'open' ? 'default' : 'secondary'} className="text-[10px] uppercase font-mono">
@@ -115,13 +124,7 @@ export default function CaseDetail() {
       >
         <Card className="card-intel relative overflow-hidden">
           {/* Scan line */}
-          <div className="absolute left-0 right-0 h-[1px] bg-primary/10 animate-scan top-0 pointer-events-none" />
-
-          {/* Corner telemetry markers */}
-          <div className="absolute top-0 left-0 w-3 h-3 border-t border-l border-primary/40" />
-          <div className="absolute top-0 right-0 w-3 h-3 border-t border-r border-primary/40" />
-          <div className="absolute bottom-0 left-0 w-3 h-3 border-b border-l border-primary/40" />
-          <div className="absolute bottom-0 right-0 w-3 h-3 border-b border-r border-primary/40" />
+          <div className="absolute left-0 right-0 h-[1px] bg-primary/5 animate-scan top-0 pointer-events-none" />
 
           <CardContent className="pt-6">
             {editing ? (
