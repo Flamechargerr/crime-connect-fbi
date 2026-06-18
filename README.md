@@ -63,7 +63,44 @@ App: http://localhost:5173
 
 ---
 
-## Architecture
+## Deploy to Vercel
+
+The frontend is ready for Vercel deployment with built-in demo fallback data (works without a backend).
+
+### Option A: Vercel Dashboard (Recommended)
+1. Go to [vercel.com](https://vercel.com) → Import your GitHub repo
+2. **Project Settings → General → Root Directory**: Set to `frontend`
+3. **Framework Preset**: Vite
+4. **Build Command**: `npm run build`
+5. **Output Directory**: `dist`
+6. Add environment variable: `VITE_API_URL` = `https://your-backend-url.com` (or leave empty for demo mode)
+7. Deploy
+
+### Option B: Vercel CLI
+```bash
+npm i -g vercel
+vercel --cwd frontend
+```
+
+The app will work immediately in **demo mode** — realistic Chicago crime data, working charts, case management, and ML predictions without any backend. When you connect a real backend, swap `VITE_API_URL` in the environment variables.
+
+---
+
+## Backend Deployment (Optional)
+
+Deploy the backend to any platform that supports Python:
+
+**Render / Railway / Fly.io**
+```bash
+cd backend
+# Set environment variables:
+# SECRET_KEY=your-random-secret
+# DATABASE_URL=sqlite+aiosqlite:///./data/app.db
+pip install -r requirements.txt
+uvicorn backend.src.main:app --host 0.0.0.0 --port 8001
+```
+
+Then update the frontend's `VITE_API_URL` to point to your deployed backend.
 
 ```
 crime-connect-fbi/
